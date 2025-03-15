@@ -6,20 +6,22 @@ import DiscCard from "../components/DiscCard";
 import DiscDetailsModal from "../components/DiscDetailsModal";
 
 export default function Inventory() {
+  const userId = 1; // ✅ Hardcoded for now, needs to be replaced later!
+
   const { data: userDiscs, error, isLoading, refetch } = useQuery({
-    queryKey: ["discs"],
-    queryFn: getDiscs,
+    queryKey: ["discs", userId],
+    queryFn: () => getDiscs(userId),
   });
 
   const [selectedDisc, setSelectedDisc] = useState(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [errorDetails, setErrorDetails] = useState(null);
 
-  const fetchDiscDetails = async (userId, discId) => {
+  const fetchDiscDetails = async (userDiscId) => {
     setIsLoadingDetails(true);
     setErrorDetails(null);
     try {
-      const discDetails = await getDiscDetails(userId, discId);
+      const discDetails = await getDiscDetails(userDiscId);
       setSelectedDisc(discDetails);  // ✅ Pass the full object
     } catch (error) {
       setErrorDetails("Failed to load disc details.");
@@ -54,8 +56,8 @@ export default function Inventory() {
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9 gap-10 auto-rows-fr pl-8">
               {categorizedDiscs[type].map((userDisc) => (
                 <div 
-                  key={userDisc.id} 
-                  onClick={() => fetchDiscDetails(1, userDisc.id)} // USER_ID NEEDS TO BE FETCHED FROM LOCAL STORAGE OR COOKIE IN THE FUTURE!!!
+                  key={userDisc.userDiscId} 
+                  onClick={() => fetchDiscDetails(userDisc.userDiscId)}
                   className="cursor-pointer"
                 >
                   <DiscCard

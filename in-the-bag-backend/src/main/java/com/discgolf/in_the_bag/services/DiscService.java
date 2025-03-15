@@ -30,25 +30,25 @@ public class DiscService {
     }
 
     // ✅ fetches detailed view DTO for disc based on ID
-    public DiscDetailsRecord getDiscDetails(Long userId, Long discId) {
+    public DiscDetailsRecord getDiscDetails(Long userDiscId) {
         // Fetch disc details (without bags)
-        Optional<BaseDiscDetailsRecord> baseDiscDetailsOpt = discRepository.findBaseDiscDetailsById(userId, discId);
+        Optional<BaseDiscDetailsRecord> baseDiscDetailsOpt = discRepository.findBaseDiscDetailsById(userDiscId);
 
         if (baseDiscDetailsOpt.isEmpty()) {
-            throw new RuntimeException("Disc not found for user: " + userId);
+            throw new RuntimeException("Disc not found for user_discs.id: " + userDiscId);
         }
 
         BaseDiscDetailsRecord baseDiscDetails = baseDiscDetailsOpt.get();
 
         // Fetch associated bags
-        List<BagRecord> bags = bagRepository.findBagsByDiscId(discId);
+        List<BagRecord> bags = bagRepository.findBagsByUserDiscId(userDiscId);
 
         // ✅ Fetch the plastics for the disc’s manufacturer
-        List<PlasticRecord> plastics = discRepository.findPlasticsByDiscId(discId);
+        List<PlasticRecord> plastics = discRepository.findPlasticsByUserDiscId(userDiscId);
 
         // Merge into `DiscDetailsRecord`
         return new DiscDetailsRecord(
-                baseDiscDetails.id(),
+                baseDiscDetails.userDiscId(),
                 baseDiscDetails.name(),
                 baseDiscDetails.type(),
                 baseDiscDetails.customSpeed(),
@@ -71,8 +71,8 @@ public class DiscService {
         );
     }
 
-    public boolean updateDisc(Long userId, Long discId, UpdateDiscRequest request) {
-        UserDisc userDisc = discRepository.findDiscEntityByIdAndUserId(discId, userId)
+    public boolean updateDisc(Long userDiscId, UpdateDiscRequest request) {
+        UserDisc userDisc = discRepository.findDiscEntityByUserDiscId(userDiscId)
                 .orElseThrow(() -> new RuntimeException("Disc not found or does not belong to user"));
 
         // ✅ Update only provided fields

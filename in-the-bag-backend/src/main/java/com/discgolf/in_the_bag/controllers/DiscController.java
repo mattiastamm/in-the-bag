@@ -20,29 +20,28 @@ public class DiscController {
     }
 
     // ✅ GET ALL USER DISCS (Existing)
-    @GetMapping
-    public List<InventoryDiscRecord> getUserDiscs() {
-        Long userId = 1L; // Hardcoded for now
+    @GetMapping("/{userId}")
+    public List<InventoryDiscRecord> getUserDiscs(
+            @PathVariable Long userId
+    ) {
         return discService.getUserDiscs(userId);
     }
 
     // ✅ GET detailed info for specific UserDisc
-    @GetMapping("/{userId}/{discId}")
+    @GetMapping("/details/{userDiscId}")
     public DiscDetailsRecord getDiscDetails(
-            @PathVariable Long userId,
-            @PathVariable Long discId
+            @PathVariable Long userDiscId
     ) {
-        return discService.getDiscDetails(userId, discId);
+        return discService.getDiscDetails(userDiscId);
     }
 
     // ✅ PATCH request to update customizable parts for a user's disc
-    @PatchMapping("/{userId}/{discId}")
+    @PatchMapping("/{userDiscId}")
     public ResponseEntity<DiscDetailsRecord> updateDisc(
-            @PathVariable Long userId, // ✅ Now requires userId
-            @PathVariable Long discId,
+            @PathVariable Long userDiscId,
             @RequestBody UpdateDiscRequest request
     ) {
-        boolean isUpdated = discService.updateDisc(userId, discId, request);
+        boolean isUpdated = discService.updateDisc(userDiscId, request);
 
         if (isUpdated) {
             return ResponseEntity.noContent().build(); // ✅ 204 No Content (Success)

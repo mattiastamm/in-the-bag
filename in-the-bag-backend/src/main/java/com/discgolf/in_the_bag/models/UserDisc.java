@@ -12,7 +12,8 @@ import java.util.HashSet;
 public class UserDisc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id") // ✅ Explicitly map this field to the "id" column in the DB
+    private Long userDiscId;
 
     private Long userId;
 

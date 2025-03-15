@@ -3,7 +3,7 @@ package com.discgolf.in_the_bag.records;
 import java.util.List;
 
 public record DiscDetailsRecord(
-        Long id,
+        Long userDiscId,
         String name,
         String type,
         Float customSpeed,

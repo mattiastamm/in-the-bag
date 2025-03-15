@@ -1,7 +1,7 @@
 package com.discgolf.in_the_bag.records;
 
 public record InventoryDiscRecord(
-        Long id,
+        Long userDiscId,
         String name,
         String type,
         Float customSpeed,

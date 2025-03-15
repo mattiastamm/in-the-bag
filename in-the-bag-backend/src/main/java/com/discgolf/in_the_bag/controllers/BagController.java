@@ -13,8 +13,8 @@ import java.util.List;
 public class BagController {
     private final BagService bagService;
 
-    @GetMapping("/by-disc/{discId}")
-    public List<BagRecord> getBagsByDiscId(@PathVariable Long discId) {
-        return bagService.getBagsByDiscId(discId);
+    @GetMapping("/by-userDisc/{userDiscId}")
+    public List<BagRecord> getBagsByUserDiscId(@PathVariable Long userDiscId) {
+        return bagService.getBagsByUserDiscId(userDiscId);
     }
 }

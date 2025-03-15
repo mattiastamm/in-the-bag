@@ -18,7 +18,7 @@ public interface DiscRepository extends JpaRepository<UserDisc, Long> {
     // ✅ Use this for Inventory View (custom DTO projection)
     @Query("""
         SELECT new com.discgolf.in_the_bag.records.InventoryDiscRecord(
-            ud.id, ud.disc.name, ud.disc.type, 
+            ud.userDiscId, ud.disc.name, ud.disc.type, 
             ud.customSpeed, ud.customGlide, ud.customTurn, ud.customFade, 
             ud.color, ud.plastic.name,  
             ud.disc.manufacturer.name, 
@@ -31,7 +31,7 @@ public interface DiscRepository extends JpaRepository<UserDisc, Long> {
 
     @Query("""
         SELECT new com.discgolf.in_the_bag.records.BaseDiscDetailsRecord(
-            ud.id,
+            ud.userDiscId,
             ud.disc.name,
             ud.disc.type,
             ud.customSpeed,
@@ -51,21 +51,21 @@ public interface DiscRepository extends JpaRepository<UserDisc, Long> {
             ud.comment
         )
         FROM UserDisc ud
-        WHERE ud.id = :id and ud.userId = :userId
+        WHERE ud.userDiscId = :userDiscId
     """)
-    Optional<BaseDiscDetailsRecord> findBaseDiscDetailsById(@Param("userId") Long userId, @Param("id") Long id);
+    Optional<BaseDiscDetailsRecord> findBaseDiscDetailsById(@Param("userDiscId") Long userDiscId);
 
     @Query("""
     SELECT new com.discgolf.in_the_bag.records.PlasticRecord(p.id, p.name)
     FROM Plastic p
     WHERE p.manufacturer.id = (
-        SELECT ud.disc.manufacturer.id FROM UserDisc ud WHERE ud.id = :discId
+        SELECT ud.disc.manufacturer.id FROM UserDisc ud WHERE ud.userDiscId = :userDiscId
     )
 """)
-    List<PlasticRecord> findPlasticsByDiscId(@Param("discId") Long discId);
+    List<PlasticRecord> findPlasticsByUserDiscId(@Param("userDiscId") Long userDiscId);
 
 
     // ✅ Use these for modifying/deleting UserDiscs (they return real entities)
     List<UserDisc> findDiscEntitiesByUserId(Long userId);
-    Optional<UserDisc> findDiscEntityByIdAndUserId(Long id, Long userId);
+    Optional<UserDisc> findDiscEntityByUserDiscId(Long userDiscId);
 }

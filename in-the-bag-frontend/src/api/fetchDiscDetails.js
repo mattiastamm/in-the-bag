@@ -1,5 +1,5 @@
-export async function getDiscDetails(userId, discId) {
-    const apiUrl = `${import.meta.env.VITE_API_URL}/api/discs/${userId}/${discId}`;
+export async function getDiscDetails(userDiscId) {
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/discs/details/${userDiscId}`;
     console.log("Fetching disc details from:", apiUrl);  // ✅ Debugging log
 
     try {

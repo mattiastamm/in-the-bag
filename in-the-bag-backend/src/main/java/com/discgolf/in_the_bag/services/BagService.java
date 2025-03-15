@@ -11,7 +11,7 @@ import java.util.List;
 public class BagService {
     private final BagRepository bagRepository;
 
-    public List<BagRecord> getBagsByDiscId(Long discId) {
-        return bagRepository.findBagsByDiscId(discId);
+    public List<BagRecord> getBagsByUserDiscId(Long userDiscId) {
+        return bagRepository.findBagsByUserDiscId(userDiscId);
     }
 }

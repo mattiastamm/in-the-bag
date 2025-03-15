@@ -1,8 +1,9 @@
-export async function getDiscs() {
-    console.log("Fetching discs from:", import.meta.env.VITE_API_URL);  // ✅ Debugging log
+export async function getDiscs(userId) {
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/discs/${userId}`;
+    console.log("Fetching discs from:", apiUrl);  // ✅ Debugging log
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/discs`);
+        const response = await fetch(apiUrl);
 
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);

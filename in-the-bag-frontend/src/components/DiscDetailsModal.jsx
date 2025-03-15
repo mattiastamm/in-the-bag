@@ -34,7 +34,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
 
   const handleSave = async () => {
     try {
-        const success = await updateDisc(1, disc.id, formData);
+        const success = await updateDisc(disc.userDiscId, formData);
 
         if (success) {
             console.log("Disc updated successfully!");
