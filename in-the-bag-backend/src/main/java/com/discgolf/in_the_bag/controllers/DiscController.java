@@ -50,4 +50,15 @@ public class DiscController {
         }
     }
 
+    @DeleteMapping("/{userDiscId}")
+    public ResponseEntity<Void> deleteDisc(@PathVariable Long userDiscId) {
+        boolean deleted = discService.deleteDisc(userDiscId);
+
+        if (deleted) {
+            return ResponseEntity.noContent().build(); // ✅ 204 No Content
+        } else {
+            return ResponseEntity.notFound().build(); // ❌ 404 Not Found
+        }
+    }
+
 }

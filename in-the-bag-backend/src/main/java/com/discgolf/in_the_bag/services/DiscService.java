@@ -96,4 +96,13 @@ public class DiscService {
         return true;
     }
 
+    public boolean deleteDisc(Long userDiscId) {
+        if (!discRepository.existsById(userDiscId)) {
+            return false; // ❌ Disc does not exist
+        }
+
+        discRepository.deleteById(userDiscId); // ✅ Delete disc
+        return true; // ✅ Successful deletion
+    }
+
 }

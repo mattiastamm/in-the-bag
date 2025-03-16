@@ -64,6 +64,7 @@ public interface DiscRepository extends JpaRepository<UserDisc, Long> {
 """)
     List<PlasticRecord> findPlasticsByUserDiscId(@Param("userDiscId") Long userDiscId);
 
+    void deleteById(Long UserDiscId);
 
     // ✅ Use these for modifying/deleting UserDiscs (they return real entities)
     List<UserDisc> findDiscEntitiesByUserId(Long userId);
