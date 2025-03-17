@@ -19,7 +19,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
         customFade: disc.customFade,
         color: disc.color,
         plasticId: disc.plasticId,
-        weight: disc.weight,
+        weight: 0,
         comment: disc.comment,
     }));
 

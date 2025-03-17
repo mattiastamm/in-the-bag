@@ -1,72 +1,44 @@
 package com.discgolf.in_the_bag.repositories;
 
-import com.discgolf.in_the_bag.models.UserDisc;
-import com.discgolf.in_the_bag.records.BaseDiscDetailsRecord;
-import com.discgolf.in_the_bag.records.InventoryDiscRecord;
-import com.discgolf.in_the_bag.records.PlasticRecord;
+import com.discgolf.in_the_bag.models.Disc;
+import com.discgolf.in_the_bag.records.DiscAutoFillBaseRecord;
+import com.discgolf.in_the_bag.records.DiscAutoFillRecord;
+import com.discgolf.in_the_bag.records.DiscSearchRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DiscRepository extends JpaRepository<UserDisc, Long> {
+public interface DiscRepository extends JpaRepository<Disc, Long> {
 
-    // ✅ Use this for Inventory View (custom DTO projection)
     @Query("""
-        SELECT new com.discgolf.in_the_bag.records.InventoryDiscRecord(
-            ud.userDiscId, ud.disc.name, ud.disc.type, 
-            ud.customSpeed, ud.customGlide, ud.customTurn, ud.customFade, 
-            ud.color, ud.plastic.name,  
-            ud.disc.manufacturer.name, 
-            ud.disc.speed, ud.disc.glide, ud.disc.turn, ud.disc.fade, 
-            ud.inUse)
-        FROM UserDisc ud
-        WHERE ud.userId = :userId
+        SELECT new com.discgolf.in_the_bag.records.DiscSearchRecord(d.id, d.name)
+        FROM Disc d
+        WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :query, '%'))
     """)
-    List<InventoryDiscRecord> findDiscsByUserId(@Param("userId") Long userId);
+    List<DiscSearchRecord> searchDiscsByName(@Param("query") String query);
 
     @Query("""
-        SELECT new com.discgolf.in_the_bag.records.BaseDiscDetailsRecord(
-            ud.userDiscId,
-            ud.disc.name,
-            ud.disc.type,
-            ud.customSpeed,
-            ud.customGlide,
-            ud.customTurn,
-            ud.customFade,
-            ud.color,
-            ud.plastic.id,
-            ud.plastic.name,
-            ud.disc.manufacturer.name,
-            ud.disc.speed,
-            ud.disc.glide,
-            ud.disc.turn,
-            ud.disc.fade,
-            ud.weight,
-            ud.inUse,
-            ud.comment
+        SELECT new com.discgolf.in_the_bag.records.DiscAutoFillBaseRecord(
+            d.id,
+            d.name,
+            d.type,
+            d.manufacturer.id,
+            d.manufacturer.name,
+            d.speed,
+            d.glide,
+            d.turn,
+            d.fade
         )
-        FROM UserDisc ud
-        WHERE ud.userDiscId = :userDiscId
+        FROM Disc d
+        WHERE d.id = :discId
     """)
-    Optional<BaseDiscDetailsRecord> findBaseDiscDetailsById(@Param("userDiscId") Long userDiscId);
+    Optional<DiscAutoFillBaseRecord> findDiscDetailsForCreation(@Param("discId") Long discId);
 
-    @Query("""
-    SELECT new com.discgolf.in_the_bag.records.PlasticRecord(p.id, p.name)
-    FROM Plastic p
-    WHERE p.manufacturer.id = (
-        SELECT ud.disc.manufacturer.id FROM UserDisc ud WHERE ud.userDiscId = :userDiscId
-    )
-""")
-    List<PlasticRecord> findPlasticsByUserDiscId(@Param("userDiscId") Long userDiscId);
 
-    void deleteById(Long UserDiscId);
-
-    // ✅ Use these for modifying/deleting UserDiscs (they return real entities)
-    List<UserDisc> findDiscEntitiesByUserId(Long userId);
-    Optional<UserDisc> findDiscEntityByUserDiscId(Long userDiscId);
 }
+

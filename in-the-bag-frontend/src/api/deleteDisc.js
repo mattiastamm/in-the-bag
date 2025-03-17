@@ -1,5 +1,5 @@
 export async function deleteDisc(userDiscId) {
-    const apiUrl = `${import.meta.env.VITE_API_URL}/api/discs/${userDiscId}`;
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/user-discs/${userDiscId}`;
     console.log(`Deleting disc at: ${apiUrl}`);
 
     try {

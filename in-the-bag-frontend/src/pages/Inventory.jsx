@@ -4,6 +4,8 @@ import { getDiscs } from "../api/fetchDiscs";
 import { getDiscDetails } from "../api/fetchDiscDetails";
 import DiscCard from "../components/DiscCard";
 import DiscDetailsModal from "../components/DiscDetailsModal";
+import AddNewUserDiscModal from "../components/AddNewUserDiscModal";
+
 
 export default function Inventory() {
   const userId = 1; // ✅ Hardcoded for now, needs to be replaced later!
@@ -14,6 +16,7 @@ export default function Inventory() {
   });
 
   const [selectedDisc, setSelectedDisc] = useState(null);
+  const [isAddingDisc, setIsAddingDisc] = useState(false);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [errorDetails, setErrorDetails] = useState(null);
 
@@ -46,7 +49,16 @@ export default function Inventory() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mt-3 mb-9 pl-1">My Inventory</h1>
+      {/* Header with "My Inventory" + "Add Disc" Button */}
+      <div className="flex justify-between items-center mt-3 mb-9">
+        <h1 className="text-3xl font-bold pl-1">My Inventory</h1>
+        <button 
+          onClick={() => setIsAddingDisc(true)}
+          className="bg-green-500 text-white text-2xl px-4 py-2 rounded transition-transform transform hover:bg-green-700"
+        >
+          + Add Disc
+        </button>
+      </div>
       
       {/* Render each category in predefined order */}
       {discTypeOrder.map((type) => (
@@ -93,6 +105,15 @@ export default function Inventory() {
           refetch={refetch}
         />
       )}
+
+      {/* ✅ Render AddNewUserDiscModal when clicking "Add Disc" */}
+      {isAddingDisc && (
+        <AddNewUserDiscModal 
+          onClose={() => setIsAddingDisc(false)}
+          refetch={refetch}
+        />
+      )}
+
     </div>
   );
 }
