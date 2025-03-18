@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@layer utilities {
+  @theme {
+    --grid-cols-custom: 8;
+  }
+
+  /* Define the custom grid for 1400px (between xl and 2xl) */
+  @media (min-width: 1450px) and (max-width: 1600px) {
+    .grid-cols-custom {
+      grid-template-columns: repeat(var(--grid-cols-custom), minmax(0, 1fr));
+    }
+  }
+}
+
 /* Prevent background scrolling when modal is open */
 body.modal-open {
     overflow: hidden;
