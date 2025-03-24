@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Inventory from "./pages/Inventory";
@@ -13,6 +13,7 @@ export default function App() {
         <Header />
         <div className="flex-1 p-6">
           <Routes>
+            <Route path="/" element={<Navigate to="/inventory" replace />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/my-bags" element={<MyBags />} />
             <Route path="/wishlist" element={<Wishlist />} />
