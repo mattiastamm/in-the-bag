@@ -108,6 +108,19 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
               <div className="text-center flex flex-col items-center mt-2">
                 <p className="text-gray-600"><strong>Type:</strong> {disc.type}</p>
                 <p className="text-gray-600"><strong>Manufacturer:</strong> {disc.manufacturerName}</p>
+
+                {/* Bags Section */}
+                <div className="w-full text-center">
+                  <p className=" text-gray-600">
+                    <strong>Bags:</strong>{' '}
+                    {disc.inUse ? (
+                      disc.bags.map(bag => bag.title).join(', ')
+                    ) : (
+                      <span className="text-gray-500 italic">This disc is not a part of any bag yet.</span>
+                    )}
+                  </p>
+                </div>
+                
               </div>
 
               {/* Flight Numbers & Additional Fields in Centered Grid Layout */}
