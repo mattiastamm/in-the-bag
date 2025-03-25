@@ -3,6 +3,7 @@ package com.discgolf.in_the_bag.repositories;
 import com.discgolf.in_the_bag.models.UserDisc;
 import com.discgolf.in_the_bag.records.PlasticRecord;
 import com.discgolf.in_the_bag.records.UserDiscDto;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
+
+    void deleteById(Long UserDiscId);
+
+    Optional<UserDisc> findDiscEntityByUserDiscId(Long userDiscId);
 
     // ✅ Use this for Inventory View (custom DTO projection)
     @Query("""
@@ -75,9 +80,8 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
 """)
     List<PlasticRecord> findPlasticsByUserDiscId(@Param("userDiscId") Long userDiscId);
 
-    void deleteById(Long UserDiscId);
+    @Modifying
+    @Query("UPDATE UserDisc ud SET ud.inUse = :stillInUse WHERE ud.userDiscId = :userDiscId")
+    void updateInUseStatus(@Param("userDiscId") Long userDiscId, @Param("stillInUse") boolean stillInUse);
 
-    // ✅ Use these for modifying/deleting UserDiscs (they return real entities)
-    List<UserDisc> findDiscEntitiesByUserId(Long userId);
-    Optional<UserDisc> findDiscEntityByUserDiscId(Long userDiscId);
 }

@@ -151,4 +151,9 @@ public class UserDiscService {
         return true; // ✅ Successful deletion
     }
 
+    public void setInUseStatus(Long userDiscId, boolean inUse) {
+        logger.info("Setting in_use value for user userDiscId={} to inUse={}", userDiscId, inUse);
+        userDiscRepository.updateInUseStatus(userDiscId, inUse);
+    }
+
 }

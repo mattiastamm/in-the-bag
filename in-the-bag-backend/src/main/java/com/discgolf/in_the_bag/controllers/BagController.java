@@ -2,6 +2,7 @@ package com.discgolf.in_the_bag.controllers;
 
 import com.discgolf.in_the_bag.records.BagRecord;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
+import com.discgolf.in_the_bag.records.UpdateBagDiscsRequest;
 import com.discgolf.in_the_bag.services.BagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,12 @@ public class BagController {
     @GetMapping("/{userId}/bags-with-discs")
     public ResponseEntity<List<BagWithDiscsDto>> getBagsWithDiscs(@PathVariable Long userId) {
         return ResponseEntity.ok(bagService.getBagsWithDiscsForUser(userId));
+    }
+
+    @PostMapping("/update-discs")
+    public ResponseEntity<Void> updateBagDiscs(@RequestBody UpdateBagDiscsRequest request) {
+        bagService.updateBagDiscs(request.bagId(), request.userDiscIds());
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/remove-disc")

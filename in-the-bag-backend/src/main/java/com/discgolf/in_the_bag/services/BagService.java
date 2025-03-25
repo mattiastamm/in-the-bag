@@ -1,6 +1,7 @@
 package com.discgolf.in_the_bag.services;
 
 import com.discgolf.in_the_bag.models.Bag;
+import com.discgolf.in_the_bag.models.DiscInBag;
 import com.discgolf.in_the_bag.models.UserDisc;
 import com.discgolf.in_the_bag.records.BagRecord;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
@@ -12,7 +13,11 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 @Service
@@ -23,6 +28,8 @@ public class BagService {
     private final BagRepository bagRepository;
     private final DiscInBagRepository discInBagRepository;
     private final UserDiscRepository userDiscRepository;
+
+    private final UserDiscService userDiscService;
 
     public List<BagRecord> getBagsByUserDiscId(Long userDiscId) {
         logger.info("Fetching bags containing userDiscId {}", userDiscId);
@@ -93,6 +100,66 @@ public class BagService {
             userDiscRepository.save(userDisc);
             logger.info("Set in_use=false for user_disc_id={}", userDiscId);
         }
+    }
+
+    @Transactional
+    public void updateBagDiscs(Long bagId, List<Long> updatedUserDiscIds) {
+        logger.info("Updating discs in bag with id={} to match user selection: {}", bagId, updatedUserDiscIds);
+
+        // Get current disc IDs in bag
+        List<Long> currentDiscIds = discInBagRepository.findUserDiscIdsByBagId(bagId);
+
+        Set<Long> currentSet = new HashSet<>(currentDiscIds);
+        Set<Long> updatedSet = new HashSet<>(updatedUserDiscIds);
+        logger.debug("Current discs in bag {}: {}", bagId, currentDiscIds);
+
+        // Find discs to add and remove
+        Set<Long> toAdd = new HashSet<>(updatedSet);
+        toAdd.removeAll(currentSet);
+
+        Set<Long> toRemove = new HashSet<>(currentSet);
+        toRemove.removeAll(updatedSet);
+
+        logger.info("Discs to add: {}", toAdd);
+        logger.info("Discs to remove: {}", toRemove);
+
+        Bag bag = bagRepository.findById(bagId)
+                .orElseThrow(() -> new RuntimeException("Bag not found: " + bagId));
+
+        // Deal with added discs
+        for (Long userDiscId : toAdd) {
+            logger.debug("Adding userDiscId={} to bagId={}", userDiscId, bagId);
+
+            UserDisc userDisc = userDiscRepository.findById(userDiscId)
+                    .orElseThrow(() -> new RuntimeException("UserDisc not found: " + userDiscId));
+
+            DiscInBag entry = new DiscInBag();
+            entry.setUserDisc(userDisc);
+            entry.setBag(bag);
+            discInBagRepository.save(entry);
+        }
+
+        // Deal with removed discs
+        for (Long userDiscId : toRemove) {
+            logger.debug("Removing userDiscId={} from bagId={}", userDiscId, bagId);
+
+            UserDisc userDisc = userDiscRepository.findById(userDiscId)
+                    .orElseThrow(() -> new RuntimeException("UserDisc not found: " + userDiscId));
+
+            discInBagRepository.deleteByUserDiscAndBag(userDisc, bag);
+        }
+
+        // Update in_use for all affected discs
+        Set<Long> affected = new HashSet<>();
+        affected.addAll(toAdd);
+        affected.addAll(toRemove);
+
+        for (Long userDiscId : affected) {
+            boolean stillInUse = discInBagRepository.existsByUserDisc_UserDiscId(userDiscId);
+            userDiscService.setInUseStatus(userDiscId, stillInUse);
+        }
+        
+        logger.info("Finished updating bag with id={}", bagId);
     }
 
 }
