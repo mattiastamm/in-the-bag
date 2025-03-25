@@ -2,7 +2,7 @@ package com.discgolf.in_the_bag.repositories;
 
 import com.discgolf.in_the_bag.models.UserDisc;
 import com.discgolf.in_the_bag.records.BaseDiscDetailsRecord;
-import com.discgolf.in_the_bag.records.InventoryDiscRecord;
+import com.discgolf.in_the_bag.records.UserDiscDto;
 import com.discgolf.in_the_bag.records.PlasticRecord;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +17,7 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
 
     // ✅ Use this for Inventory View (custom DTO projection)
     @Query("""
-        SELECT new com.discgolf.in_the_bag.records.InventoryDiscRecord(
+        SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
             ud.userDiscId, ud.disc.name, ud.disc.type, 
             ud.customSpeed, ud.customGlide, ud.customTurn, ud.customFade, 
             ud.color, ud.plastic.name,  
@@ -27,7 +27,7 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
         FROM UserDisc ud
         WHERE ud.userId = :userId
     """)
-    List<InventoryDiscRecord> findDiscsByUserId(@Param("userId") Long userId);
+    List<UserDiscDto> findDiscsByUserId(@Param("userId") Long userId);
 
     @Query("""
         SELECT new com.discgolf.in_the_bag.records.BaseDiscDetailsRecord(

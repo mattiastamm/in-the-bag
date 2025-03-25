@@ -18,4 +18,6 @@ public interface BagRepository extends JpaRepository<Bag, Long> {
         WHERE ud.userDiscId = :userDiscId
     """)
     List<BagRecord> findBagsByUserDiscId(@Param("userDiscId") Long userDiscId);
+
+    List<Bag> findByUserId(Long userId);
 }

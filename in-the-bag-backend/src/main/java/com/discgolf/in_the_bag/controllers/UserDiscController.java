@@ -21,7 +21,7 @@ public class UserDiscController {
 
     // ✅ GET ALL USER DISCS (Existing)
     @GetMapping("/{userId}")
-    public List<InventoryDiscRecord> getUserDiscs(
+    public List<UserDiscDto> getUserDiscs(
             @PathVariable Long userId
     ) {
         return userDiscService.getUserDiscs(userId);

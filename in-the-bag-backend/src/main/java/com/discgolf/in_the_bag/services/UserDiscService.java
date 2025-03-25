@@ -11,12 +11,15 @@ import com.discgolf.in_the_bag.repositories.PlasticRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UserDiscService {
+    private static final Logger logger = LoggerFactory.getLogger(BagService.class);
+
     private final UserDiscRepository userDiscRepository;
     private final BagRepository bagRepository;
     private final PlasticRepository plasticRepository;
@@ -29,17 +32,19 @@ public class UserDiscService {
         this.discRepository = discRepository;
     }
 
-    // ✅ fetches base view DTO for every disc the user has
-    public List<InventoryDiscRecord> getUserDiscs(Long userId) {
+    public List<UserDiscDto> getUserDiscs(Long userId) {
+        logger.info("Fetching base view DTO for every disc for userId={}", userId);
         return userDiscRepository.findDiscsByUserId(userId);
     }
 
-    // ✅ fetches detailed view DTO for disc based on ID
     public DiscDetailsRecord getDiscDetails(Long userDiscId) {
+        logger.info("Fetching detailed view DTO for userDiscId={}", userDiscId);
+
         // Fetch disc details (without bags)
         Optional<BaseDiscDetailsRecord> baseDiscDetailsOpt = userDiscRepository.findBaseDiscDetailsById(userDiscId);
 
         if (baseDiscDetailsOpt.isEmpty()) {
+            logger.warn("Disc not found for userDiscId={}", userDiscId);
             throw new RuntimeException("Disc not found for user_discs.id: " + userDiscId);
         }
 
@@ -77,6 +82,9 @@ public class UserDiscService {
     }
 
     public UserDisc addDiscToUser(CreateUserDiscRequest request) {
+        logger.info("Adding new disc for userId={} with discId={} and plasticId={}",
+                request.userId(), request.discId(), request.plasticId());
+
         // Validate referenced entities (disc & plastic exist)
         Disc disc = discRepository.findById(request.discId())
                 .orElseThrow(() -> new RuntimeException("Disc not found"));
@@ -105,6 +113,8 @@ public class UserDiscService {
     }
 
     public boolean updateDisc(Long userDiscId, UpdateDiscRequest request) {
+        logger.info("Updating userDiscId={}", userDiscId);
+
         UserDisc userDisc = userDiscRepository.findDiscEntityByUserDiscId(userDiscId)
                 .orElseThrow(() -> new RuntimeException("Disc not found or does not belong to user"));
 
@@ -130,7 +140,10 @@ public class UserDiscService {
     }
 
     public boolean deleteDisc(Long userDiscId) {
+        logger.info("Attempting to delete userDiscId={}", userDiscId);
+
         if (!userDiscRepository.existsById(userDiscId)) {
+            logger.warn("UserDisc with id={} not found", userDiscId);
             return false; // ❌ Disc does not exist
         }
 

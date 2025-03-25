@@ -1,6 +1,6 @@
 package com.discgolf.in_the_bag.records;
 
-public record InventoryDiscRecord(
+public record UserDiscDto(
         Long userDiscId,
         String name,
         String type,
