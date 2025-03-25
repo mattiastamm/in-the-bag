@@ -1,10 +1,7 @@
 package com.discgolf.in_the_bag.controllers;
 
-import com.discgolf.in_the_bag.models.Bag;
 import com.discgolf.in_the_bag.records.BagRecord;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
-import com.discgolf.in_the_bag.records.UserDiscDto;
-import com.discgolf.in_the_bag.repositories.BagRepository;
 import com.discgolf.in_the_bag.services.BagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

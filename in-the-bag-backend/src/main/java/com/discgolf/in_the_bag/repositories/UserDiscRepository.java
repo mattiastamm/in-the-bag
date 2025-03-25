@@ -1,9 +1,8 @@
 package com.discgolf.in_the_bag.repositories;
 
 import com.discgolf.in_the_bag.models.UserDisc;
-import com.discgolf.in_the_bag.records.BaseDiscDetailsRecord;
-import com.discgolf.in_the_bag.records.UserDiscDto;
 import com.discgolf.in_the_bag.records.PlasticRecord;
+import com.discgolf.in_the_bag.records.UserDiscDto;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,19 +17,31 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
     // ✅ Use this for Inventory View (custom DTO projection)
     @Query("""
         SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
-            ud.userDiscId, ud.disc.name, ud.disc.type, 
-            ud.customSpeed, ud.customGlide, ud.customTurn, ud.customFade, 
-            ud.color, ud.plastic.name,  
+            ud.userDiscId, 
+            ud.disc.name, 
+            ud.disc.type, 
+            ud.customSpeed, 
+            ud.customGlide, 
+            ud.customTurn, 
+            ud.customFade, 
+            ud.color, 
+            ud.plastic.id, 
+            ud.plastic.name,  
             ud.disc.manufacturer.name, 
-            ud.disc.speed, ud.disc.glide, ud.disc.turn, ud.disc.fade, 
-            ud.inUse)
+            ud.disc.speed, 
+            ud.disc.glide, 
+            ud.disc.turn, 
+            ud.disc.fade, 
+            ud.weight, 
+            ud.inUse, 
+            ud.comment)
         FROM UserDisc ud
         WHERE ud.userId = :userId
     """)
-    List<UserDiscDto> findDiscsByUserId(@Param("userId") Long userId);
+    List<UserDiscDto> findUserDiscsByUserId(@Param("userId") Long userId);
 
     @Query("""
-        SELECT new com.discgolf.in_the_bag.records.BaseDiscDetailsRecord(
+        SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
             ud.userDiscId,
             ud.disc.name,
             ud.disc.type,
@@ -53,7 +64,7 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
         FROM UserDisc ud
         WHERE ud.userDiscId = :userDiscId
     """)
-    Optional<BaseDiscDetailsRecord> findBaseDiscDetailsById(@Param("userDiscId") Long userDiscId);
+    Optional<UserDiscDto> findUserDiscsById(@Param("userDiscId") Long userDiscId);
 
     @Query("""
     SELECT new com.discgolf.in_the_bag.records.PlasticRecord(p.id, p.name)

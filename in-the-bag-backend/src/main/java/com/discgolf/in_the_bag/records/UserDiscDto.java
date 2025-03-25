@@ -9,11 +9,14 @@ public record UserDiscDto(
         Float customTurn,
         Float customFade,
         String color,
+        Integer plasticId,
         String plasticName,
         String manufacturerName,
         Float speed,
         Float glide,
         Float turn,
         Float fade,
-        Boolean inUse) {
+        Double weight,
+        Boolean inUse,
+        String comment) {
 }

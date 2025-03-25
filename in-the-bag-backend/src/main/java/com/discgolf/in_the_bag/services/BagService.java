@@ -49,13 +49,16 @@ public class BagService {
                             userDisc.getCustomTurn(),
                             userDisc.getCustomFade(),
                             userDisc.getColor(),
+                            userDisc.getPlastic().getId(),
                             userDisc.getPlastic().getName(),
                             userDisc.getDisc().getManufacturer().getName(),
                             userDisc.getDisc().getSpeed(),
                             userDisc.getDisc().getGlide(),
                             userDisc.getDisc().getTurn(),
                             userDisc.getDisc().getFade(),
-                            userDisc.getInUse()
+                            userDisc.getWeight(),
+                            userDisc.getInUse(),
+                            userDisc.getComment()
                     )
             ).toList();
 

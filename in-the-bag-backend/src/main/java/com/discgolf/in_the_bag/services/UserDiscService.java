@@ -34,21 +34,21 @@ public class UserDiscService {
 
     public List<UserDiscDto> getUserDiscs(Long userId) {
         logger.info("Fetching base view DTO for every disc for userId={}", userId);
-        return userDiscRepository.findDiscsByUserId(userId);
+        return userDiscRepository.findUserDiscsByUserId(userId);
     }
 
     public DiscDetailsRecord getDiscDetails(Long userDiscId) {
         logger.info("Fetching detailed view DTO for userDiscId={}", userDiscId);
 
         // Fetch disc details (without bags)
-        Optional<BaseDiscDetailsRecord> baseDiscDetailsOpt = userDiscRepository.findBaseDiscDetailsById(userDiscId);
+        Optional<UserDiscDto> userDiscDtoOpt = userDiscRepository.findUserDiscsById(userDiscId);
 
-        if (baseDiscDetailsOpt.isEmpty()) {
+        if (userDiscDtoOpt.isEmpty()) {
             logger.warn("Disc not found for userDiscId={}", userDiscId);
             throw new RuntimeException("Disc not found for user_discs.id: " + userDiscId);
         }
 
-        BaseDiscDetailsRecord baseDiscDetails = baseDiscDetailsOpt.get();
+        UserDiscDto baseDiscDetails = userDiscDtoOpt.get();
 
         // Fetch associated bags
         List<BagRecord> bags = bagRepository.findBagsByUserDiscId(userDiscId);
