@@ -4,7 +4,6 @@ import { Trash2 } from "lucide-react";
 export default function BagDiscItem({ disc, onRemove }) {
   const {
     name,
-    type,
     color,
     plasticName,
     manufacturerName,
@@ -16,6 +15,7 @@ export default function BagDiscItem({ disc, onRemove }) {
     glide,
     turn,
     fade,
+    weight,
   } = disc;
 
   // Helper: Highlight custom numbers if they differ
@@ -43,6 +43,7 @@ export default function BagDiscItem({ disc, onRemove }) {
           <span className={getTextClass(customTurn, turn)}>{customTurn}</span>
           <span className={getTextClass(customFade, fade)}>{customFade}</span>
         </div>
+        <div>{weight}g</div>
       </div>
 
       {/* Delete Button */}

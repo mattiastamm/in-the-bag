@@ -74,19 +74,16 @@ export default function Inventory() {
                 >
                   <DiscCard
                     name={userDisc.name}
-                    type={userDisc.type}
                     customSpeed={userDisc.customSpeed}
                     customGlide={userDisc.customGlide}
                     customTurn={userDisc.customTurn}
                     customFade={userDisc.customFade}
                     color={userDisc.color}
                     plasticName={userDisc.plasticName}
-                    manufacturer={userDisc.manufacturerName}
                     speed={userDisc.speed}
                     glide={userDisc.glide}
                     turn={userDisc.turn}
                     fade={userDisc.fade}
-                    inUse={userDisc.inUse}
                   />
                 </div>
               ))}

@@ -2,19 +2,16 @@ import React from "react";
 
 export default function DiscCard({
   name,
-  type,
   customSpeed,
   customGlide,
   customTurn,
   customFade,
   color,
   plasticName,
-  manufacturer,
   speed,
   glide,
   turn,
   fade,
-  inUse
 }) {
   // Function to determine color (green if custom value differs)
   const getTextColor = (customValue, originalValue) => {
