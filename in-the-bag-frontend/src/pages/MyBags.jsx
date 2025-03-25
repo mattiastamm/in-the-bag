@@ -3,6 +3,7 @@ import { fetchBagsWithDiscs } from "../api/fetchBagsWithDiscs";
 import { useState } from "react";
 import BagDiscList from "../components/BagDiscList";
 import { removeDiscFromBag } from "../api/removeDiscFromBag";
+import { useEffect } from "react";
 
 export default function MyBags() {
   const userId = 1;
@@ -14,6 +15,12 @@ export default function MyBags() {
 
   const [selectedBagId, setSelectedBagId] = useState(null);
   const [isAddingBag, setIsAddingBag] = useState(false);
+
+  useEffect(() => {
+    if (bags?.length > 0 && selectedBagId === null) {
+      setSelectedBagId(bags[0].id);
+    }
+  }, [bags, selectedBagId]);
 
   const handleRemoveDisc = async (userDiscId, bagId) => {
     const confirmed = window.confirm("Are you sure you want to remove this disc from the bag?");
@@ -39,19 +46,27 @@ export default function MyBags() {
           <h1 className="text-3xl font-bold">My Bags</h1>
         </div>
 
-        {/* Middle: Bag Buttons */}
-        <div className="flex flex-wrap justify-start gap-4 w-[70%]">
-          {bags.map((bag) => (
-            <button
-              key={bag.id}
-              onClick={() => setSelectedBagId(bag.id)}
-              className={`bg-blue-500 text-white text-2xl px-4 py-2 rounded hover:bg-blue-600 cursor-pointer ${
-                selectedBagId === bag.id ? "ring-4 ring-blue-300" : ""
-              }`}
-            >
-              {bag.title}
-            </button>
-          ))}
+        {/* Middle: Bag Buttons or Empty State Message */}
+        <div className="w-[70%] flex items-center justify-start">
+          {bags.length > 0 ? (
+            <div className="flex flex-wrap gap-4">
+              {bags.map((bag) => (
+                <button
+                  key={bag.id}
+                  onClick={() => setSelectedBagId(bag.id)}
+                  className={`bg-blue-500 text-white text-2xl px-4 py-2 rounded hover:bg-blue-600 cursor-pointer ${
+                    selectedBagId === bag.id ? "ring-4 ring-blue-300" : ""
+                  }`}
+                >
+                  {bag.title}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600 text-lg italic">
+              No bags found. To create your first bag, press the <span className="font-semibold">Add Bag</span> button.
+            </p>
+          )}
         </div>
 
         {/* Right: Add Bag Button */}
