@@ -4,6 +4,7 @@ import { useState } from "react";
 import BagDiscList from "../components/BagDiscList";
 import { removeDiscFromBag } from "../api/removeDiscFromBag";
 import { useEffect } from "react";
+import EditBagModal from "../components/EditBagModal";
 
 export default function MyBags() {
   const userId = 1;
@@ -15,6 +16,7 @@ export default function MyBags() {
 
   const [selectedBagId, setSelectedBagId] = useState(null);
   const [isAddingBag, setIsAddingBag] = useState(false);
+  const [isEditingBag, setIsEditingBag] = useState(false);
 
   useEffect(() => {
     if (bags?.length > 0 && selectedBagId === null) {
@@ -89,6 +91,7 @@ export default function MyBags() {
               discs={bags.find((b) => b.id === selectedBagId)?.discs || []}
               bagId={selectedBagId}
               onRemoveDisc={handleRemoveDisc}
+              onEditBag={() => setIsEditingBag(true)}
             />
           )}
         </div>
@@ -102,6 +105,15 @@ export default function MyBags() {
           )}
         </div>
       </div>
+
+      {isEditingBag && (
+        <EditBagModal
+          bagId={selectedBagId}
+          initialSelectedDiscIds={bags.find(b => b.id === selectedBagId)?.discs.map(d => d.userDiscId) || []}
+          onClose={() => setIsEditingBag(false)}
+          refetch={refetch}
+        />
+      )}
     </div>
   );
 }
