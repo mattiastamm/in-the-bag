@@ -59,13 +59,13 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
         {/* Action Buttons */}
         <div className="mt-6 flex justify-end gap-4">
           <button
-            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
             onClick={onClose}
           >
             Cancel
           </button>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
             onClick={handleSave}
           >
             Save Changes

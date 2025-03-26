@@ -5,6 +5,7 @@ import BagDiscList from "../components/BagDiscList";
 import { removeDiscFromBag } from "../api/removeDiscFromBag";
 import { useEffect } from "react";
 import EditBagModal from "../components/EditBagModal";
+import AddNewBagModal from "../components/AddNewBagModal";
 
 export default function MyBags() {
   const userId = 1;
@@ -40,9 +41,9 @@ export default function MyBags() {
   if (error) return <p>Error fetching bags</p>;
 
   return (
-    <div className="px-6">
+    <div>
       {/* Sub-Header */}
-      <div className="flex justify-between items-center mt-3 mb-9">
+      <div className="flex justify-between items-center mt-3 pb-8">
         {/* Left: My Bags Title */}
         <div className="w-[15%]">
           <h1 className="text-3xl font-bold">My Bags</h1>
@@ -82,6 +83,9 @@ export default function MyBags() {
         </div>
       </div>
 
+      {/* Divider Line */}
+      <div className="-mx-6 border-b border-gray-300" />
+
       {/* Split Layout: Left = Disc List, Right = Future Content */}
       <div className="flex gap-6">
         {/* Left Half */}
@@ -114,6 +118,14 @@ export default function MyBags() {
           refetch={refetch}
         />
       )}
+
+      {isAddingBag && (
+        <AddNewBagModal
+          onClose={() => setIsAddingBag(false)}
+          refetch={refetch}
+        />
+      )}
+
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import BagDiscItem from "./BagDiscItem";
+import { PenLine, Trash2 } from "lucide-react";
 
 export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag }) {
   const discTypeOrder = ["Distance Driver", "Fairway Driver", "Midrange", "Putt & Approach"];
@@ -13,13 +14,23 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag }) {
   return (
     <div className="w-full mt-6">
 
-      {/* ✅ Edit Bag Button at Top */}
-      <div className="mb-6">
+      {/* Buttons at the Top */}
+      <div className="mb-6 flex justify-center gap-6">
+        {/* Edit Bag Button */}
         <button
-          onClick={onEditBag}
-          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
+            onClick={onEditBag}
+            className="bg-yellow-500 text-white text-xl px-6 py-3 rounded-lg hover:bg-yellow-600 transition cursor-pointer shadow-md inline-flex items-center space-x-2"
         >
-          Edit Bag
+            <span>Edit Bag</span>
+            <PenLine size={24} />
+        </button>
+
+        {/* Delete Bag Button */}
+        <button
+            className="bg-red-500 text-white text-xl px-6 py-3 rounded-lg hover:bg-red-600 transition cursor-pointer shadow-md inline-flex items-center space-x-2"
+        >
+            <span>Delete Bag</span>
+            <Trash2 size={24} />
         </button>
       </div>
 
