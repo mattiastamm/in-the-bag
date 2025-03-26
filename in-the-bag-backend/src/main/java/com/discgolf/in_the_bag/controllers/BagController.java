@@ -26,7 +26,7 @@ public class BagController {
         return ResponseEntity.ok(bagService.getBagsWithDiscsForUser(userId));
     }
 
-    @PostMapping("/update-discs")
+    @PutMapping("/update-discs")
     public ResponseEntity<Void> updateBagDiscs(@RequestBody UpdateBagDiscsRequest request) {
         bagService.updateBagDiscs(request.bagId(), request.userDiscIds());
         return ResponseEntity.ok().build();
