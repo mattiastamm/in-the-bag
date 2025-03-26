@@ -5,6 +5,7 @@ import com.discgolf.in_the_bag.models.DiscInBag;
 import com.discgolf.in_the_bag.models.UserDisc;
 import com.discgolf.in_the_bag.records.BagRecord;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
+import com.discgolf.in_the_bag.records.CreateBagRequest;
 import com.discgolf.in_the_bag.records.UserDiscDto;
 import com.discgolf.in_the_bag.repositories.BagRepository;
 import com.discgolf.in_the_bag.repositories.DiscInBagRepository;
@@ -14,6 +15,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,6 +81,17 @@ public class BagService {
             );
         }).toList();
     }
+
+    public Bag createBag(CreateBagRequest request) {
+        Bag bag = new Bag();
+        bag.setUserId(request.userId());
+        bag.setTitle(request.title());
+        bag.setComment(request.comment());
+        bag.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        return bagRepository.save(bag);
+    }
+
 
     @Transactional
     public void removeDiscFromBag(Long userDiscId, Long bagId) {
@@ -158,7 +172,7 @@ public class BagService {
             boolean stillInUse = discInBagRepository.existsByUserDisc_UserDiscId(userDiscId);
             userDiscService.setInUseStatus(userDiscId, stillInUse);
         }
-        
+
         logger.info("Finished updating bag with id={}", bagId);
     }
 

@@ -1,10 +1,13 @@
 package com.discgolf.in_the_bag.controllers;
 
+import com.discgolf.in_the_bag.models.Bag;
 import com.discgolf.in_the_bag.records.BagRecord;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
+import com.discgolf.in_the_bag.records.CreateBagRequest;
 import com.discgolf.in_the_bag.records.UpdateBagDiscsRequest;
 import com.discgolf.in_the_bag.services.BagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +28,13 @@ public class BagController {
     public ResponseEntity<List<BagWithDiscsDto>> getBagsWithDiscs(@PathVariable Long userId) {
         return ResponseEntity.ok(bagService.getBagsWithDiscsForUser(userId));
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<Bag> createBag(@RequestBody CreateBagRequest request) {
+        Bag newBag = bagService.createBag(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newBag);
+    }
+
 
     @PutMapping("/update-discs")
     public ResponseEntity<Void> updateBagDiscs(@RequestBody UpdateBagDiscsRequest request) {
