@@ -40,17 +40,23 @@ export default function MyBags() {
   };
 
   const handleDeleteBag = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this bag?");
-    if (!confirmDelete) return;
+    const confirmed = window.confirm("Are you sure you want to delete this bag?");
+    if (!confirmed) return;
   
     const success = await deleteBag(selectedBagId);
     if (success) {
-      setSelectedBagId(null);
-      refetch(); // Refresh bags
+      const { data: updatedBags } = await refetch(); // ✅ bags is automatically updated
+  
+      // 🔁 Update selected bag after deletion
+      if (updatedBags.length > 0) {
+        setSelectedBagId(updatedBags[0].id);
+      } else {
+        setSelectedBagId(null);
+      }
     } else {
-      alert("Failed to delete bag.");
+      alert("Failed to delete the bag.");
     }
-  };  
+  };
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error fetching bags</p>;
@@ -58,39 +64,45 @@ export default function MyBags() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Sub-Header */}
-      <div className="flex justify-between items-center mt-3 pb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mt-3 pb-8">
+        
         {/* Left: My Bags Title */}
-        <div className="w-[15%]">
+        <div className="flex-shrink-0">
           <h1 className="text-3xl font-bold">My Bags</h1>
         </div>
 
-        {/* Middle: Bag Buttons or Empty State Message */}
-        <div className="w-[70%] flex items-center justify-start">
+        {/* Middle: Bag Buttons */}
+        <div className="flex-1 flex flex-wrap gap-4 mx-4">
           {bags.length > 0 ? (
-            <div className="flex flex-wrap gap-4">
-              {bags.map((bag) => (
-                <button
-                  key={bag.id}
-                  onClick={() => setSelectedBagId(bag.id)}
-                  className={`bg-blue-500 text-white text-2xl px-4 py-2 rounded hover:bg-blue-600 cursor-pointer ${
-                    selectedBagId === bag.id ? "ring-4 ring-blue-300" : ""
-                  }`}
-                >
-                  {bag.title}
-                </button>
-              ))}
-            </div>
+            bags.map((bag) => (
+              <button
+                key={bag.id}
+                onClick={() => setSelectedBagId(bag.id)}
+                className={`bg-blue-500 text-white text-xl px-4 py-2 rounded hover:bg-blue-600 cursor-pointer ${
+                  selectedBagId === bag.id ? "ring-4 ring-blue-300" : ""
+                }`}
+              >
+                {bag.title}
+              </button>
+            ))
           ) : (
             <p className="text-gray-600 text-lg italic">
-              No bags found. To create your first bag, press the <span className="font-semibold">Add Bag</span> button.
+              No bags found. To create your first bag, press the{" "}
+              <span className="font-semibold">Add Bag</span> button.
             </p>
           )}
         </div>
 
         {/* Right: Add Bag Button */}
-        <div className="w-[15%] flex justify-end">
+        <div className="flex-shrink-0">
           <button
-            onClick={() => setIsAddingBag(true)}
+            onClick={() => {
+              if (bags.length >= 5) {
+                alert("You can only have up to 5 bags.");
+                return;
+              }
+              setIsAddingBag(true);
+            }}
             className="bg-green-500 text-white text-2xl px-4 py-2 rounded transition-transform transform hover:bg-green-700 cursor-pointer"
           >
             + Add Bag

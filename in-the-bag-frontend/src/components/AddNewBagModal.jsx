@@ -6,9 +6,16 @@ export default function AddNewBagModal({ onClose, refetch }) {
   const [comment, setComment] = useState("");
   const userId = 1; // Hardcoded for now
 
+  const MAX_TITLE_LENGTH = 15;
+
   const handleSave = async () => {
     if (!title.trim()) {
       alert("Please enter a bag name");
+      return;
+    }
+
+    if (title.length > MAX_TITLE_LENGTH) {
+      alert(`Bag name can't exceed ${MAX_TITLE_LENGTH} characters.`);
       return;
     }
 
@@ -57,13 +64,13 @@ export default function AddNewBagModal({ onClose, refetch }) {
 
         <div className="flex justify-end gap-3">
           <button
-            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 cursor-pointer"
             onClick={onClose}
           >
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
             onClick={handleSave}
           >
             Save
