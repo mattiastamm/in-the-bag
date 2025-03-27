@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import EditBagModal from "../components/EditBagModal";
 import AddNewBagModal from "../components/AddNewBagModal";
 import { deleteBag } from "../api/deleteBag";
+import StabilityChart from "../components/StabilityChart";
 
 
 export default function MyBags() {
@@ -129,12 +130,10 @@ export default function MyBags() {
         </div>
 
         {/* Right Half - Placeholder */}
-        <div className="w-1/2 border-l border-gray-300 p-4 text-gray-500 text-lg">
-          {selectedBagId ? (
-            <p>Select a disc to view details or perform actions.</p>
-          ) : (
-            <p>Select a bag to view its contents.</p>
-          )}
+        <div className="w-1/2 border-l flex flex-col justify-start border-gray-300 p-4 text-gray-500 text-lg">
+          <StabilityChart
+            discs={bags.find((b) => b.id === selectedBagId)?.discs || []}
+          />
         </div>
       </div>
 
