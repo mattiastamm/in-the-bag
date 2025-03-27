@@ -7,9 +7,11 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
   const [allDiscs, setAllDiscs] = useState([]);
   const [selectedDiscs, setSelectedDiscs] = useState(new Set(initialSelectedDiscIds));
 
+  const discTypeOrder = ["Putt & Approach", "Midrange", "Fairway Driver", "Distance Driver"];
+
   useEffect(() => {
     async function fetchInventory() {
-      const discs = await getDiscs(1); // hardcoded userId = 1
+      const discs = await getDiscs(1); // hardcoded userId
       setAllDiscs(discs);
     }
     fetchInventory();
@@ -31,30 +33,45 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
     }
   };
 
+  // Group discs by type
+  const groupedDiscs = allDiscs.reduce((acc, disc) => {
+    if (!acc[disc.type]) acc[disc.type] = [];
+    acc[disc.type].push(disc);
+    return acc;
+  }, {});
+
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="bg-white w-[90%] max-h-[90vh] rounded-lg p-6 overflow-y-auto shadow-lg">
+        {/* Header */}
         <div className="flex justify-between items-center border-b pb-2 mb-4">
           <h2 className="text-xl font-bold">Edit Bag Contents</h2>
           <button onClick={onClose} className="text-red-500 text-3xl font-bold hover:text-red-700">&times;</button>
         </div>
 
-        {/* Disc Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {allDiscs.map((disc) => (
-            <div
-              key={disc.userDiscId}
-              className={`cursor-pointer border-4 rounded-lg transition-all ${
-                selectedDiscs.has(disc.userDiscId)
-                  ? "border-blue-500"
-                  : "border-transparent"
-              }`}
-              onClick={() => toggleDisc(disc.userDiscId)}
-            >
-              <DiscCard {...disc} />
+        {/* Grouped Disc Lists */}
+        {discTypeOrder.map((type) => (
+          groupedDiscs[type]?.length > 0 && (
+            <div key={type} className="mb-6">
+              <h3 className="text-lg font-semibold mb-3 bg-gray-200 py-2 px-3 rounded">{type}</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-6">
+                {groupedDiscs[type].map((disc) => (
+                  <div
+                    key={disc.userDiscId}
+                    className={`cursor-pointer border-4 rounded-lg transition-all ${
+                      selectedDiscs.has(disc.userDiscId)
+                        ? "border-blue-500"
+                        : "border-transparent"
+                    }`}
+                    onClick={() => toggleDisc(disc.userDiscId)}
+                  >
+                    <DiscCard {...disc} />
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          )
+        ))}
 
         {/* Action Buttons */}
         <div className="mt-6 flex justify-end gap-4">

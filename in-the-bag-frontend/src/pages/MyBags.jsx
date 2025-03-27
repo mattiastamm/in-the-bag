@@ -56,7 +56,7 @@ export default function MyBags() {
   if (error) return <p>Error fetching bags</p>;
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       {/* Sub-Header */}
       <div className="flex justify-between items-center mt-3 pb-8">
         {/* Left: My Bags Title */}
@@ -102,7 +102,7 @@ export default function MyBags() {
       <div className="-mx-6 border-b border-gray-300" />
 
       {/* Split Layout: Left = Disc List, Right = Future Content */}
-      <div className="flex gap-6">
+      <div className="flex flex-1 gap-6">
         {/* Left Half */}
         <div className="w-1/2">
           {selectedBagId && (
