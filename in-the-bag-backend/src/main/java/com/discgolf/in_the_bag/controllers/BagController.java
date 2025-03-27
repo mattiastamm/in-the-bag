@@ -51,4 +51,15 @@ public class BagController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteBag(@RequestParam Long bagId) {
+        boolean success = bagService.deleteBag(bagId);
+
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 }

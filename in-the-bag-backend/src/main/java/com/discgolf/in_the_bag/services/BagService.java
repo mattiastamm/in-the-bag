@@ -176,4 +176,22 @@ public class BagService {
         logger.info("Finished updating bag with id={}", bagId);
     }
 
+    @Transactional
+    public boolean deleteBag(Long bagId) {
+        logger.info("Attempting to delete bag with id={} and all related disc links.", bagId);
+        if (!bagRepository.existsById(bagId)) {
+            logger.warn("Bag not found with id={}.", bagId);
+            return false;
+        }
+
+        // 1. Remove all disc links
+        discInBagRepository.deleteByBag_Id(bagId);
+
+        // 2. Delete the bag
+        bagRepository.deleteById(bagId);
+
+        logger.info("Bag with id={} successfully deleted.", bagId);
+        return true;
+    }
+
 }
