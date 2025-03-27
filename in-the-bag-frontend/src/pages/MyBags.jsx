@@ -6,6 +6,8 @@ import { removeDiscFromBag } from "../api/removeDiscFromBag";
 import { useEffect } from "react";
 import EditBagModal from "../components/EditBagModal";
 import AddNewBagModal from "../components/AddNewBagModal";
+import { deleteBag } from "../api/deleteBag";
+
 
 export default function MyBags() {
   const userId = 1;
@@ -36,6 +38,19 @@ export default function MyBags() {
       alert("Failed to remove disc from bag.");
     }
   };
+
+  const handleDeleteBag = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this bag?");
+    if (!confirmDelete) return;
+  
+    const success = await deleteBag(selectedBagId);
+    if (success) {
+      setSelectedBagId(null);
+      refetch(); // Refresh bags
+    } else {
+      alert("Failed to delete bag.");
+    }
+  };  
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error fetching bags</p>;
@@ -96,6 +111,7 @@ export default function MyBags() {
               bagId={selectedBagId}
               onRemoveDisc={handleRemoveDisc}
               onEditBag={() => setIsEditingBag(true)}
+              onDeleteBag={handleDeleteBag}
             />
           )}
         </div>

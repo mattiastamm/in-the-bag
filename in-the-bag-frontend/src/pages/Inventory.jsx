@@ -37,7 +37,7 @@ export default function Inventory() {
   if (error) return <p>Error fetching discs: {error.message}</p>;
 
   // Predefined order of disc types
-  const discTypeOrder = ["Distance Driver", "Fairway Driver", "Midrange", "Putt & Approach"];
+  const discTypeOrder = ["Putt & Approach", "Midrange", "Fairway Driver", "Distance Driver"];
 
   // Organize discs by type
   const categorizedDiscs = userDiscs.reduce((acc, userDisc) => {

@@ -2,8 +2,8 @@ import React from "react";
 import BagDiscItem from "./BagDiscItem";
 import { PenLine, Trash2 } from "lucide-react";
 
-export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag }) {
-  const discTypeOrder = ["Distance Driver", "Fairway Driver", "Midrange", "Putt & Approach"];
+export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onDeleteBag }) {
+  const discTypeOrder = ["Putt & Approach", "Midrange", "Fairway Driver", "Distance Driver"];
 
   const grouped = discs.reduce((acc, disc) => {
     if (!acc[disc.type]) acc[disc.type] = [];
@@ -27,6 +27,7 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag }) {
 
         {/* Delete Bag Button */}
         <button
+            onClick={onDeleteBag}
             className="bg-red-500 text-white text-xl px-6 py-3 rounded-lg hover:bg-red-600 transition cursor-pointer shadow-md inline-flex items-center space-x-2"
         >
             <span>Delete Bag</span>
