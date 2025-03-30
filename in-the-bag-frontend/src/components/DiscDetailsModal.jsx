@@ -24,6 +24,8 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
         comment: disc.comment,
     }));
 
+    const [useCustomPlastic, setUseCustomPlastic] = useState(disc.availablePlastics.length === 0);
+
     // ✅ Flight number limits
     const flightNumberLimits = {
         customSpeed: { min: 1, max: 14 },
@@ -178,36 +180,6 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                     />
                   </div>
 
-                  {/* Plastic Input */}
-                  <div className="flex flex-col items-center">
-                    <label className="block text-gray-700 mb-1">Plastic:</label>
-                    {disc.availablePlastics.length > 0 ? (
-                      <select
-                        value={formData.plasticId || ""}
-                        onChange={(e) => setFormData({ ...formData, plasticId: parseInt(e.target.value), customPlastic: null })}
-                        className="border rounded px-2 py-1"
-                      >
-                        <option value="">Select Plastic</option>
-                        {disc.availablePlastics.map((plastic) => (
-                          <option key={plastic.id} value={plastic.id}>
-                            {plastic.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        maxLength={20}
-                        value={formData.customPlastic || ""}
-                        onChange={(e) =>
-                          setFormData({ ...formData, customPlastic: e.target.value, plasticId: null })
-                        }
-                        className="border rounded px-2 py-1"
-                        placeholder="Enter custom plastic"
-                      />
-                    )}
-                  </div>
-
                   {/* Weight Input */}
                   <div className="flex flex-col items-center">
                     <label className="block text-gray-700 mb-1">Weight (grams):</label>
@@ -224,6 +196,51 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                       className="border rounded px-2 py-1 w-24 text-center"
                     />
                   </div>
+
+                  {/* Plastic Input */}
+                  <div className="flex flex-col items-center">
+                    <label className="block text-gray-700 mb-1">Plastic:</label>
+
+                    {useCustomPlastic ? (
+                      <input
+                        type="text"
+                        maxLength={20}
+                        value={formData.customPlastic || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, customPlastic: e.target.value, plasticId: null })
+                        }
+                        className="border rounded px-2 py-1"
+                        placeholder="Enter custom plastic"
+                      />
+                    ) : (
+                      <select
+                        value={formData.plasticId || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, plasticId: parseInt(e.target.value), customPlastic: null })
+                        }
+                        className="border rounded px-2 py-1"
+                      >
+                        <option value="">Select Plastic</option>
+                        {disc.availablePlastics.map((plastic) => (
+                          <option key={plastic.id} value={plastic.id}>
+                            {plastic.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+
+                    {/* Small toggle button */}
+                    {disc.availablePlastics.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setUseCustomPlastic((prev) => !prev)}
+                        className="text-xs mt-2 px-2 py-1 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition cursor-pointer"
+                      >
+                        {useCustomPlastic ? "plastic options" : "custom plastic"}
+                      </button>
+                    )}
+                  </div>
+
                 </div>
               </div>
 
