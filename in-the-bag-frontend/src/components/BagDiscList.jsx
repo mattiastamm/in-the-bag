@@ -39,8 +39,8 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onD
       {discTypeOrder.map((type) => (
         grouped[type] && grouped[type].length > 0 && (
           <div key={type} className="mb-4">
-            <h2 className="text-xl font-semibold -mx-6 mb-4 pl-6 bg-gray-200 py-2">{type}</h2>
-            <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-semibold mb-4 pl-6 bg-gray-200 py-2">{type}</h2>
+            <div className="flex flex-col gap-2 mx-5">
               {grouped[type].map((disc) => (
                 <BagDiscItem
                   key={disc.userDiscId}

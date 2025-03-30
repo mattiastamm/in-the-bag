@@ -115,9 +115,9 @@ export default function MyBags() {
       <div className="-mx-6 border-b border-gray-300" />
 
       {/* Split Layout: Left = Disc List, Right = Future Content */}
-      <div className="flex flex-col lg:flex-row flex-1 gap-6">
+      <div className="flex flex-col lg:flex-row flex-1 gap-6 -ml-6">
         {/* Left Half - becomes full width on smaller screens */}
-        <div className="w-full lg:w-1/2 overflow-y-auto max-h-[90vh] pr-2">
+        <div className="w-full lg:w-1/2 overflow-y-auto max-h-[90vh] pr-2 -pl-6">
           {selectedBagId && (
             <BagDiscList
               discs={bags.find((b) => b.id === selectedBagId)?.discs || []}
