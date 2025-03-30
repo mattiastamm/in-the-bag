@@ -115,9 +115,9 @@ export default function MyBags() {
       <div className="-mx-6 border-b border-gray-300" />
 
       {/* Split Layout: Left = Disc List, Right = Future Content */}
-      <div className="flex flex-1 gap-6">
-        {/* Left Half */}
-        <div className="w-1/2">
+      <div className="flex flex-col lg:flex-row flex-1 gap-6">
+        {/* Left Half - becomes full width on smaller screens */}
+        <div className="w-full lg:w-1/2 overflow-y-auto max-h-[90vh] pr-2">
           {selectedBagId && (
             <BagDiscList
               discs={bags.find((b) => b.id === selectedBagId)?.discs || []}
@@ -129,8 +129,8 @@ export default function MyBags() {
           )}
         </div>
 
-        {/* Right Half - Placeholder */}
-        <div className="w-1/2 border-l flex flex-col justify-start border-gray-300 p-4 text-gray-500 text-lg">
+        {/* Right Half - becomes full width and moves below on smaller screens */}
+        <div className="w-full lg:w-1/2 border-t lg:border-t-0 lg:border-l flex flex-col justify-start border-gray-300 p-4 text-gray-500 text-lg">
           <StabilityChart
             discs={bags.find((b) => b.id === selectedBagId)?.discs || []}
           />
