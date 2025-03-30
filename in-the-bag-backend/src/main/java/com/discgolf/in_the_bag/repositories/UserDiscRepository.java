@@ -21,55 +21,65 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
 
     // ✅ Use this for Inventory View (custom DTO projection)
     @Query("""
-        SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
-            ud.userDiscId, 
-            ud.disc.name, 
-            ud.disc.type, 
-            ud.customSpeed, 
-            ud.customGlide, 
-            ud.customTurn, 
-            ud.customFade, 
-            ud.color, 
-            ud.plastic.id, 
-            ud.plastic.name,  
-            ud.disc.manufacturer.name, 
-            ud.disc.speed, 
-            ud.disc.glide, 
-            ud.disc.turn, 
-            ud.disc.fade, 
-            ud.weight, 
-            ud.inUse, 
-            ud.comment)
-        FROM UserDisc ud
-        WHERE ud.userId = :userId
-    """)
+    SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
+        ud.userDiscId,
+        d.name,
+        d.type,
+        ud.customSpeed,
+        ud.customGlide,
+        ud.customTurn,
+        ud.customFade,
+        ud.color,
+        p.id,
+        p.name,
+        ud.customPlastic,
+        m.name,
+        d.speed,
+        d.glide,
+        d.turn,
+        d.fade,
+        ud.weight,
+        ud.inUse,
+        ud.comment
+    )
+    FROM UserDisc ud
+    JOIN ud.disc d
+    JOIN d.manufacturer m
+    LEFT JOIN ud.plastic p
+    WHERE ud.userId = :userId
+""")
     List<UserDiscDto> findUserDiscsByUserId(@Param("userId") Long userId);
 
     @Query("""
-        SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
-            ud.userDiscId,
-            ud.disc.name,
-            ud.disc.type,
-            ud.customSpeed,
-            ud.customGlide,
-            ud.customTurn,
-            ud.customFade,
-            ud.color,
-            ud.plastic.id,
-            ud.plastic.name,
-            ud.disc.manufacturer.name,
-            ud.disc.speed,
-            ud.disc.glide,
-            ud.disc.turn,
-            ud.disc.fade,
-            ud.weight,
-            ud.inUse,
-            ud.comment
-        )
-        FROM UserDisc ud
-        WHERE ud.userDiscId = :userDiscId
-    """)
+    SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
+        ud.userDiscId,
+        d.name,
+        d.type,
+        ud.customSpeed,
+        ud.customGlide,
+        ud.customTurn,
+        ud.customFade,
+        ud.color,
+        p.id,
+        p.name,
+        ud.customPlastic,
+        m.name,
+        d.speed,
+        d.glide,
+        d.turn,
+        d.fade,
+        ud.weight,
+        ud.inUse,
+        ud.comment
+    )
+    FROM UserDisc ud
+    JOIN ud.disc d
+    JOIN d.manufacturer m
+    LEFT JOIN ud.plastic p
+    WHERE ud.userDiscId = :userDiscId
+""")
     Optional<UserDiscDto> findUserDiscsById(@Param("userDiscId") Long userDiscId);
+
 
     @Query("""
     SELECT new com.discgolf.in_the_bag.records.PlasticRecord(p.id, p.name)

@@ -13,6 +13,7 @@ public record DiscDetailsRecord(
         String color,
         Integer plasticId,
         String plasticName,
+        String customPlastic,
         String manufacturerName,
         Float speed,
         Float glide,

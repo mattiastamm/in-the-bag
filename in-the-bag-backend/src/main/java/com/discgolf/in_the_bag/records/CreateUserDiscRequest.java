@@ -5,7 +5,8 @@ import jakarta.validation.constraints.NotNull;
 public record CreateUserDiscRequest(
         @NotNull Long userId,
         @NotNull Long discId,
-        @NotNull Long plasticId,
+        Long plasticId,
+        String customPlastic,
         @NotNull String color,
         @NotNull Double weight,
         @NotNull Float customSpeed,

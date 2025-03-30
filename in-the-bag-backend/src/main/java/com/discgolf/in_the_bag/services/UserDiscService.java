@@ -8,6 +8,7 @@ import com.discgolf.in_the_bag.repositories.BagRepository;
 import com.discgolf.in_the_bag.repositories.DiscRepository;
 import com.discgolf.in_the_bag.repositories.UserDiscRepository;
 import com.discgolf.in_the_bag.repositories.PlasticRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -68,6 +69,7 @@ public class UserDiscService {
                 baseDiscDetails.color(),
                 baseDiscDetails.plasticId(),
                 baseDiscDetails.plasticName(),
+                baseDiscDetails.customPlastic(),
                 baseDiscDetails.manufacturerName(),
                 baseDiscDetails.speed(),
                 baseDiscDetails.glide(),
@@ -82,14 +84,24 @@ public class UserDiscService {
     }
 
     public UserDisc addDiscToUser(CreateUserDiscRequest request) {
-        logger.info("Adding new disc for userId={} with discId={} and plasticId={}",
-                request.userId(), request.discId(), request.plasticId());
+        logger.info("Adding new disc for userId={} with discId={} and plasticId={}/customPlastic={}",
+                request.userId(), request.discId(), request.plasticId(), request.customPlastic());
 
         // Validate referenced entities (disc & plastic exist)
         Disc disc = discRepository.findById(request.discId())
                 .orElseThrow(() -> new RuntimeException("Disc not found"));
-        Plastic plastic = plasticRepository.findById(request.plasticId())
-                .orElseThrow(() -> new RuntimeException("Plastic not found"));
+
+        // Plastic validation - cannot have both existing plasticId and customPlastic
+        if (request.plasticId() != null && request.customPlastic() != null) {
+            throw new IllegalArgumentException("Only one of plasticId or customPlastic should be provided.");
+        }
+
+        // if plasticId exists, we find the corresponding plastic; else we use the customPlastic string
+        Plastic plastic = null;
+        if (request.plasticId() != null){
+            plastic = plasticRepository.findById(request.plasticId())
+                    .orElseThrow(() -> new RuntimeException("Plastic not found"));
+        }
 
         String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
@@ -98,6 +110,7 @@ public class UserDiscService {
         newUserDisc.setUserId(request.userId());
         newUserDisc.setDisc(disc);
         newUserDisc.setPlastic(plastic);
+        newUserDisc.setCustomPlastic(request.customPlastic());
         newUserDisc.setColor(request.color());
         newUserDisc.setWeight(request.weight());
         newUserDisc.setCustomSpeed(request.customSpeed());
@@ -112,6 +125,7 @@ public class UserDiscService {
         return userDiscRepository.save(newUserDisc);
     }
 
+    @Transactional
     public boolean updateDisc(Long userDiscId, UpdateDiscRequest request) {
         logger.info("Updating userDiscId={}", userDiscId);
 
@@ -128,10 +142,18 @@ public class UserDiscService {
         userDisc.setComment(request.comment());
 
         // ✅ Update plastic if changed
+        if (request.plasticId() != null && request.customPlastic() != null) {
+            throw new IllegalArgumentException("Cannot provide both plasticId and customPlastic.");
+        }
         if (request.plasticId() != null) {
             Plastic newPlastic = plasticRepository.findPlasticEntityById(request.plasticId())
                     .orElseThrow(() -> new RuntimeException("Plastic not found"));
             userDisc.setPlastic(newPlastic);
+            userDisc.setCustomPlastic(null); // Clear custom plastic
+        }
+        if (request.customPlastic() != null) {
+            userDisc.setPlastic(null); // Clear predefined plastic
+            userDisc.setCustomPlastic(request.customPlastic());
         }
 
         // ✅ Save updated disc

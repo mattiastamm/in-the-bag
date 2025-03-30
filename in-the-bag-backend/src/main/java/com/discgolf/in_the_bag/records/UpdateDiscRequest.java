@@ -7,6 +7,7 @@ public record UpdateDiscRequest(
         Float customFade,
         String color,
         Long plasticId,
+        String customPlastic,
         Double weight,
         String comment
 ) {}

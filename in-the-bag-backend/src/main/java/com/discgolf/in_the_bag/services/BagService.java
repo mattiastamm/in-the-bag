@@ -2,6 +2,7 @@ package com.discgolf.in_the_bag.services;
 
 import com.discgolf.in_the_bag.models.Bag;
 import com.discgolf.in_the_bag.models.DiscInBag;
+import com.discgolf.in_the_bag.models.Plastic;
 import com.discgolf.in_the_bag.models.UserDisc;
 import com.discgolf.in_the_bag.records.BagRecord;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
@@ -49,28 +50,31 @@ public class BagService {
         logger.info("Found {} bags for userId {}", bags.size(), userId);
 
         return bags.stream().map(bag -> {
-            List<UserDiscDto> discDtos = bag.getUserDiscs().stream().map(userDisc ->
-                    new UserDiscDto(
-                            userDisc.getUserDiscId(),
-                            userDisc.getDisc().getName(),
-                            userDisc.getDisc().getType(),
-                            userDisc.getCustomSpeed(),
-                            userDisc.getCustomGlide(),
-                            userDisc.getCustomTurn(),
-                            userDisc.getCustomFade(),
-                            userDisc.getColor(),
-                            userDisc.getPlastic().getId(),
-                            userDisc.getPlastic().getName(),
-                            userDisc.getDisc().getManufacturer().getName(),
-                            userDisc.getDisc().getSpeed(),
-                            userDisc.getDisc().getGlide(),
-                            userDisc.getDisc().getTurn(),
-                            userDisc.getDisc().getFade(),
-                            userDisc.getWeight(),
-                            userDisc.getInUse(),
-                            userDisc.getComment()
-                    )
-            ).toList();
+            List<UserDiscDto> discDtos = bag.getUserDiscs().stream().map(userDisc -> {
+                Plastic plastic = userDisc.getPlastic();
+
+                return new UserDiscDto(
+                        userDisc.getUserDiscId(),
+                        userDisc.getDisc().getName(),
+                        userDisc.getDisc().getType(),
+                        userDisc.getCustomSpeed(),
+                        userDisc.getCustomGlide(),
+                        userDisc.getCustomTurn(),
+                        userDisc.getCustomFade(),
+                        userDisc.getColor(),
+                        plastic != null ? plastic.getId() : null,
+                        plastic != null ? plastic.getName() : null,
+                        userDisc.getCustomPlastic(),
+                        userDisc.getDisc().getManufacturer().getName(),
+                        userDisc.getDisc().getSpeed(),
+                        userDisc.getDisc().getGlide(),
+                        userDisc.getDisc().getTurn(),
+                        userDisc.getDisc().getFade(),
+                        userDisc.getWeight(),
+                        userDisc.getInUse(),
+                        userDisc.getComment()
+                );
+            }).toList();
 
             return new BagWithDiscsDto(
                     bag.getId(),

@@ -1,6 +1,7 @@
 package com.discgolf.in_the_bag.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.Set;
@@ -35,8 +36,14 @@ public class UserDisc {
     @Column(name = "updated_at")
     private String updatedAt;
 
+    @Size(max = 50, message = "Comment cannot exceed 50 characters.")
     private String comment;
+
     private String color;
+
+    @Column(name = "custom_plastic")
+    @Size(max = 20, message = "Custom plastic name cannot exceed 20 characters.")
+    private String customPlastic;
 
     @ManyToMany
     @JoinTable(
