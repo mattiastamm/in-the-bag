@@ -8,6 +8,7 @@ export default function DiscCard({
   customFade,
   color,
   plasticName,
+  customPlastic,
   speed,
   glide,
   turn,
@@ -23,7 +24,7 @@ export default function DiscCard({
     transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-600 hover:bg-gray-100">
       {/* Header */}
       <div className="p-1 text-center text-lg font-semibold leading-tight">
-        {name} <span className="text-lg text-gray-600">{plasticName}</span>
+        {name} <span className="text-lg text-gray-600">{plasticName || customPlastic}</span>
       </div>
 
       {/* Circle (Disc Color) */}

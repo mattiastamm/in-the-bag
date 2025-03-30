@@ -6,6 +6,7 @@ export default function BagDiscItem({ disc, onRemove }) {
     name,
     color,
     plasticName,
+    customPlastic,
     manufacturerName,
     customSpeed,
     customGlide,
@@ -37,7 +38,7 @@ export default function BagDiscItem({ disc, onRemove }) {
         <div className="flex items-center gap-x-4 min-w-0">
           <div className="flex flex-wrap gap-x-4 text-gray-600 min-w-0">
             <span className="whitespace-nowrap">{manufacturerName}</span>
-            <span className="whitespace-nowrap">{plasticName}</span>
+            <span className="whitespace-nowrap">{plasticName || customPlastic}</span>
           </div>
         </div>
 

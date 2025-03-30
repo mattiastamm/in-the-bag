@@ -80,6 +80,7 @@ export default function Inventory() {
                     customFade={userDisc.customFade}
                     color={userDisc.color}
                     plasticName={userDisc.plasticName}
+                    customPlastic={userDisc.customPlastic}
                     speed={userDisc.speed}
                     glide={userDisc.glide}
                     turn={userDisc.turn}

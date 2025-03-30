@@ -13,7 +13,8 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
 
   const [formData, setFormData] = useState({
     discId: null,
-    plasticId: "",
+    plasticId: null,
+    customPlastic: null,
     weight: 0, // Preset to 0 so the user must enter a weight > 0
     color: "#ffffff",
     customSpeed: null,
@@ -73,9 +74,13 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
 
   // ✅ Validate form: all required fields must be set and weight must be > 0
   const isFormValid = () => {
+    const hasValidPlastic =
+      (formData.plasticId && !formData.customPlastic) ||
+      (!formData.plasticId && formData.customPlastic);
+
     return (
       formData.discId &&
-      formData.plasticId &&
+      hasValidPlastic &&
       formData.weight > 0 &&
       formData.customSpeed !== null &&
       formData.customGlide !== null &&
@@ -238,21 +243,45 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
                     />
                   </div>
   
-                  {/* Plastic Dropdown */}
+                  {/* Plastic Input */}
                   <div className="flex flex-col items-center">
                     <label className="block text-gray-700 mb-1">Plastic:</label>
-                    <select
-                      value={formData.plasticId || ""}
-                      onChange={(e) => setFormData({ ...formData, plasticId: parseInt(e.target.value) })}
-                      className="border rounded px-2 py-1"
-                    >
-                      <option value="">Select Plastic</option>
-                      {selectedDisc.availablePlastics.map((plastic) => (
-                        <option key={plastic.id} value={plastic.id}>
-                          {plastic.name}
-                        </option>
-                      ))}
-                    </select>
+
+                    {selectedDisc.availablePlastics.length > 0 ? (
+                      <select
+                        value={formData.plasticId || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            plasticId: parseInt(e.target.value),
+                            customPlastic: null, // 🧼 Clear any previous custom input
+                          })
+                        }
+                        className="border rounded px-2 py-1"
+                      >
+                        <option value="">Select Plastic</option>
+                        {selectedDisc.availablePlastics.map((plastic) => (
+                          <option key={plastic.id} value={plastic.id}>
+                            {plastic.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        maxLength={20}
+                        placeholder="Enter plastic name"
+                        value={formData.customPlastic || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            customPlastic: e.target.value,
+                            plasticId: null, // 🧼 Clear any plastic ID if user types
+                          })
+                        }
+                        className="border rounded px-2 py-1 w-48"
+                      />
+                    )}
                   </div>
   
                   {/* Weight Input */}
@@ -273,6 +302,7 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
               <div className="mt-4 flex flex-col">
                 <label className="block text-gray-700 mb-1">Comment:</label>
                 <textarea
+                  maxLength={50}
                   value={formData.comment}
                   onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                   className="border rounded px-2 py-1 w-full h-32 resize-none"

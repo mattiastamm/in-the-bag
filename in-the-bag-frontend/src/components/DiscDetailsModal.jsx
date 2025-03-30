@@ -19,7 +19,8 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
         customFade: disc.customFade,
         color: disc.color,
         plasticId: disc.plasticId,
-        weight: 0,
+        customPlastic: disc.customPlastic,
+        weight: disc.weight,
         comment: disc.comment,
     }));
 
@@ -87,7 +88,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-xl font-bold">{disc?.name} ({disc?.plasticName})</h2>
+          <h2 className="text-xl font-bold">{disc?.name} ({disc.customPlastic || disc.plasticName})</h2>
           <button 
             onClick={onClose} 
             className="text-red-500 font-bold text-3xl transition-transform transform hover:scale-105 hover:text-red-700"> &times;
@@ -177,20 +178,34 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                     />
                   </div>
 
-                  {/* Plastic Dropdown */}
+                  {/* Plastic Input */}
                   <div className="flex flex-col items-center">
                     <label className="block text-gray-700 mb-1">Plastic:</label>
-                    <select
-                      value={formData.plasticId}
-                      onChange={(e) => setFormData({ ...formData, plasticId: parseInt(e.target.value) })}
-                      className="border rounded px-2 py-1"
-                    >
-                      {disc.availablePlastics.map((plastic) => (
-                        <option key={plastic.id} value={plastic.id}>
-                          {plastic.name}
-                        </option>
-                      ))}
-                    </select>
+                    {disc.availablePlastics.length > 0 ? (
+                      <select
+                        value={formData.plasticId || ""}
+                        onChange={(e) => setFormData({ ...formData, plasticId: parseInt(e.target.value), customPlastic: null })}
+                        className="border rounded px-2 py-1"
+                      >
+                        <option value="">Select Plastic</option>
+                        {disc.availablePlastics.map((plastic) => (
+                          <option key={plastic.id} value={plastic.id}>
+                            {plastic.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        maxLength={20}
+                        value={formData.customPlastic || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, customPlastic: e.target.value, plasticId: null })
+                        }
+                        className="border rounded px-2 py-1"
+                        placeholder="Enter custom plastic"
+                      />
+                    )}
                   </div>
 
                   {/* Weight Input */}
@@ -227,14 +242,14 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
             <div className="mt-4 flex justify-between gap-4">
                 {/* Save Button */}
                 <button 
-                    className="bg-blue-500 text-white px-4 py-2 rounded w-1/2 transition-transform transform hover:bg-blue-700"
+                    className="bg-blue-500 text-white px-4 py-2 rounded w-1/2 transition-transform transform hover:bg-blue-700 cursor-pointer"
                     onClick={handleSave}>
                     Save
                 </button>
 
                 {/* Delete Button */}
                 <button 
-                    className="bg-red-500 text-white px-4 py-2 rounded w-1/2 transition-transform transform hover:bg-red-700"
+                    className="bg-red-500 text-white px-4 py-2 rounded w-1/2 transition-transform transform hover:bg-red-700 cursor-pointer"
                     onClick={handleDelete}>
                     Delete
                 </button>
