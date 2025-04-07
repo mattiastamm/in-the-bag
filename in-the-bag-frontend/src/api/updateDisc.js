@@ -1,3 +1,5 @@
+import { getAuthHeaders } from "../utils/authHelpers";
+
 export async function updateDisc(userDiscId, updatedData) {
     const apiUrl = `${import.meta.env.VITE_API_URL}/api/user-discs/${userDiscId}`;
     console.log("Updating disc at:", apiUrl); // ✅ Debugging log
@@ -5,9 +7,7 @@ export async function updateDisc(userDiscId, updatedData) {
     try {
         const response = await fetch(apiUrl, {
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(updatedData),
         });
 

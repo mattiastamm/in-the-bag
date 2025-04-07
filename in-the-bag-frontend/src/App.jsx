@@ -5,6 +5,7 @@ import Inventory from "./pages/Inventory";
 import MyBags from "./pages/MyBags";
 import Wishlist from "./pages/Wishlist";
 import Profile from "./pages/Profile";
+import AuthPage from "./pages/AuthPage";
 
 export default function App() {
   return (
@@ -13,7 +14,8 @@ export default function App() {
         <Header />
         <div className="flex-1 p-6">
           <Routes>
-            <Route path="/" element={<Navigate to="/inventory" replace />} />
+            <Route path="/" element={<Navigate to="/auth" replace />} />
+            <Route path="/auth" element={<AuthPage />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/my-bags" element={<MyBags />} />
             <Route path="/wishlist" element={<Wishlist />} />

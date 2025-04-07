@@ -10,6 +10,7 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isEditingSearch, setIsEditingSearch] = useState(false);
   const [tempSearchQuery, setTempSearchQuery] = useState("");
+  const userId = parseInt(localStorage.getItem("userId"));
 
   const [formData, setFormData] = useState({
     discId: null,
@@ -95,7 +96,6 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
       setErrorMessage("Please fill in all required fields and ensure weight is greater than 0.");
       return;
     }
-    const userId = 1; // Hardcoded for now
     try {
       const success = await addNewDisc({ ...formData, userId });
       if (success) {

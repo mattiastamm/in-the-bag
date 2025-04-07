@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchBagsWithDiscs } from "../api/fetchBagsWithDiscs";
+import { getBagsWithDiscs } from "../api/getBagsWithDiscs";
 import { useState } from "react";
 import BagDiscList from "../components/BagDiscList";
 import { removeDiscFromBag } from "../api/removeDiscFromBag";
@@ -11,11 +11,11 @@ import StabilityChart from "../components/StabilityChart";
 
 
 export default function MyBags() {
-  const userId = 1;
+  const userId = parseInt(localStorage.getItem("userId"));
 
   const { data: bags, isLoading, error, refetch } = useQuery({
     queryKey: ["bags", userId],
-    queryFn: () => fetchBagsWithDiscs(userId),
+    queryFn: () => getBagsWithDiscs(userId),
   });
 
   const [selectedBagId, setSelectedBagId] = useState(null);

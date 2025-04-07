@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { getDiscs } from "../api/fetchDiscs";
-import { getDiscDetails } from "../api/fetchDiscDetails";
+import { getDiscs } from "../api/getDiscs";
+import { getDiscDetails } from "../api/getDiscDetails";
 import DiscCard from "../components/DiscCard";
 import DiscDetailsModal from "../components/DiscDetailsModal";
 import AddNewUserDiscModal from "../components/AddNewUserDiscModal";
 
 
 export default function Inventory() {
-  const userId = 1; // ✅ Hardcoded for now, needs to be replaced later!
+  const userId = parseInt(localStorage.getItem("userId"));
 
   const { data: userDiscs, error, isLoading, refetch } = useQuery({
     queryKey: ["discs", userId],

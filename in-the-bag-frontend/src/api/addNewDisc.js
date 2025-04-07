@@ -1,3 +1,5 @@
+import { getAuthHeaders } from "../utils/authHelpers";
+
 export async function addNewDisc(discData) {
     const apiUrl = `${import.meta.env.VITE_API_URL}/api/user-discs`;
     console.log("Adding new disc with data:", discData);
@@ -5,9 +7,7 @@ export async function addNewDisc(discData) {
     try {
         const response = await fetch(apiUrl, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(discData),
         });
 

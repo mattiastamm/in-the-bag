@@ -4,7 +4,7 @@ import { createBag } from "../api/createBag";
 export default function AddNewBagModal({ onClose, refetch }) {
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
-  const userId = 1; // Hardcoded for now
+  const userId = parseInt(localStorage.getItem("userId"));
 
   const MAX_TITLE_LENGTH = 15;
 

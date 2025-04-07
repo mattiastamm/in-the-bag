@@ -1,7 +1,13 @@
+import { getAuthHeaders } from "../utils/authHelpers";
+
 export async function discCreationAutoFill(discId) {
     try {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/discs/${discId}/details`
+            `${import.meta.env.VITE_API_URL}/api/discs/${discId}/details`,
+            {
+                method: "GET",
+                headers: getAuthHeaders(),
+            }
         );
 
         if (!response.ok) {
@@ -9,7 +15,7 @@ export async function discCreationAutoFill(discId) {
         }
 
         const data = await response.json();
-        return data; // ✅ Returns { id, name, type, manufacturer, speed, glide, turn, fade, availablePlastics }
+        return data;
     } catch (error) {
         console.error("Failed to fetch disc details:", error);
         return null;

@@ -1,12 +1,12 @@
+import { getAuthHeaders } from "../utils/authHelpers";
+
 export async function createBag({ userId, title, comment }) {
     const apiUrl = `${import.meta.env.VITE_API_URL}/api/bags/create`;
   
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ userId, title, comment }),
       });
   
@@ -17,5 +17,5 @@ export async function createBag({ userId, title, comment }) {
       console.error("Create bag failed:", error);
       return null;
     }
-  }
+}
   

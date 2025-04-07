@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getDiscs } from "../api/fetchDiscs";
+import { getDiscs } from "../api/getDiscs";
 import { updateBagDiscs } from "../api/updateBagDiscs";
 import DiscCard from "./DiscCard";
 
@@ -8,10 +8,11 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
   const [selectedDiscs, setSelectedDiscs] = useState(new Set(initialSelectedDiscIds));
 
   const discTypeOrder = ["Putt & Approach", "Midrange", "Fairway Driver", "Distance Driver"];
+  const userId = parseInt(localStorage.getItem("userId"));
 
   useEffect(() => {
     async function fetchInventory() {
-      const discs = await getDiscs(1); // hardcoded userId
+      const discs = await getDiscs(userId); 
       setAllDiscs(discs);
     }
     fetchInventory();

@@ -1,3 +1,5 @@
+import { getAuthHeaders } from "../utils/authHelpers";
+
 export async function deleteDisc(userDiscId) {
     const apiUrl = `${import.meta.env.VITE_API_URL}/api/user-discs/${userDiscId}`;
     console.log(`Deleting disc at: ${apiUrl}`);
@@ -5,6 +7,7 @@ export async function deleteDisc(userDiscId) {
     try {
         const response = await fetch(apiUrl, {
             method: "DELETE",
+            headers: getAuthHeaders(),
         });
 
         if (response.status === 204) {

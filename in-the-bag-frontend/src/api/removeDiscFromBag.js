@@ -1,9 +1,12 @@
+import { getAuthHeaders } from "../utils/authHelpers";
+
 export async function removeDiscFromBag(userDiscId, bagId) {
     const apiUrl = `${import.meta.env.VITE_API_URL}/api/bags/remove-disc?userDiscId=${userDiscId}&bagId=${bagId}`;
   
     try {
       const response = await fetch(apiUrl, {
         method: "DELETE",
+        headers: getAuthHeaders(),
       });
   
       if (!response.ok) {

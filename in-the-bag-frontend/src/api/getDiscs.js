@@ -1,16 +1,21 @@
+import { getAuthHeaders } from "../utils/authHelpers";
+
 export async function getDiscs(userId) {
     const apiUrl = `${import.meta.env.VITE_API_URL}/api/user-discs/${userId}`;
-    console.log("Fetching discs from:", apiUrl);  // ✅ Debugging log
+    console.log("Fetching discs from:", apiUrl);
 
     try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);
         }
 
         const data = await response.json();
-        console.log("Fetched data:", data);  // ✅ Debugging log
+        console.log("Fetched data:", data);
         return data;
     } catch (error) {
         console.error("Failed to fetch discs:", error);
