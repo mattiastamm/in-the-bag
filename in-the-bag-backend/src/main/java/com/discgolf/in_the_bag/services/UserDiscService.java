@@ -9,6 +9,7 @@ import com.discgolf.in_the_bag.repositories.DiscRepository;
 import com.discgolf.in_the_bag.repositories.UserDiscRepository;
 import com.discgolf.in_the_bag.repositories.PlasticRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
+@RequiredArgsConstructor
 public class UserDiscService {
     private static final Logger logger = LoggerFactory.getLogger(BagService.class);
 
@@ -25,13 +27,6 @@ public class UserDiscService {
     private final BagRepository bagRepository;
     private final PlasticRepository plasticRepository;
     private final DiscRepository discRepository;
-
-    public UserDiscService(UserDiscRepository userDiscRepository, BagRepository bagRepository, PlasticRepository plasticRepository, DiscRepository discRepository) {
-        this.userDiscRepository = userDiscRepository;
-        this.bagRepository = bagRepository;
-        this.plasticRepository = plasticRepository;
-        this.discRepository = discRepository;
-    }
 
     public List<UserDiscDto> getUserDiscs(Long userId) {
         logger.info("Fetching base view DTO for every disc for userId={}", userId);

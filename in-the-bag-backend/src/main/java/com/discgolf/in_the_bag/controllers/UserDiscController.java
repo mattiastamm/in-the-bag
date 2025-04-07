@@ -4,6 +4,7 @@ import com.discgolf.in_the_bag.models.UserDisc;
 import com.discgolf.in_the_bag.records.*;
 import com.discgolf.in_the_bag.services.UserDiscService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/user-discs")
 public class UserDiscController {
     private final UserDiscService userDiscService;
-
-    public UserDiscController(UserDiscService userDiscService) {
-        this.userDiscService = userDiscService;
-    }
 
     // ✅ GET ALL USER DISCS (Existing)
     @GetMapping("/{userId}")

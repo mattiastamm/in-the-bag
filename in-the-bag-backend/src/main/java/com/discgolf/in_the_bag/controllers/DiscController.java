@@ -7,23 +7,19 @@ import com.discgolf.in_the_bag.records.PlasticRecord;
 import com.discgolf.in_the_bag.repositories.DiscRepository;
 import com.discgolf.in_the_bag.repositories.PlasticRepository;
 import com.discgolf.in_the_bag.services.DiscService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/discs")
 public class DiscController {
 
     private final DiscRepository discRepository;
     private final DiscService discService;
-
-    // ✅ Constructor Injection (Recommended)
-    public DiscController(DiscRepository discRepository, DiscService discService) {
-        this.discRepository = discRepository;
-        this.discService = discService;
-    }
 
     @GetMapping("/search")
     public ResponseEntity<List<DiscSearchRecord>> searchDiscs(@RequestParam String query) {
