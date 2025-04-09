@@ -1,6 +1,8 @@
 package com.discgolf.in_the_bag.jwt;
 
 import com.discgolf.in_the_bag.services.BagService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +47,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        username = jwtService.extractUsername(jwt);
+
+        try {
+            username = jwtService.extractUsername(jwt);
+        } catch (ExpiredJwtException ex) {
+            logger.warn("⚠️ Token expired: {}", ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"TokenExpired\", \"message\": \"Your session has expired.\"}");
+            return;
+        } catch (JwtException ex) {
+            logger.warn("❌ Invalid token: {}", ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"InvalidToken\", \"message\": \"Invalid or malformed token.\"}");
+            return;
+        }
+
         logger.info("🔑 Extracted username from token: {}", username);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

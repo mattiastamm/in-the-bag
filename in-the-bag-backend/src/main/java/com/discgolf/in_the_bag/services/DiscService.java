@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 @Service
 @RequiredArgsConstructor
 public class DiscService {
-    private static final Logger logger = LoggerFactory.getLogger(BagService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DiscService.class);
 
     private final DiscRepository discRepository;
     private final PlasticRepository plasticRepository;
