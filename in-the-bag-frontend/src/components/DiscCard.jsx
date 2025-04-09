@@ -21,12 +21,16 @@ export default function DiscCard({
 
   return (
     <div className="w-full border-2 border-gray-400 shadow-md rounded-lg flex flex-col 
-    transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-600 hover:bg-gray-100">
-      {/* Header */}
-      <div className="p-1 text-center text-lg font-semibold leading-tight">
-        {name} <span className="text-lg text-gray-600">{plasticName || customPlastic}</span>
+      transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-600 hover:bg-gray-100">
+  
+      {/* Header - Name and Plastic on Separate Lines */}
+      <div className="p-1 text-center leading-tight">
+        <div className="text-base text-gray-600 truncate max-w-full" title={plasticName || customPlastic}>
+          {plasticName || customPlastic}
+        </div>
+        <div className="text-lg font-semibold truncate">{name}</div>
       </div>
-
+  
       {/* Circle (Disc Color) */}
       <div className="flex-1 flex items-center justify-center">
         <div
@@ -34,16 +38,16 @@ export default function DiscCard({
           style={{ backgroundColor: color }}
         />
       </div>
-
+  
       {/* Flight Numbers */}
       <div className="p-1 text-base text-gray-700 text-center">
         <p>
-          <span className={getTextColor(customSpeed, speed)}>{customSpeed}</span> | 
-          <span className={getTextColor(customGlide, glide)}> {customGlide}</span> | 
-          <span className={getTextColor(customTurn, turn)}> {customTurn}</span> | 
+          <span className={getTextColor(customSpeed, speed)}>{customSpeed}</span> |
+          <span className={getTextColor(customGlide, glide)}> {customGlide}</span> |
+          <span className={getTextColor(customTurn, turn)}> {customTurn}</span> |
           <span className={getTextColor(customFade, fade)}> {customFade}</span>
         </p>
       </div>
     </div>
-  );
+  );  
 }

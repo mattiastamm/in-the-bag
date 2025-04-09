@@ -6,6 +6,7 @@ import MyBags from "./pages/MyBags";
 import Wishlist from "./pages/Wishlist";
 import Profile from "./pages/Profile";
 import AuthPage from "./pages/AuthPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -16,10 +17,40 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/auth" replace />} />
             <Route path="/auth" element={<AuthPage />} />
-            <Route path="/inventory" element={<Inventory />} />
-            <Route path="/my-bags" element={<MyBags />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/profile" element={<Profile />} />
+
+            {/* ✅ Protected routes below */}
+            <Route
+              path="/inventory"
+              element={
+                <ProtectedRoute>
+                  <Inventory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-bags"
+              element={
+                <ProtectedRoute>
+                  <MyBags />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <ProtectedRoute>
+                  <Wishlist />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </div>
         <Footer />
@@ -27,3 +58,4 @@ export default function App() {
     </Router>
   );
 }
+

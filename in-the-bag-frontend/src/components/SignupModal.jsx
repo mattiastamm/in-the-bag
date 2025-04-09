@@ -62,14 +62,14 @@ export default function SignupModal({ onClose, onSignupSuccess, switchToLogin })
 
         <button
           onClick={handleSignup}
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 cursor-pointer"
         >
           Create Account
         </button>
 
         <div className="text-center mt-4 text-sm">
           Already have an account?{" "}
-          <button className="text-blue-600 underline" onClick={switchToLogin}>
+          <button className="text-blue-600 underline cursor-pointer" onClick={switchToLogin}>
             Log in
           </button>
         </div>

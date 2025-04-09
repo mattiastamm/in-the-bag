@@ -43,14 +43,14 @@ export default function LoginModal({ onClose, onLoginSuccess, switchToSignup }) 
 
         <button
           onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 cursor-pointer"
         >
           Log In
         </button>
 
         <div className="text-center mt-4 text-sm">
           Don't have an account?{" "}
-          <button className="text-blue-600 underline" onClick={switchToSignup}>
+          <button className="text-blue-600 underline cursor-pointer" onClick={switchToSignup}>
             Sign up
           </button>
         </div>

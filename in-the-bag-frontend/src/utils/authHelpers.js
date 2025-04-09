@@ -30,6 +30,7 @@ export function getUserId() {
 export function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    window.location.href = "/auth"; // Redirects & reloads
 }
 
 export function getAuthHeaders() {

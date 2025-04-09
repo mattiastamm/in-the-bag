@@ -65,7 +65,7 @@ export default function Inventory() {
         categorizedDiscs[type] && categorizedDiscs[type].length > 0 && (
           <div key={type} className="mb-9">
             <h2 className="text-2xl font-semibold -mx-6 mb-8 pl-7 bg-gray-200">{type}</h2>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 grid-cols-custom 2xl:grid-cols-9 gap-10 auto-rows-fr pl-8">
+            <div className="custom-grid gap-10 auto-rows-fr pl-8">
               {categorizedDiscs[type].map((userDisc) => (
                 <div 
                   key={userDisc.userDiscId} 

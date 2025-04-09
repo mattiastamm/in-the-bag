@@ -1,19 +1,66 @@
 @import "tailwindcss";
 
 @layer utilities {
-  @theme {
-    --grid-cols-custom: 8;
+  @media (max-width: 440px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
   }
 
-  /* Define the custom grid for 1400px (between xl and 2xl) */
-  @media (min-width: 1450px) and (max-width: 1600px) {
-    .grid-cols-custom {
-      grid-template-columns: repeat(var(--grid-cols-custom), minmax(0, 1fr));
+  @media (min-width: 440px) and (max-width: 640px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 830px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 830px) and (max-width: 1025px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1025px) and (max-width: 1220px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1220px) and (max-width: 1420px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1420px) and (max-width: 1620px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1620px) and (max-width: 1775px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1775px) {
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
     }
   }
 }
-
-/* Prevent background scrolling when modal is open */
-body.modal-open {
-    overflow: hidden;
-  }
