@@ -54,7 +54,7 @@ export default function Inventory() {
         <h1 className="text-3xl font-bold pl-1">My Inventory</h1>
         <button 
           onClick={() => setIsAddingDisc(true)}
-          className="bg-green-500 text-white text-2xl px-4 py-2 rounded transition-transform transform hover:bg-green-700"
+          className="bg-green-500 text-white text-2xl px-4 py-2 rounded transition-transform transform hover:bg-green-700 cursor-pointer"
         >
           + Add Disc
         </button>

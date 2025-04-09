@@ -93,7 +93,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
           <h2 className="text-xl font-bold">{disc?.name} ({disc.customPlastic || disc.plasticName})</h2>
           <button 
             onClick={onClose} 
-            className="text-red-500 font-bold text-3xl transition-transform transform hover:scale-105 hover:text-red-700"> &times;
+            className="text-red-500 font-bold text-3xl transition-transform transform hover:scale-105 hover:text-red-700 cursor-pointer"> &times;
           </button>
         </div>
 
@@ -139,7 +139,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                           <button
                               onClick={() => updateFlightNumber(field, 0.5)}
                               disabled={formData[field] >= flightNumberLimits[field].max}
-                              className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
+                              className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50 hover:bg-gray-300"
                           >
                               +
                           </button>
@@ -157,7 +157,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                           <button
                               onClick={() => updateFlightNumber(field, -0.5)}
                               disabled={formData[field] <= flightNumberLimits[field].min}
-                              className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
+                              className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50 hover:bg-gray-300"
                           >
                               -
                           </button>

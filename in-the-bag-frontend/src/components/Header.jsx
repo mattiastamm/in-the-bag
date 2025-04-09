@@ -62,13 +62,13 @@ export default function Header() {
               <div className="absolute right-0 mt-12 w-32 -mr-6 bg-white text-gray-800 border rounded shadow z-50">
                 <button
                   onClick={handleProfileClick}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >
                   Profile
                 </button>
                 <button
                   onClick={handleLogoutClick}
-                  className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                  className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 cursor-pointer"
                 >
                   Log out
                 </button>
