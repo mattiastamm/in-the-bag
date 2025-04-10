@@ -10,6 +10,7 @@ import com.discgolf.in_the_bag.repositories.UserDiscRepository;
 import com.discgolf.in_the_bag.repositories.PlasticRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +45,7 @@ public class UserDiscService {
 
         if (userDiscDtoOpt.isEmpty()) {
             logger.warn("Disc not found for userDiscId={}", userDiscId);
-            throw new RuntimeException("Disc not found for user_discs.id: " + userDiscId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc not found: " + userDiscId);
         }
 
         UserDiscDto baseDiscDetails = userDiscDtoOpt.get();
@@ -86,18 +88,21 @@ public class UserDiscService {
 
         // Validate referenced entities (disc & plastic exist)
         Disc disc = discRepository.findById(request.discId())
-                .orElseThrow(() -> new RuntimeException("Disc not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disc not found: " + request.discId()));
 
         // Plastic validation - cannot have both existing plasticId and customPlastic
         if (request.plasticId() != null && request.customPlastic() != null) {
-            throw new IllegalArgumentException("Only one of plasticId or customPlastic should be provided.");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Only one of plasticId or customPlastic should be provided."
+            );
         }
 
         // if plasticId exists, we find the corresponding plastic; else we use the customPlastic string
         Plastic plastic = null;
         if (request.plasticId() != null){
             plastic = plasticRepository.findById(request.plasticId())
-                    .orElseThrow(() -> new RuntimeException("Plastic not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plastic not found: " + request.plasticId()));
         }
 
         String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -140,11 +145,14 @@ public class UserDiscService {
 
         // ✅ Update plastic if changed
         if (request.plasticId() != null && request.customPlastic() != null) {
-            throw new IllegalArgumentException("Cannot provide both plasticId and customPlastic.");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Only one of plasticId or customPlastic should be provided."
+            );
         }
         if (request.plasticId() != null) {
             Plastic newPlastic = plasticRepository.findPlasticEntityById(request.plasticId())
-                    .orElseThrow(() -> new RuntimeException("Plastic not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plastic not found: " + request.plasticId()));
             userDisc.setPlastic(newPlastic);
             userDisc.setCustomPlastic(null); // Clear custom plastic
         }
@@ -166,6 +174,7 @@ public class UserDiscService {
         return true; // ✅ Successful deletion
     }
 
+    // NB! No checks if the userDiscId is valid, needs to be checked before.
     public void setInUseStatus(Long userDiscId, boolean inUse) {
         logger.info("Setting in_use value for user userDiscId={} to inUse={}", userDiscId, inUse);
         userDiscRepository.updateInUseStatus(userDiscId, inUse);
@@ -180,12 +189,12 @@ public class UserDiscService {
         UserDisc userDisc = userDiscRepository.findDiscEntityByUserDiscId(userDiscId)
                 .orElseThrow(() -> {
                     logger.warn("userDisc with id={} does not exist", userDiscId);
-                    return new NoSuchElementException("UserDisc with this id does not exist");
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc with this id does not exist");
                 });
 
         if (!userDisc.getUserId().equals(userId)) {
             logger.warn("userDisc with id={} does not belong to user with userId={}", userDiscId, userId);
-            throw new IllegalArgumentException("UserDisc does not belong to this user");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "UserDisc does not belong to this user");
         }
     }
 
@@ -195,12 +204,12 @@ public class UserDiscService {
         UserDisc userDisc = userDiscRepository.findDiscEntityByUserDiscId(userDiscId)
                 .orElseThrow(() -> {
                     logger.warn("userDisc with id={} does not exist", userDiscId);
-                    return new NoSuchElementException("UserDisc with this id does not exist");
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc with this id does not exist");
                 });
 
         if (!userDisc.getUserId().equals(userId)) {
             logger.warn("userDisc with id={} does not belong to user with userId={}", userDiscId, userId);
-            throw new IllegalArgumentException("UserDisc does not belong to this user");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "UserDisc does not belong to this user");
         }
 
         return userDisc;

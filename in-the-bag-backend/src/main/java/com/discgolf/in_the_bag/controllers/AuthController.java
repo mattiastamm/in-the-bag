@@ -16,13 +16,8 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            LoginResponse response = userService.authenticateUser(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
-        }
+    public LoginResponse login(@RequestBody LoginRequest request) {
+        return userService.authenticateUser(request);
     }
 
     @PostMapping("/signup")

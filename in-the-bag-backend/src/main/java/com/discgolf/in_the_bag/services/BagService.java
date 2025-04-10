@@ -14,6 +14,7 @@ import com.discgolf.in_the_bag.repositories.UserDiscRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.server.ResponseStatusException;
+
 @Service
 @RequiredArgsConstructor
 public class BagService {
@@ -109,7 +112,7 @@ public class BagService {
 
         if (!exists) {
             logger.warn("No entry found in disc_in_bag for user_disc_id={} and bag_id={}", userDiscId, bagId);
-            return; // could also throw a custom exception here
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Disc not found in the specified bag");
         }
 
         discInBagRepository.deleteByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId);
@@ -119,7 +122,7 @@ public class BagService {
         boolean stillInBags = discInBagRepository.existsByUserDisc_UserDiscId(userDiscId);
         if (!stillInBags) {
             UserDisc userDisc = userDiscRepository.findById(userDiscId)
-                    .orElseThrow(() -> new EntityNotFoundException("UserDisc not found: " + userDiscId));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc not found: " + userDiscId));
             userDisc.setInUse(false);
             userDiscRepository.save(userDisc);
             logger.info("Set in_use=false for user_disc_id={}", userDiscId);
@@ -159,7 +162,7 @@ public class BagService {
             logger.debug("Adding userDiscId={} to bagId={}", userDiscId, bagId);
 
             UserDisc userDisc = userDiscRepository.findById(userDiscId)
-                    .orElseThrow(() -> new RuntimeException("UserDisc not found: " + userDiscId));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc not found: " + userDiscId));
 
             DiscInBag entry = new DiscInBag();
             entry.setUserDisc(userDisc);
@@ -172,7 +175,7 @@ public class BagService {
             logger.debug("Removing userDiscId={} from bagId={}", userDiscId, bagId);
 
             UserDisc userDisc = userDiscRepository.findById(userDiscId)
-                    .orElseThrow(() -> new RuntimeException("UserDisc not found: " + userDiscId));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc not found: " + userDiscId));
 
             discInBagRepository.deleteByUserDiscAndBag(userDisc, bag);
         }
@@ -210,21 +213,21 @@ public class BagService {
     // VALIDATION METHODS
     public void validateBagOwnership(Long userId, Long bagId) {
         Bag bag = bagRepository.findById(bagId)
-                .orElseThrow(() -> new NoSuchElementException("Bag with id=" + bagId + " not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bag with id=" + bagId + " not found"));
 
         if (!bag.getUserId().equals(userId)) {
-            logger.warn("Bag with id={} does not belong to user with id={}", bagId, userId);
-            throw new IllegalArgumentException("Bag with id=" + bagId + " does not belong to this user");
+            logger.warn("❌ Bag with id={} does not belong to user with id={}", bagId, userId);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this bag");
         }
     }
 
     public Bag validateBagOwnershipAndReturn(Long userId, Long bagId) {
         Bag bag = bagRepository.findById(bagId)
-                .orElseThrow(() -> new NoSuchElementException("Bag with id=" + bagId + " not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bag with id=" + bagId + " not found"));
 
         if (!bag.getUserId().equals(userId)) {
-            logger.warn("Bag with id={} does not belong to user with id={}", bagId, userId);
-            throw new IllegalArgumentException("Bag with id=" + bagId + " does not belong to this user");
+            logger.warn("❌ Bag with id={} does not belong to user with id={}", bagId, userId);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this bag");
         }
 
         return bag;

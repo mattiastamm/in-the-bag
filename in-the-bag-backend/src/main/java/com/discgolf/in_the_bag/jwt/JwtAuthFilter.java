@@ -30,18 +30,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String email;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.warn("❌ No Authorization header or it doesn't start with Bearer");
             filterChain.doFilter(request, response);
             return;
         }
@@ -49,39 +44,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
 
         try {
-            email = jwtService.extractEmail(jwt);
-        } catch (ExpiredJwtException ex) {
-            logger.warn("⚠️ Token expired: {}", ex.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"TokenExpired\", \"message\": \"Your session has expired.\"}");
-            return;
-        } catch (JwtException ex) {
-            logger.warn("❌ Invalid token: {}", ex.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"InvalidToken\", \"message\": \"Invalid or malformed token.\"}");
-            return;
-        }
+            String email = jwtService.extractEmail(jwt);
 
-        logger.info("🔑 Extracted username from token: {}", email);
-
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtService.isTokenValid(jwt, email)) {
-                logger.info("✅ Token is valid for user: {}", email);
-                Long userId = jwtService.extractUserId(jwt);
-                logger.info("🧠 Extracted userId: {}", userId);
-
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            } else {
-                logger.warn("❌ Token is invalid for user: {}", email);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (jwtService.isTokenValid(jwt, email)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+
+            filterChain.doFilter(request, response); // ✅ pass forward
+
+        } catch (ExpiredJwtException ex) {
+            request.setAttribute("jwtException", ex); // ❗ just pass it forward
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "TokenExpired");
+        } catch (JwtException ex) {
+            request.setAttribute("jwtException", ex);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "InvalidToken");
         }
-
-        filterChain.doFilter(request, response);
     }
-
 }

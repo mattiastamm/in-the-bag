@@ -13,8 +13,12 @@ import com.discgolf.in_the_bag.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.discgolf.in_the_bag.records.ChangePasswordRequest;
+import org.springframework.web.server.ResponseStatusException;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,7 +42,7 @@ public class UserService {
         Optional<User> existingUser = userRepository.findByEmail(request.email());
         if (existingUser.isPresent()) {
             logger.warn("⚠️ Signup failed: Email already in use -> {}", request.email());
-            throw new RuntimeException("Email is already in use.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already in use.");
         }
 
         User newUser = new User();
@@ -61,12 +65,12 @@ public class UserService {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> {
                     logger.warn("❌ Login failed: User not found -> {}", request.email());
-                    return new RuntimeException("User not found");
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
                 });
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             logger.warn("❌ Login failed: Invalid credentials for email {}", request.email());
-            throw new RuntimeException("Invalid credentials");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
         String jwt = jwtService.generateToken(user.getId(), user.getEmail());
@@ -80,7 +84,7 @@ public class UserService {
         logger.info("Fetching profile info for user={}", userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         List<UserDisc> userDiscs = userDiscRepository.findAllByUserId(userId);
         int totalDiscs = userDiscs.size();
@@ -104,6 +108,30 @@ public class UserService {
                 fairways,
                 drivers
         );
+    }
+
+    public void changePassword(Long userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+    }
+
+    public void deleteAccount(Long userId, String password) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Current password is incorrect");
+        }
+
+        logger.info("Deleting user with ID {}", userId);
+        userRepository.delete(user); // This triggers cascading deletions by the DB
     }
 
 }
