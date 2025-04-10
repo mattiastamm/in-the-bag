@@ -15,6 +15,8 @@ import java.util.Optional;
 @Repository
 public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
 
+    List<UserDisc> findAllByUserId(Long userId);
+
     void deleteById(Long UserDiscId);
 
     Optional<UserDisc> findDiscEntityByUserDiscId(Long userDiscId);

@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +33,9 @@ public class BagService {
 
     private final UserDiscService userDiscService;
 
-    public List<BagRecord> getBagsByUserDiscId(Long userDiscId) {
+    public List<BagRecord> getBagsByUserDiscId(Long userId, Long userDiscId) {
         logger.info("Fetching bags containing userDiscId {}", userDiscId);
+        userDiscService.validateUserDiscOwnership(userId, userDiscId);
 
         List<BagRecord> bags = bagRepository.findBagsByUserDiscId(userDiscId);
         logger.info("Found {} bags for userDiscId {}", bags.size(), userDiscId);
@@ -86,11 +85,13 @@ public class BagService {
         }).toList();
     }
 
-    public Bag createBag(CreateBagRequest request) {
+    public Bag createBag(Long userId, String title, String comment) {
+        logger.info("Creating new bag for user={} with title={} and comment={}", userId, title, comment);
+
         Bag bag = new Bag();
-        bag.setUserId(request.userId());
-        bag.setTitle(request.title());
-        bag.setComment(request.comment());
+        bag.setUserId(userId);
+        bag.setTitle(title);
+        bag.setComment(comment);
         bag.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         return bagRepository.save(bag);
@@ -98,7 +99,12 @@ public class BagService {
 
 
     @Transactional
-    public void removeDiscFromBag(Long userDiscId, Long bagId) {
+    public void removeDiscFromBag(Long userId, Long userDiscId, Long bagId) {
+        logger.info("Attempting to remove userDisc={} from bag={} for user={}", userDiscId, bagId, userId);
+
+        userDiscService.validateUserDiscOwnership(userId, userDiscId);
+        validateBagOwnership(userId, bagId);
+
         boolean exists = discInBagRepository.existsByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId);
 
         if (!exists) {
@@ -121,8 +127,15 @@ public class BagService {
     }
 
     @Transactional
-    public void updateBagDiscs(Long bagId, List<Long> updatedUserDiscIds) {
+    public void updateBagDiscs(Long userId, Long bagId, List<Long> updatedUserDiscIds) {
         logger.info("Updating discs in bag with id={} to match user selection: {}", bagId, updatedUserDiscIds);
+
+        for (Long userDiscId : updatedUserDiscIds) {
+            userDiscService.validateUserDiscOwnership(userId, userDiscId);
+        }
+
+        // validate the request
+        Bag bag = validateBagOwnershipAndReturn(userId, bagId);
 
         // Get current disc IDs in bag
         List<Long> currentDiscIds = discInBagRepository.findUserDiscIdsByBagId(bagId);
@@ -140,9 +153,6 @@ public class BagService {
 
         logger.info("Discs to add: {}", toAdd);
         logger.info("Discs to remove: {}", toRemove);
-
-        Bag bag = bagRepository.findById(bagId)
-                .orElseThrow(() -> new RuntimeException("Bag not found: " + bagId));
 
         // Deal with added discs
         for (Long userDiscId : toAdd) {
@@ -181,12 +191,9 @@ public class BagService {
     }
 
     @Transactional
-    public boolean deleteBag(Long bagId) {
+    public boolean deleteBag(Long userId, Long bagId) {
         logger.info("Attempting to delete bag with id={} and all related disc links.", bagId);
-        if (!bagRepository.existsById(bagId)) {
-            logger.warn("Bag not found with id={}.", bagId);
-            return false;
-        }
+        validateBagOwnership(userId, bagId);
 
         // 1. Remove all disc links
         discInBagRepository.deleteByBag_Id(bagId);
@@ -196,6 +203,31 @@ public class BagService {
 
         logger.info("Bag with id={} successfully deleted.", bagId);
         return true;
+    }
+
+
+
+    // VALIDATION METHODS
+    public void validateBagOwnership(Long userId, Long bagId) {
+        Bag bag = bagRepository.findById(bagId)
+                .orElseThrow(() -> new NoSuchElementException("Bag with id=" + bagId + " not found"));
+
+        if (!bag.getUserId().equals(userId)) {
+            logger.warn("Bag with id={} does not belong to user with id={}", bagId, userId);
+            throw new IllegalArgumentException("Bag with id=" + bagId + " does not belong to this user");
+        }
+    }
+
+    public Bag validateBagOwnershipAndReturn(Long userId, Long bagId) {
+        Bag bag = bagRepository.findById(bagId)
+                .orElseThrow(() -> new NoSuchElementException("Bag with id=" + bagId + " not found"));
+
+        if (!bag.getUserId().equals(userId)) {
+            logger.warn("Bag with id={} does not belong to user with id={}", bagId, userId);
+            throw new IllegalArgumentException("Bag with id=" + bagId + " does not belong to this user");
+        }
+
+        return bag;
     }
 
 }

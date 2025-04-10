@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +34,9 @@ public class UserDiscService {
         return userDiscRepository.findUserDiscsByUserId(userId);
     }
 
-    public DiscDetailsRecord getDiscDetails(Long userDiscId) {
+    public DiscDetailsRecord getDiscDetails(Long userId, Long userDiscId) {
         logger.info("Fetching detailed view DTO for userDiscId={}", userDiscId);
+        validateUserDiscOwnership(userId, userDiscId);
 
         // Fetch disc details (without bags)
         Optional<UserDiscDto> userDiscDtoOpt = userDiscRepository.findUserDiscsById(userDiscId);
@@ -78,9 +80,9 @@ public class UserDiscService {
         );
     }
 
-    public UserDisc addDiscToUser(CreateUserDiscRequest request) {
+    public UserDisc addDiscToUser(Long userId, CreateUserDiscRequest request) {
         logger.info("Adding new disc for userId={} with discId={} and plasticId={}/customPlastic={}",
-                request.userId(), request.discId(), request.plasticId(), request.customPlastic());
+                userId, request.discId(), request.plasticId(), request.customPlastic());
 
         // Validate referenced entities (disc & plastic exist)
         Disc disc = discRepository.findById(request.discId())
@@ -102,7 +104,7 @@ public class UserDiscService {
 
         // Create new UserDisc entity
         UserDisc newUserDisc = new UserDisc();
-        newUserDisc.setUserId(request.userId());
+        newUserDisc.setUserId(userId);
         newUserDisc.setDisc(disc);
         newUserDisc.setPlastic(plastic);
         newUserDisc.setCustomPlastic(request.customPlastic());
@@ -121,11 +123,11 @@ public class UserDiscService {
     }
 
     @Transactional
-    public boolean updateDisc(Long userDiscId, UpdateDiscRequest request) {
+    public boolean updateDisc(Long userId, Long userDiscId, UpdateDiscRequest request) {
         logger.info("Updating userDiscId={}", userDiscId);
 
-        UserDisc userDisc = userDiscRepository.findDiscEntityByUserDiscId(userDiscId)
-                .orElseThrow(() -> new RuntimeException("Disc not found or does not belong to user"));
+        // validate the request
+        UserDisc userDisc = validateUserDiscOwnershipAndReturn(userId, userDiscId);
 
         // ✅ Update only provided fields
         if (request.customSpeed() != null) userDisc.setCustomSpeed(request.customSpeed());
@@ -156,13 +158,9 @@ public class UserDiscService {
         return true;
     }
 
-    public boolean deleteDisc(Long userDiscId) {
+    public boolean deleteDisc(Long userId, Long userDiscId) {
         logger.info("Attempting to delete userDiscId={}", userDiscId);
-
-        if (!userDiscRepository.existsById(userDiscId)) {
-            logger.warn("UserDisc with id={} not found", userDiscId);
-            return false; // ❌ Disc does not exist
-        }
+        validateUserDiscOwnership(userId, userDiscId);
 
         userDiscRepository.deleteById(userDiscId); // ✅ Delete disc
         return true; // ✅ Successful deletion
@@ -171,6 +169,41 @@ public class UserDiscService {
     public void setInUseStatus(Long userDiscId, boolean inUse) {
         logger.info("Setting in_use value for user userDiscId={} to inUse={}", userDiscId, inUse);
         userDiscRepository.updateInUseStatus(userDiscId, inUse);
+    }
+
+
+
+    // VALIDATION METHODS
+    public void validateUserDiscOwnership(Long userId, Long userDiscId) {
+        logger.info("Validating userDisc={} ownership", userDiscId);
+
+        UserDisc userDisc = userDiscRepository.findDiscEntityByUserDiscId(userDiscId)
+                .orElseThrow(() -> {
+                    logger.warn("userDisc with id={} does not exist", userDiscId);
+                    return new NoSuchElementException("UserDisc with this id does not exist");
+                });
+
+        if (!userDisc.getUserId().equals(userId)) {
+            logger.warn("userDisc with id={} does not belong to user with userId={}", userDiscId, userId);
+            throw new IllegalArgumentException("UserDisc does not belong to this user");
+        }
+    }
+
+    public UserDisc validateUserDiscOwnershipAndReturn(Long userId, Long userDiscId) {
+        logger.info("Validating userDisc={} ownership", userDiscId);
+
+        UserDisc userDisc = userDiscRepository.findDiscEntityByUserDiscId(userDiscId)
+                .orElseThrow(() -> {
+                    logger.warn("userDisc with id={} does not exist", userDiscId);
+                    return new NoSuchElementException("UserDisc with this id does not exist");
+                });
+
+        if (!userDisc.getUserId().equals(userId)) {
+            logger.warn("userDisc with id={} does not belong to user with userId={}", userDiscId, userId);
+            throw new IllegalArgumentException("UserDisc does not belong to this user");
+        }
+
+        return userDisc;
     }
 
 }

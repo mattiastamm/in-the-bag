@@ -1,11 +1,8 @@
 package com.discgolf.in_the_bag.controllers;
 
-import com.discgolf.in_the_bag.records.DiscAutoFillBaseRecord;
 import com.discgolf.in_the_bag.records.DiscAutoFillRecord;
 import com.discgolf.in_the_bag.records.DiscSearchRecord;
-import com.discgolf.in_the_bag.records.PlasticRecord;
 import com.discgolf.in_the_bag.repositories.DiscRepository;
-import com.discgolf.in_the_bag.repositories.PlasticRepository;
 import com.discgolf.in_the_bag.services.DiscService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

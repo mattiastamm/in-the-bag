@@ -22,15 +22,27 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
 
         final Exception jwtException = (Exception) request.getAttribute("jwtException");
 
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+
         if (jwtException instanceof ExpiredJwtException) {
             logger.warn("🔒 Token has expired.");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token expired");
+            response.getWriter().write("""
+                {
+                    "error": "TokenExpired",
+                    "message": "Your session has expired. Please log in again."
+                }
+            """);
         } else {
             logger.warn("🔒 Unauthorized access or invalid token.");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized");
+            response.getWriter().write("""
+                {
+                    "error": "Unauthorized",
+                    "message": "You are not authorized to access this resource."
+                }
+            """);
         }
     }
 }
+
 
