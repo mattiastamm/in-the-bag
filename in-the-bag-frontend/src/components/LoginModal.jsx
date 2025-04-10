@@ -9,8 +9,8 @@ export default function LoginModal({ onClose, onLoginSuccess, switchToSignup }) 
 
   const handleSubmit = async () => {
     try {
-      const { token, userId } = await login({ email, password });
-      saveAuthData({ token, userId });
+      const { token } = await login({ email, password });
+      saveAuthData({ token });
       onLoginSuccess?.(); // Notify parent if needed
       onClose(); // Close modal
     } catch (err) {

@@ -4,7 +4,6 @@ import { createBag } from "../api/createBag";
 export default function AddNewBagModal({ onClose, refetch }) {
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
-  const userId = parseInt(localStorage.getItem("userId"));
 
   const MAX_TITLE_LENGTH = 15;
 
@@ -19,7 +18,7 @@ export default function AddNewBagModal({ onClose, refetch }) {
       return;
     }
 
-    const success = await createBag({ userId, title, comment });
+    const success = await createBag({ title, comment });
     if (success) {
       refetch();
       onClose();

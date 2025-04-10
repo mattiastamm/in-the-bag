@@ -11,11 +11,9 @@ import StabilityChart from "../components/StabilityChart";
 
 
 export default function MyBags() {
-  const userId = parseInt(localStorage.getItem("userId"));
-
   const { data: bags, isLoading, error, refetch } = useQuery({
-    queryKey: ["bags", userId],
-    queryFn: () => getBagsWithDiscs(userId),
+    queryKey: ["bags"],
+    queryFn: () => getBagsWithDiscs(),
   });
 
   const [selectedBagId, setSelectedBagId] = useState(null);

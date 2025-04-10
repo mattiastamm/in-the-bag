@@ -8,11 +8,10 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
   const [selectedDiscs, setSelectedDiscs] = useState(new Set(initialSelectedDiscIds));
 
   const discTypeOrder = ["Putt & Approach", "Midrange", "Fairway Driver", "Distance Driver"];
-  const userId = parseInt(localStorage.getItem("userId"));
 
   useEffect(() => {
     async function fetchInventory() {
-      const discs = await getDiscs(userId); 
+      const discs = await getDiscs(); 
       setAllDiscs(discs);
     }
     fetchInventory();

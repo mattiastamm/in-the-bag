@@ -8,11 +8,9 @@ import AddNewUserDiscModal from "../components/AddNewUserDiscModal";
 
 
 export default function Inventory() {
-  const userId = parseInt(localStorage.getItem("userId"));
-
   const { data: userDiscs, error, isLoading, refetch } = useQuery({
-    queryKey: ["discs", userId],
-    queryFn: () => getDiscs(userId),
+    queryKey: ["discs"],
+    queryFn: () => getDiscs(),
   });
 
   const [selectedDisc, setSelectedDisc] = useState(null);

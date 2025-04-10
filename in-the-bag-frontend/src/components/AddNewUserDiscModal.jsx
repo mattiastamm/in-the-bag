@@ -10,7 +10,6 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isEditingSearch, setIsEditingSearch] = useState(false);
   const [tempSearchQuery, setTempSearchQuery] = useState("");
-  const userId = parseInt(localStorage.getItem("userId"));
 
   const [formData, setFormData] = useState({
     discId: null,
@@ -97,7 +96,7 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
       return;
     }
     try {
-      const success = await addNewDisc({ ...formData, userId });
+      const success = await addNewDisc({ ...formData });
       if (success) {
         refetch(); // Refresh inventory after adding disc
         onClose();  // Close modal if successful
@@ -119,7 +118,7 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
           <h2 className="text-xl font-bold">Add New Disc</h2>
           <button 
             onClick={onClose}
-            className="text-red-500 font-bold text-3xl transition-transform transform hover:scale-105 hover:text-red-700"
+            className="text-red-500 font-bold text-3xl transition-transform transform hover:scale-105 hover:text-red-700 cursor-pointer"
           >
             &times;
           </button>
@@ -320,7 +319,7 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
         {/* Save Button (Always at the Bottom) */}
         <div className="mt-4">
           <button 
-            className="bg-blue-500 text-white px-4 py-2 rounded w-full transition-transform hover:bg-blue-700"
+            className="bg-blue-500 text-white px-4 py-2 rounded w-full transition-transform hover:bg-blue-700 cursor-pointer"
             onClick={handleSave}
           >
             Add Disc

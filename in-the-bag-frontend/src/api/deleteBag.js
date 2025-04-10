@@ -1,7 +1,7 @@
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 export async function deleteBag(bagId) {
-  const apiUrl = `${import.meta.env.VITE_API_URL}/api/bags/delete?bagId=${bagId}`;
+  const apiUrl = `${import.meta.env.VITE_API_URL}/api/bags/${bagId}`;
 
   try {
     const response = await fetchWithAuth(apiUrl, {

@@ -10,7 +10,7 @@ export async function login({ email, password }) {
     throw new Error(error || "Login failed");
   }
 
-  return res.json(); // expected: { token, userId }
+  return res.json();
 }
 
 
@@ -26,5 +26,5 @@ export async function signup({ email, password }) {
     throw new Error(error || "Signup failed");
   }
 
-  return res.json(); // expected: { token, userId }
+  return res.json();
 }

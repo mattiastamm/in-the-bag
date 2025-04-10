@@ -20,8 +20,8 @@ export default function SignupModal({ onClose, onSignupSuccess, switchToLogin })
     }
 
     try {
-      const { token, userId } = await signup({ email, password });
-      saveAuthData({ token, userId });
+      const { token } = await signup({ email, password });
+      saveAuthData({ token });
       onSignupSuccess?.();
       onClose();
     } catch (err) {
