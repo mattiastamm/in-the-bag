@@ -23,21 +23,21 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(Long userId, String username) {
+    public String generateToken(Long userId, String email) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
-        claims.put("username", username);
+        claims.put("email", email);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
@@ -58,9 +58,9 @@ public class JwtService {
                 .getBody();
     }
 
-    public boolean isTokenValid(String token, String expectedUsername) {
-        final String username = extractUsername(token);
-        return (username.equals(expectedUsername) && !isTokenExpired(token));
+    public boolean isTokenValid(String token, String expectedEmail) {
+        final String email = extractEmail(token);
+        return (email.equals(expectedEmail) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {

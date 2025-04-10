@@ -38,7 +38,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String username;
+        final String email;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             logger.warn("❌ No Authorization header or it doesn't start with Bearer");
@@ -49,7 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
 
         try {
-            username = jwtService.extractUsername(jwt);
+            email = jwtService.extractEmail(jwt);
         } catch (ExpiredJwtException ex) {
             logger.warn("⚠️ Token expired: {}", ex.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -64,20 +64,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        logger.info("🔑 Extracted username from token: {}", username);
+        logger.info("🔑 Extracted username from token: {}", email);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtService.isTokenValid(jwt, username)) {
-                logger.info("✅ Token is valid for user: {}", username);
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (jwtService.isTokenValid(jwt, email)) {
+                logger.info("✅ Token is valid for user: {}", email);
                 Long userId = jwtService.extractUserId(jwt);
                 logger.info("🧠 Extracted userId: {}", userId);
 
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+                        new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else {
-                logger.warn("❌ Token is invalid for user: {}", username);
+                logger.warn("❌ Token is invalid for user: {}", email);
             }
         }
 
