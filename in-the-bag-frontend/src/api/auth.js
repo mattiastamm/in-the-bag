@@ -6,8 +6,8 @@ export async function login({ email, password }) {
   });
 
   if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error || "Login failed");
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Login failed");
   }
 
   return res.json();
@@ -22,8 +22,8 @@ export async function signup({ email, password }) {
   });
 
   if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error || "Signup failed");
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Signup failed");
   }
 
   return res.json();

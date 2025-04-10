@@ -3,7 +3,6 @@ import { logout } from "./authHelpers";
 export async function fetchWithAuth(url, options = {}) {
   const token = localStorage.getItem("token");
 
-  // Set default headers
   const headers = {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -16,23 +15,32 @@ export async function fetchWithAuth(url, options = {}) {
       headers,
     });
 
+    // Handle 401 errors by analyzing the error type
     if (response.status === 401) {
-      // Optional: Parse response for more detailed message
-      const errorText = await response.text();
-      if (errorText.includes("expired")) {
-        alert("Your session has expired. Please log in again.");
-      } else {
-        alert("You are not authorized. Please log in.");
-      }
+      const contentType = response.headers.get("content-type");
 
-      logout(); // Clear localStorage
-      window.location.href = "/auth"; // Redirect to login
-      return; // Stop execution
+      // Try to parse the JSON body if possible
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await response.json();
+
+        // ONLY log the user out if token is expired or invalid
+        if (errorData.error === "TokenExpired" || errorData.error === "InvalidToken") {
+          alert(errorData.message || "Session expired");
+          logout();
+          window.location.href = "/auth";
+          return;
+        } else {
+          // Let the caller handle normal 401s (e.g. wrong password)
+          throw new Error(errorData.message || "Unauthorized");
+        }
+      } else {
+        throw new Error("Unauthorized access");
+      }
     }
 
     return response;
   } catch (error) {
-    console.error("Network error:", error);
+    console.error("Fetch error:", error);
     throw error;
   }
 }

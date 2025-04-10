@@ -1,12 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { getUserProfile } from "../api/getUserProfile";
 import DiscTypePieChart from "../components/DiscTypePieChart";
+import ChangePasswordModal from "../components/ChangePasswordModal";
+import DeleteAccountModal from "../components/DeleteAccountModal";
 
 export default function Profile() {
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ["userProfile"],
     queryFn: getUserProfile,
   });
+
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   if (isLoading)
     return <p className="text-center text-gray-500">Loading profile...</p>;
@@ -49,13 +55,26 @@ export default function Profile() {
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4">
-        <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white text-lg py-4 px-4 rounded cursor-pointer">
+        <button
+          className="w-full bg-yellow-500 hover:bg-yellow-600 text-white text-lg py-4 px-4 rounded cursor-pointer"
+          onClick={() => setShowChangePassword(true)}
+        >
           Change Password
         </button>
-        <button className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-4 px-4 rounded cursor-pointer">
+        <button
+          className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-4 px-4 rounded cursor-pointer"
+          onClick={() => setShowDeleteModal(true)}
+        >
           Delete Account
         </button>
       </div>
+
+      {showChangePassword && (
+        <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
+      )}
+      {showDeleteModal && (
+        <DeleteAccountModal onClose={() => setShowDeleteModal(false)} />
+      )}
     </div>
   );
 }
