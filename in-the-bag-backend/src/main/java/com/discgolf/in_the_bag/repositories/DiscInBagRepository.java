@@ -22,8 +22,10 @@ public interface DiscInBagRepository extends JpaRepository<DiscInBag, Long> {
     @Transactional
     void deleteByBag_Id(Long bagId);
 
-    // Finds all UserDisc Ids for a certain bag
     @Query("SELECT dib.userDisc.userDiscId FROM DiscInBag dib WHERE dib.bag.id = :bagId")
     List<Long> findUserDiscIdsByBagId(@Param("bagId") Long bagId);
+
+    @Query("SELECT dib.userDisc FROM DiscInBag dib WHERE dib.bag.id = :bagId")
+    List<UserDisc> findUserDiscsByBagId(@Param("bagId") Long bagId);
 
 }
