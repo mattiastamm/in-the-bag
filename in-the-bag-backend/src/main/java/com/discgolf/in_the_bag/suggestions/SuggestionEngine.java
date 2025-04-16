@@ -1,6 +1,5 @@
 package com.discgolf.in_the_bag.suggestions;
 
-import com.discgolf.in_the_bag.repositories.DiscRepository;
 import com.discgolf.in_the_bag.services.UserDiscService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -15,6 +14,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SuggestionEngine {
     private static final Logger logger = LoggerFactory.getLogger(UserDiscService.class);
+    private final DiscSuggestionLoader suggestionLoader;
 
     public List<BagSuggestionDto> suggestDiscs(List<BagSuggestionInputDto> discDtos) {
         Map<DiscCategory, List<BagSuggestionInputDto>> discsByCategory = generateMap();
@@ -38,12 +38,17 @@ public class SuggestionEngine {
         }
         if (suggestions.isEmpty()) return null;
 
-        // find actual discs for suggestions from pre-processed datasets
-        for (DiscCategory suggestion : suggestions) {
+        List<BagSuggestionDto> suggestionsDtos = new ArrayList<>();
 
+        // find actual discs for suggestions from pre-processed datasets
+        for (DiscCategory category : suggestions) {
+            List<Long> discIds = suggestionLoader.getSuggestionsForCategory(category);
+            String categoryLabel = suggestionLoader.getLabelForCategory(category);
+            BagSuggestionDto suggestionDto = new BagSuggestionDto(categoryLabel, discIds);
+            suggestionsDtos.add(suggestionDto);
         }
 
-        return null;
+        return suggestionsDtos;
     }
 
     private static Map<DiscCategory, List<BagSuggestionInputDto>> generateMap() {
@@ -74,7 +79,7 @@ public class SuggestionEngine {
         boolean isOverstable = (turn >= 0 && stability > 2) || (turn > -2 && turn < 0 && stability >= 3);
 
         switch (category) {
-            case "putt and approach":
+            case "putt & approach":
                 if (isUnderstable) return DiscCategory.UNDERSTABLE_PUTT_APPROACH;
                 if (isOverstable) return DiscCategory.OVERSTABLE_APPROACH;
                 return DiscCategory.STABLE_PUTT_APPROACH;

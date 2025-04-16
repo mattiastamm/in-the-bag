@@ -1,0 +1,56 @@
+{
+  "UNDERSTABLE_FAIRWAY_7": {
+    "label": "Understable Fairway Driver with speed 7",
+    "discIds": [71945, 246]
+  },
+  "UNDERSTABLE_FAIRWAY_9": {
+    "label": "Understable Fairway Driver with speed 9",
+    "discIds": [367, 368, 251, 253]
+  },
+  "UNDERSTABLE_DRIVER": {
+    "label": "Understable Distance Driver",
+    "discIds": [22703, 421, 454, 51]
+  },
+
+  "STABLE_PUTT_APPROACH": {
+    "label": "Stable Putt & Approach",
+    "discIds": [102, 36, 38, 323, 495, 401, 41]
+  },
+  "STABLE_MIDRANGE": {
+    "label": "Stable Midrange",
+    "discIds": [47241, 84, 383, 384, 483, 484, 286, 21899]
+  },
+  "STABLE_FAIRWAY_7": {
+    "label": "Stable Fairway Driver with speed 7",
+    "discIds": [240, 365, 20, 258]
+  },
+  "STABLE_FAIRWAY_9": {
+    "label": "Stable Fairway Driver with speed 9",
+    "discIds": [129, 257, 76]
+  },
+  "STABLE_DRIVER": {
+    "label": "Stable Distance Driver",
+    "discIds": [21421, 417, 234, 213, 9, 124]
+  },
+
+  "OVERSTABLE_APPROACH": {
+    "label": "Overstable Approach",
+    "discIds": [107, 39, 489, 332, 42, 23791, 114]
+  },
+  "OVERSTABLE_MIDRANGE": {
+    "label": "Overstable Midrange",
+    "discIds": [86, 137, 94, 34, 142]
+  },
+  "OVERSTABLE_FAIRWAY_7": {
+    "label": "Overstable Fairway Driver with speed 7",
+    "discIds": [237, 16102, 23149]
+  },
+  "OVERSTABLE_FAIRWAY_9": {
+    "label": "Overstable Fairway Driver with speed 9",
+    "discIds": [22, 128, 241]
+  },
+  "OVERSTABLE_DRIVER": {
+    "label": "Overstable Distance Driver",
+    "discIds": [118, 50, 356, 14912, 117, 21739]
+  }
+}

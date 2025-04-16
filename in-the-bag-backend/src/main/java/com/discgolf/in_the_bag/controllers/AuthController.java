@@ -5,7 +5,6 @@ import com.discgolf.in_the_bag.records.LoginResponse;
 import com.discgolf.in_the_bag.records.SignupRequest;
 import com.discgolf.in_the_bag.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,5 +23,4 @@ public class AuthController {
     public LoginResponse signup(@RequestBody SignupRequest request) {
         return userService.signup(request);
     }
-
 }
