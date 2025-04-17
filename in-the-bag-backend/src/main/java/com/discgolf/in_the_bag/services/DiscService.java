@@ -1,10 +1,12 @@
 package com.discgolf.in_the_bag.services;
 
+import com.discgolf.in_the_bag.models.Disc;
 import com.discgolf.in_the_bag.records.DiscAutoFillBaseRecord;
 import com.discgolf.in_the_bag.records.DiscAutoFillRecord;
 import com.discgolf.in_the_bag.records.PlasticRecord;
 import com.discgolf.in_the_bag.repositories.DiscRepository;
 import com.discgolf.in_the_bag.repositories.PlasticRepository;
+import com.discgolf.in_the_bag.suggestions.DiscSuggestionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -19,6 +21,10 @@ public class DiscService {
 
     private final DiscRepository discRepository;
     private final PlasticRepository plasticRepository;
+
+    public List<DiscSuggestionDto> getDiscSuggestionDtosByIds(List<Long> ids) {
+        return discRepository.findDiscSuggestionDtosByIds(ids);
+    }
 
     public Optional<DiscAutoFillRecord> getDiscDetailsForCreation(Long discId) {
         logger.info("Fetching base disc details for discId {}", discId);

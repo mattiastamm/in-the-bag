@@ -4,6 +4,7 @@ import com.discgolf.in_the_bag.models.Disc;
 import com.discgolf.in_the_bag.records.DiscAutoFillBaseRecord;
 import com.discgolf.in_the_bag.records.DiscAutoFillRecord;
 import com.discgolf.in_the_bag.records.DiscSearchRecord;
+import com.discgolf.in_the_bag.suggestions.DiscSuggestionDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,6 +40,14 @@ public interface DiscRepository extends JpaRepository<Disc, Long> {
     """)
     Optional<DiscAutoFillBaseRecord> findDiscDetailsForCreation(@Param("discId") Long discId);
 
+    @Query("""
+    SELECT new com.discgolf.in_the_bag.suggestions.DiscSuggestionDto(
+        d.id, d.name, d.manufacturer.name, d.speed, d.glide, d.turn, d.fade
+    )
+    FROM Disc d
+    WHERE d.id IN :ids
+""")
+    List<DiscSuggestionDto> findDiscSuggestionDtosByIds(@Param("ids") List<Long> ids);
 
 }
 

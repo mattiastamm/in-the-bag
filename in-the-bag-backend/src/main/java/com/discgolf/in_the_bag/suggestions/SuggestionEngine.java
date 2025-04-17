@@ -1,5 +1,7 @@
 package com.discgolf.in_the_bag.suggestions;
 
+import com.discgolf.in_the_bag.models.Disc;
+import com.discgolf.in_the_bag.services.DiscService;
 import com.discgolf.in_the_bag.services.UserDiscService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -15,10 +17,11 @@ import java.util.*;
 public class SuggestionEngine {
     private static final Logger logger = LoggerFactory.getLogger(UserDiscService.class);
     private final DiscSuggestionLoader suggestionLoader;
+    private final DiscService discService;
 
-    public List<BagSuggestionDto> suggestDiscs(List<BagSuggestionInputDto> discDtos) {
+    public List<BagSuggestionDto> suggestDiscs(List<BagSuggestionInputDto> suggestionInputDtos) {
         Map<DiscCategory, List<BagSuggestionInputDto>> discsByCategory = generateMap();
-        categorizeDiscs(discDtos, discsByCategory);
+        categorizeDiscs(suggestionInputDtos, discsByCategory);
 
         boolean understable_putt_approach_in_bag = (!discsByCategory.get(DiscCategory.UNDERSTABLE_PUTT_APPROACH).isEmpty());
         boolean understable_midrange_in_bag = (!discsByCategory.get(DiscCategory.UNDERSTABLE_MIDRANGE).isEmpty());
@@ -28,27 +31,27 @@ public class SuggestionEngine {
         List<DiscCategory> checkOrder = resolveCheckOrder(state);
         resolveFairwaySpecialCases(discsByCategory, checkOrder);
 
-        List<DiscCategory> suggestions = new ArrayList<>();
+        List<DiscCategory> suggestion_categories = new ArrayList<>();
 
         // Add 2 missing categories to suggestions based on the correct order
-        for (int i = 0; i < 2; i++) {
-            for (DiscCategory category : checkOrder) {
-                if (discsByCategory.get(category).isEmpty() && !suggestions.contains(category)) suggestions.add(category);
-            }
+        for (DiscCategory category : checkOrder) {
+            if (suggestion_categories.size() >= 2) break;
+            if (discsByCategory.get(category).isEmpty()) suggestion_categories.add(category);
         }
-        if (suggestions.isEmpty()) return null;
 
-        List<BagSuggestionDto> suggestionsDtos = new ArrayList<>();
+        List<BagSuggestionDto> suggestions = new ArrayList<>();
 
         // find actual discs for suggestions from pre-processed datasets
-        for (DiscCategory category : suggestions) {
+        for (DiscCategory category : suggestion_categories) {
             List<Long> discIds = suggestionLoader.getSuggestionsForCategory(category);
             String categoryLabel = suggestionLoader.getLabelForCategory(category);
-            BagSuggestionDto suggestionDto = new BagSuggestionDto(categoryLabel, discIds);
-            suggestionsDtos.add(suggestionDto);
+            List<DiscSuggestionDto> discSuggestionDtos = discService.getDiscSuggestionDtosByIds(discIds);
+
+            BagSuggestionDto bagSuggestionDto = new BagSuggestionDto(categoryLabel, discSuggestionDtos);
+            suggestions.add(bagSuggestionDto);
         }
 
-        return suggestionsDtos;
+        return suggestions;
     }
 
     private static Map<DiscCategory, List<BagSuggestionInputDto>> generateMap() {
