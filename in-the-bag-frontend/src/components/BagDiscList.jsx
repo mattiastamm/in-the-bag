@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import BagDiscItem from "./BagDiscItem";
+import { getSuggestions } from "../api/getSuggestions";
 import { PenLine, Trash2 } from "lucide-react";
+import SuggestionModal from "./SuggestionModal";
 
 export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onDeleteBag }) {
   const discTypeOrder = ["Putt & Approach", "Midrange", "Fairway Driver", "Distance Driver"];
@@ -11,6 +13,20 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onD
     return acc;
   }, {});
 
+  const [suggestions, setSuggestions] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  async function handleSuggest(bagId) {
+    try {
+      const result = await getSuggestions(bagId);
+      setSuggestions(result);
+      setShowModal(true);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch suggestions");
+    }
+  }
+
   return (
     <div className="w-full mt-6">
 
@@ -18,20 +34,29 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onD
       <div className="mb-6 flex justify-center gap-6">
         {/* Edit Bag Button */}
         <button
-            onClick={onEditBag}
-            className="bg-yellow-500 text-white text-xl px-6 py-3 rounded-lg hover:bg-yellow-600 transition cursor-pointer shadow-md inline-flex items-center space-x-2"
+          onClick={onEditBag}
+          className="bg-yellow-500 text-white text-xl px-6 py-3 rounded-lg hover:bg-yellow-600 transition cursor-pointer shadow-md inline-flex items-center space-x-2"
         >
-            <span>Edit Bag</span>
-            <PenLine size={24} />
+          <span>Edit Bag</span>
+          <PenLine size={24} />
         </button>
 
         {/* Delete Bag Button */}
         <button
-            onClick={onDeleteBag}
-            className="bg-red-500 text-white text-xl px-6 py-3 rounded-lg hover:bg-red-600 transition cursor-pointer shadow-md inline-flex items-center space-x-2"
+          onClick={onDeleteBag}
+          className="bg-red-500 text-white text-xl px-6 py-3 rounded-lg hover:bg-red-600 transition cursor-pointer shadow-md inline-flex items-center space-x-2"
         >
-            <span>Delete Bag</span>
-            <Trash2 size={24} />
+          <span>Delete Bag</span>
+          <Trash2 size={24} />
+        </button>
+
+        {/* Suggest Discs Button */}
+        <button
+          onClick={() => handleSuggest(bagId)} // make sure `handleSuggest` is defined in your component
+          className="bg-gray-600 text-white text-xl px-6 py-3 rounded-lg hover:bg-gray-700 transition cursor-pointer shadow-md inline-flex items-center space-x-2"
+        >
+          <span>Suggest Discs</span>
+          {/* Optional icon: you can import something like `Sparkles` from lucide-react */}
         </button>
       </div>
 
@@ -52,6 +77,13 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onD
           </div>
         )
       ))}
+
+      {showModal && (
+        <SuggestionModal
+          suggestions={ suggestions } 
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }
