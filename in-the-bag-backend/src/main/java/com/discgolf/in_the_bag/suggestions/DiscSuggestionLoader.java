@@ -3,58 +3,61 @@ package com.discgolf.in_the_bag.suggestions;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class DiscSuggestionLoader {
 
-    // New DTO to represent the JSON structure
-    public static class DiscSuggestionEntry {
-        private String label;
-        private List<Long> discIds;
+    private static final Logger logger = LoggerFactory.getLogger(DiscSuggestionLoader.class);
 
-        // Getters & Setters
-        public String getLabel() {
-            return label;
-        }
+    private final Map<String, DiscSuggestionJsonFormatDto> suggestions = new HashMap<>();
 
-        public List<Long> getDiscIds() {
-            return discIds;
-        }
-
+    public Map<String, DiscSuggestionJsonFormatDto> getSuggestions() {
+        return Collections.unmodifiableMap(suggestions);
     }
-
-    private final Map<String, DiscSuggestionEntry> suggestionMap = new HashMap<>();
 
     @PostConstruct
     public void loadSuggestions() {
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("suggestions/disc_suggestions.json");
+            ClassPathResource resource = new ClassPathResource("disc_suggestions.json");
 
-            if (is == null) {
-                throw new IllegalStateException("Could not find disc_suggestions.json in resources");
-            }
+            Map<String, DiscSuggestionJsonFormatDto> loadedSuggestions = objectMapper.readValue(
+                    resource.getInputStream(),
+                    new TypeReference<>() {}
+            );
 
-            Map<String, DiscSuggestionEntry> loaded = mapper.readValue(is, new TypeReference<>() {});
-            suggestionMap.putAll(loaded);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load disc suggestions JSON", e);
+            suggestions.clear();
+            suggestions.putAll(loadedSuggestions);
+
+            logger.info("Loaded {} suggestion categories from JSON", suggestions.size());
+
+        } catch (IOException e) {
+            logger.error("Failed to load suggestions from disc_suggestions.json", e);
         }
     }
 
     public List<Long> getSuggestionsForCategory(DiscCategory category) {
-        DiscSuggestionEntry entry = suggestionMap.get(category.name());
-        return entry != null ? entry.getDiscIds() : List.of();
+        DiscSuggestionJsonFormatDto entry = suggestions.get(category.name());
+        return entry != null ? entry.discIds() : List.of();
     }
 
     public String getLabelForCategory(DiscCategory category) {
-        DiscSuggestionEntry entry = suggestionMap.get(category.name());
-        return entry != null ? entry.getLabel() : "";
+        DiscSuggestionJsonFormatDto entry = suggestions.get(category.name());
+        return entry != null ? entry.label() : "";
     }
+
+    public Set<Long> getAllSuggestionDiscIds() {
+        return suggestions.values().stream()
+                .flatMap(entry -> entry.discIds().stream())
+                .collect(Collectors.toSet());
+    }
+
 }
