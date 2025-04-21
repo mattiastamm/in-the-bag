@@ -1,10 +1,12 @@
 package com.discgolf.in_the_bag.controllers;
 
+import com.discgolf.in_the_bag.records.WishlistAddRequest;
 import com.discgolf.in_the_bag.records.WishlistDiscDto;
 import com.discgolf.in_the_bag.services.WishlistService;
 import com.discgolf.in_the_bag.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,10 +28,10 @@ public class WishlistController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addDiscsToWishlist(@RequestBody List<Long> discIds) {
+    public ResponseEntity<Void> addToWishlist(@RequestBody WishlistAddRequest wishlistRequest) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
-        wishlistService.addDiscs(userId, discIds);
-        return ResponseEntity.ok("Discs added to wishlist");
+        wishlistService.addToWishlist(userId, wishlistRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/remove")

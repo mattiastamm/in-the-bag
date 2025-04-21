@@ -2,6 +2,7 @@ package com.discgolf.in_the_bag.services;
 
 import com.discgolf.in_the_bag.models.Disc;
 import com.discgolf.in_the_bag.models.WishlistEntry;
+import com.discgolf.in_the_bag.records.WishlistAddRequest;
 import com.discgolf.in_the_bag.records.WishlistDiscDto;
 import com.discgolf.in_the_bag.repositories.DiscRepository;
 import com.discgolf.in_the_bag.repositories.WishlistRepository;
@@ -46,7 +47,8 @@ public class WishlistService {
     }
 
 
-    public void addDiscs(Long userId, List<Long> discIds) {
+    public void addToWishlist(Long userId, WishlistAddRequest addRequest) {
+        List<Long> discIds = addRequest.discIds();
         logger.info("Attempting to add {} discs to wishlist for userId={}", discIds.size(), userId);
 
         // Validate all discIds first
