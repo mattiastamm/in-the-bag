@@ -67,7 +67,7 @@ export default function MyBags() {
         
         {/* Left: My Bags Title */}
         <div className="flex-shrink-0">
-          <h1 className="text-3xl font-bold">My Bags</h1>
+          <h1 className="text-3xl font-bold pl-1">My Bags</h1>
         </div>
 
         {/* Middle: Bag Buttons */}

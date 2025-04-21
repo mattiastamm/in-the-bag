@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { getDiscs } from "../api/getDiscs";
 import { getDiscDetails } from "../api/getDiscDetails";
-import DiscCard from "../components/DiscCard";
+import InventoryCard from "../components/InventoryCard";
 import DiscDetailsModal from "../components/DiscDetailsModal";
 import AddNewUserDiscModal from "../components/AddNewUserDiscModal";
 
@@ -62,7 +62,7 @@ export default function Inventory() {
       {discTypeOrder.map((type) => (
         categorizedDiscs[type] && categorizedDiscs[type].length > 0 && (
           <div key={type} className="mb-9">
-            <h2 className="text-2xl font-semibold -mx-6 mb-8 pl-7 bg-gray-200">{type}</h2>
+            <h2 className="text-2xl font-semibold -mx-6 mb-8 py-1 pl-7 bg-gray-200">{type}</h2>
             <div className="custom-grid gap-10 auto-rows-fr pl-8">
               {categorizedDiscs[type].map((userDisc) => (
                 <div 
@@ -70,7 +70,7 @@ export default function Inventory() {
                   onClick={() => fetchDiscDetails(userDisc.userDiscId)}
                   className="cursor-pointer"
                 >
-                  <DiscCard
+                  <InventoryCard
                     name={userDisc.name}
                     customSpeed={userDisc.customSpeed}
                     customGlide={userDisc.customGlide}

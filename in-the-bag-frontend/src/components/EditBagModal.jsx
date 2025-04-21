@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getDiscs } from "../api/getDiscs";
 import { updateBagDiscs } from "../api/updateBagDiscs";
-import DiscCard from "./DiscCard";
+import InventoryCard from "./InventoryCard";
 
 export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, refetch }) {
   const [allDiscs, setAllDiscs] = useState([]);
@@ -65,7 +65,7 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
                     }`}
                     onClick={() => toggleDisc(disc.userDiscId)}
                   >
-                    <DiscCard {...disc} />
+                    <InventoryCard {...disc} />
                   </div>
                 ))}
               </div>

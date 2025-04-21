@@ -3,6 +3,7 @@ import BagDiscItem from "./BagDiscItem";
 import { getSuggestions } from "../api/getSuggestions";
 import { PenLine, Trash2 } from "lucide-react";
 import SuggestionModal from "./SuggestionModal";
+import LoadingModal from "./LoadingModal";
 
 export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onDeleteBag }) {
   const discTypeOrder = ["Putt & Approach", "Midrange", "Fairway Driver", "Distance Driver"];
@@ -13,17 +14,25 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onD
     return acc;
   }, {});
 
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
 
   async function handleSuggest(bagId) {
+    setIsLoadingSuggestions(true); // Show loading modal first
+
     try {
-      const result = await getSuggestions(bagId);
-      setSuggestions(result);
-      setShowModal(true);
+      const suggestionPromise = getSuggestions(bagId);
+      await new Promise((resolve) => setTimeout(resolve, 3000)); // Force a 3s delay
+
+      const suggestionsData = await suggestionPromise;
+      setSuggestions(suggestionsData);
+      setShowSuggestionModal(true);
     } catch (err) {
       console.error(err);
       alert("Failed to fetch suggestions");
+    } finally {
+      setIsLoadingSuggestions(false); // Hide loading modal
     }
   }
 
@@ -78,10 +87,12 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onD
         )
       ))}
 
-      {showModal && (
+      {isLoadingSuggestions && <LoadingModal />}
+
+      {showSuggestionModal && (
         <SuggestionModal
           suggestions={ suggestions } 
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowSuggestionModal(false)}
         />
       )}
     </div>
