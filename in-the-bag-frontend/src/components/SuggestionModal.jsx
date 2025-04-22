@@ -76,7 +76,8 @@ export default function SuggestionModal({ suggestions, onClose }) {
             {/* Title */}
             <h2 className="text-2xl text-center mb-6">
               <p className="font-bold">Suggestion {pageIndex + 1}</p>
-              <p className="font-normal">{current.categoryLabel}</p>
+              <p className="font-normal mb-5">{current.categoryLabel}</p>
+              <p className="text-lg text-gray-600 italic">Select the discs you want to add to your Wishlist</p>
             </h2>
 
             {/* Disc Cards */}
@@ -87,11 +88,13 @@ export default function SuggestionModal({ suggestions, onClose }) {
                   <div
                     key={disc.id}
                     onClick={() => toggleDisc(disc.id)}
-                    className={`cursor-pointer border-4 rounded-lg transition-all ${
+                    className={`cursor-pointer border-4 rounded-lg transition-transform transform hover:scale-105 ${
                       isSelected ? "border-blue-500" : "border-transparent"
                     }`}
                   >
-                    <SuggestionCard {...disc} />
+                    <div className="transform-gpu">
+                      <SuggestionCard {...disc} />
+                    </div>
                   </div>
                 );
               })}

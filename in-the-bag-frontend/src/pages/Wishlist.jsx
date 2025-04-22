@@ -44,7 +44,7 @@ export default function Wishlist() {
               {categorizedDiscs[type].map((disc) => (
                 <div 
                   key={disc.id} 
-                  className="cursor-default"
+                  className="cursor-pointer"
                   onClick={() => setSelectedDisc(disc)}
                 >
                   <WishlistCard

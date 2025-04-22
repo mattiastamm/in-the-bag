@@ -46,7 +46,7 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2 mb-4">
           <h2 className="text-xl font-bold">Edit Bag Contents</h2>
-          <button onClick={onClose} className="text-red-500 text-3xl font-bold hover:text-red-700">&times;</button>
+          <button onClick={onClose} className="text-red-500 text-3xl font-bold hover:text-red-700 cursor-pointer">&times;</button>
         </div>
 
         {/* Grouped Disc Lists */}
@@ -57,16 +57,18 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-6">
                 {groupedDiscs[type].map((disc) => (
                   <div
-                    key={disc.userDiscId}
-                    className={`cursor-pointer border-4 rounded-lg transition-all ${
-                      selectedDiscs.has(disc.userDiscId)
-                        ? "border-blue-500"
-                        : "border-transparent"
-                    }`}
-                    onClick={() => toggleDisc(disc.userDiscId)}
-                  >
+                  key={disc.userDiscId}
+                  className={`cursor-pointer border-4 rounded-lg transition-transform transform hover:scale-105 ${
+                    selectedDiscs.has(disc.userDiscId)
+                      ? "border-blue-500"
+                      : "border-transparent"
+                  }`}
+                  onClick={() => toggleDisc(disc.userDiscId)}
+                >
+                  <div className="transform-gpu">
                     <InventoryCard {...disc} />
                   </div>
+                </div>
                 ))}
               </div>
             </div>

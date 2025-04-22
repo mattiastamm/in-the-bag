@@ -21,7 +21,7 @@ export default function InventoryCard({
 
   return (
     <div className="w-full border-2 border-gray-400 shadow-md rounded-lg flex flex-col 
-      transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-600 hover:bg-gray-100">
+      transition-transform transform hover:shadow-lg hover:border-gray-600 hover:bg-gray-100">
   
       {/* Header - Name and Plastic on Separate Lines */}
       <div className="p-1 text-center leading-tight">

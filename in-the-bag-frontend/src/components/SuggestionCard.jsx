@@ -2,7 +2,7 @@ import React from "react";
 
 export default function SuggestionCard({ name, manufacturer, speed, glide, turn, fade }) {
   return (
-    <div className="w-full border-2 border-gray-400 shadow-md rounded-lg flex flex-col transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-600 hover:bg-gray-100">
+    <div className="w-full border-2 border-gray-400 shadow-md rounded-lg flex flex-col transition-transform transform hover:shadow-lg hover:border-gray-600 hover:bg-gray-100">
       {/* Name */}
       <div className="p-1 text-center leading-tight">
         <p> {manufacturer} </p>
