@@ -7,6 +7,7 @@ import com.discgolf.in_the_bag.records.WishlistDiscDto;
 import com.discgolf.in_the_bag.repositories.DiscRepository;
 import com.discgolf.in_the_bag.repositories.WishlistRepository;
 import com.discgolf.in_the_bag.suggestions.DiscSuggestionLoader;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +78,7 @@ public class WishlistService {
         logger.info("Added {} new discs to wishlist for userId={}", newEntries.size(), userId);
     }
 
+    @Transactional
     public void removeFromWishlist(Long userId, Long discId) {
         logger.info("Attempting to delete disc={} from wishlist for userId={}", discId, userId);
 
