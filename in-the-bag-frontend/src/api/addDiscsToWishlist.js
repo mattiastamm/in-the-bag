@@ -1,6 +1,6 @@
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
-export async function addToWishlist(discId) {
+export async function addDiscsToWishlist(discId) {
   const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/wishlist/add`, {
     method: "POST",
     body: JSON.stringify({ discId }),

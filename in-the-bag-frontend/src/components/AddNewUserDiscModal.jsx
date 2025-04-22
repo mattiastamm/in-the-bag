@@ -3,13 +3,21 @@ import { addNewDisc } from "../api/addNewDisc";
 import { discNameAutoFill } from "../api/discNameAutoFill";
 import { discCreationAutoFill } from "../api/discCreationAutoFill";
 
-export default function AddNewUserDiscModal({ onClose, refetch }) {
+export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetch }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedDisc, setSelectedDisc] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isEditingSearch, setIsEditingSearch] = useState(false);
   const [tempSearchQuery, setTempSearchQuery] = useState("");
+
+  // this part is for adding discs from Wishlist to Inventory where ID is already known
+  useEffect(() => {
+    if (preSelectedDiscId) {
+      // Fetch disc details using the preselected ID
+      handleDiscSelect(preSelectedDiscId);
+    }
+  }, [preSelectedDiscId]);
 
   const [formData, setFormData] = useState({
     discId: null,
@@ -99,7 +107,7 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
       const success = await addNewDisc({ ...formData });
       if (success) {
         refetch(); // Refresh inventory after adding disc
-        onClose();  // Close modal if successful
+        onClose(true);  // Close modal if successful
       } else {
         alert("Failed to add the disc.");
       }
@@ -117,7 +125,7 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
         <div className="flex justify-between items-center border-b pb-2">
           <h2 className="text-xl font-bold">Add New Disc</h2>
           <button 
-            onClick={onClose}
+            onClick={() => onClose(false)}
             className="text-red-500 font-bold text-3xl transition-transform transform hover:scale-105 hover:text-red-700 cursor-pointer"
           >
             &times;
@@ -128,61 +136,64 @@ export default function AddNewUserDiscModal({ onClose, refetch }) {
         {errorMessage && <p className="text-red-500 text-center mt-2">{errorMessage}</p>}
   
         {/* Disc Search Input */}
-        <div className="mt-4 relative">
-            <label className="block text-gray-700 mb-1">Search for a Disc:</label>
-            <input
-                type="text"
-                // If we are currently editing, show tempSearchQuery; otherwise show selectedDisc's name or an empty string
-                value={isEditingSearch ? tempSearchQuery : (selectedDisc ? selectedDisc.name : searchQuery)}
-                onFocus={() => {
-                // If a disc is already selected, we copy its name into tempSearchQuery
-                // so that the user can start editing. If no disc, we just keep the typed content.
-                setTempSearchQuery(selectedDisc ? selectedDisc.name : searchQuery);
-                setIsEditingSearch(true);
-                }}
-                onChange={(e) => {
-                setTempSearchQuery(e.target.value);
-                // You can trigger immediate searching here if you want:
-                if (e.target.value.length > 1) {
-                    discNameAutoFill(e.target.value)
-                    .then(setSearchResults)
-                    .catch(() => setSearchResults([]));
-                } else {
-                    setSearchResults([]);
-                }
-                }}
-                onBlur={() => {
-                // When user leaves the search bar (without picking from dropdown):
-                // If a disc is already selected => revert search bar to that disc's name
-                // If no disc => keep tempSearchQuery as searchQuery
-                if (selectedDisc) {
-                    setSearchQuery(selectedDisc.name);
-                } else {
-                    setSearchQuery(tempSearchQuery);
-                }
-                setIsEditingSearch(false);
-                setSearchResults([]);
-                }}
-                className="border rounded px-2 py-1 w-full"
-                placeholder="Enter disc name..."
-            />
+        {/* Only used when the ID is not preselected */}
+        {!preSelectedDiscId && (
+          <div className="mt-4 relative">
+              <label className="block text-gray-700 mb-1">Search for a Disc:</label>
+              <input
+                  type="text"
+                  // If we are currently editing, show tempSearchQuery; otherwise show selectedDisc's name or an empty string
+                  value={isEditingSearch ? tempSearchQuery : (selectedDisc ? selectedDisc.name : searchQuery)}
+                  onFocus={() => {
+                  // If a disc is already selected, we copy its name into tempSearchQuery
+                  // so that the user can start editing. If no disc, we just keep the typed content.
+                  setTempSearchQuery(selectedDisc ? selectedDisc.name : searchQuery);
+                  setIsEditingSearch(true);
+                  }}
+                  onChange={(e) => {
+                  setTempSearchQuery(e.target.value);
+                  // You can trigger immediate searching here if you want:
+                  if (e.target.value.length > 1) {
+                      discNameAutoFill(e.target.value)
+                      .then(setSearchResults)
+                      .catch(() => setSearchResults([]));
+                  } else {
+                      setSearchResults([]);
+                  }
+                  }}
+                  onBlur={() => {
+                  // When user leaves the search bar (without picking from dropdown):
+                  // If a disc is already selected => revert search bar to that disc's name
+                  // If no disc => keep tempSearchQuery as searchQuery
+                  if (selectedDisc) {
+                      setSearchQuery(selectedDisc.name);
+                  } else {
+                      setSearchQuery(tempSearchQuery);
+                  }
+                  setIsEditingSearch(false);
+                  setSearchResults([]);
+                  }}
+                  className="border rounded px-2 py-1 w-full"
+                  placeholder="Enter disc name..."
+              />
 
-            {/* Only show suggestions if user is editing AND typed >= 2 chars */}
-            {isEditingSearch && tempSearchQuery.length > 1 && searchResults.length > 0 && (
-                <ul className="absolute bg-white border rounded w-full mt-1 shadow-md max-h-40 overflow-y-auto">
-                {searchResults.map((disc) => (
-                    <li
-                    key={disc.id}
-                    // Use onMouseDown instead of onClick, so selection happens before onBlur
-                    onMouseDown={() => handleDiscSelect(disc.id)}
-                    className="p-2 hover:bg-gray-200 cursor-pointer"
-                    >
-                    {disc.name}
-                    </li>
-                ))}
-                </ul>
-            )}
-        </div>
+              {/* Only show suggestions if user is editing AND typed >= 2 chars */}
+              {isEditingSearch && tempSearchQuery.length > 1 && searchResults.length > 0 && (
+                  <ul className="absolute bg-white border rounded w-full mt-1 shadow-md max-h-40 overflow-y-auto">
+                  {searchResults.map((disc) => (
+                      <li
+                      key={disc.id}
+                      // Use onMouseDown instead of onClick, so selection happens before onBlur
+                      onMouseDown={() => handleDiscSelect(disc.id)}
+                      className="p-2 hover:bg-gray-200 cursor-pointer"
+                      >
+                      {disc.name}
+                      </li>
+                  ))}
+                  </ul>
+              )}
+          </div>
+        )}
   
         {/* Main Content */}
         <div className="flex-1 flex flex-col justify-center">

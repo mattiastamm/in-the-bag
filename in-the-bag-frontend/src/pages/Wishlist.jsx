@@ -1,14 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { getWishlist } from "../api/getWishlist";
 import WishlistCard from "../components/WishlistCard";
+import WishlistOptionsModal from "../components/WishlistOptionsModal";
+import { useState } from "react";
 
 const discTypeOrder = ["Putt & Approach", "Midrange", "Fairway Driver", "Distance Driver"];
 
 export default function Wishlist() {
-  const { data: wishlistDiscs, isLoading, error } = useQuery({
+  const { data: wishlistDiscs, isLoading, error, refetch } = useQuery({
     queryKey: ["wishlistDiscs"],
     queryFn: getWishlist,
   });
+
+  const [selectedDisc, setSelectedDisc] = useState(null);
 
   if (isLoading) return <p className="text-center mt-10">Loading wishlist...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">Failed to load wishlist</p>;
@@ -38,7 +42,11 @@ export default function Wishlist() {
             <h2 className="text-2xl font-semibold -mx-6 mb-8 py-1 pl-7 bg-gray-200">{type}</h2>
             <div className="custom-grid gap-10 auto-rows-fr pl-8">
               {categorizedDiscs[type].map((disc) => (
-                <div key={disc.id} className="cursor-default">
+                <div 
+                  key={disc.id} 
+                  className="cursor-default"
+                  onClick={() => setSelectedDisc(disc)}
+                >
                   <WishlistCard
                     key={disc.id}
                     name={disc.name}
@@ -60,6 +68,14 @@ export default function Wishlist() {
         <p className="text-center text-gray-600 text-lg mt-16">
           You haven't added any discs to your wishlist yet.
         </p>
+      )}
+
+      {selectedDisc && (
+        <WishlistOptionsModal 
+          disc={selectedDisc} 
+          onClose={() => setSelectedDisc(null)}
+          refetch={refetch}
+        />
       )}
     </div>
   );

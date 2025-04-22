@@ -105,7 +105,10 @@ export default function Inventory() {
       {/* ✅ Render AddNewUserDiscModal when clicking "Add Disc" */}
       {isAddingDisc && (
         <AddNewUserDiscModal 
-          onClose={() => setIsAddingDisc(false)}
+          preSelectedDiscId={null} // The user will search for discs to add, nothing is preselected
+          onClose={() => {
+            setIsAddingDisc(false); // Just close the modal, ignore the boolean
+          }}
           refetch={refetch}
         />
       )}
