@@ -1,7 +1,7 @@
 package com.discgolf.in_the_bag.suggestions;
 
 public record DiscSuggestionDto(
-        Long id,
+        Long suggestionId,
         String name,
         String manufacturer,
         float speed,

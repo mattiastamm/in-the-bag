@@ -2,6 +2,7 @@ package com.discgolf.in_the_bag.suggestions;
 
 import com.discgolf.in_the_bag.models.UserDisc;
 import com.discgolf.in_the_bag.repositories.DiscInBagRepository;
+import com.discgolf.in_the_bag.repositories.SuggestionRepository;
 import com.discgolf.in_the_bag.services.BagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class SuggestionService {
     private final DiscInBagRepository discInBagRepository;
     private final BagService bagService;
     private final SuggestionEngine suggestionEngine;
+    private final SuggestionRepository suggestionRepository;
 
     public List<BagSuggestionDto> suggestForUser(Long userId, Long bagId) {
         // Validate ownership of the bag
@@ -29,5 +31,6 @@ public class SuggestionService {
 
         return suggestionEngine.suggestDiscs(suggestionInputDtos);
     }
+
 }
 

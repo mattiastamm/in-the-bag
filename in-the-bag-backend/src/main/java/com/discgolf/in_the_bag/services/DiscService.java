@@ -22,10 +22,6 @@ public class DiscService {
     private final DiscRepository discRepository;
     private final PlasticRepository plasticRepository;
 
-    public List<DiscSuggestionDto> getDiscSuggestionDtosByIds(List<Long> ids) {
-        return discRepository.findDiscSuggestionDtosByIds(ids);
-    }
-
     public Optional<DiscAutoFillRecord> getDiscDetailsForCreation(Long discId) {
         logger.info("Fetching base disc details for discId {}", discId);
 

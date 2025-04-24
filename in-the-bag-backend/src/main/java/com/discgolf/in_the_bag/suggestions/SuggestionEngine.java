@@ -1,7 +1,8 @@
 package com.discgolf.in_the_bag.suggestions;
 
 import com.discgolf.in_the_bag.models.Disc;
-import com.discgolf.in_the_bag.services.DiscService;
+import com.discgolf.in_the_bag.models.Suggestion;
+import com.discgolf.in_the_bag.repositories.SuggestionRepository;
 import com.discgolf.in_the_bag.services.UserDiscService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,8 +17,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SuggestionEngine {
     private static final Logger logger = LoggerFactory.getLogger(UserDiscService.class);
-    private final DiscSuggestionLoader suggestionLoader;
-    private final DiscService discService;
+    private final SuggestionRepository suggestionRepository;
+
 
     public List<BagSuggestionDto> suggestDiscs(List<BagSuggestionInputDto> suggestionInputDtos) {
         Map<DiscCategory, List<BagSuggestionInputDto>> discsByCategory = generateMap();
@@ -43,11 +44,9 @@ public class SuggestionEngine {
 
         // find actual discs for suggestions from pre-processed datasets
         for (DiscCategory category : suggestion_categories) {
-            List<Long> discIds = suggestionLoader.getSuggestionsForCategory(category);
-            String categoryLabel = suggestionLoader.getLabelForCategory(category);
-            List<DiscSuggestionDto> discSuggestionDtos = discService.getDiscSuggestionDtosByIds(discIds);
-
-            BagSuggestionDto bagSuggestionDto = new BagSuggestionDto(categoryLabel, discSuggestionDtos);
+            List<DiscSuggestionDto> discSuggestionDtos = suggestionRepository.findDiscSuggestionDtosByDiscCategory(category);
+            String title = category.getTitle();
+            BagSuggestionDto bagSuggestionDto = new BagSuggestionDto(title, discSuggestionDtos);
             suggestions.add(bagSuggestionDto);
         }
 

@@ -1,6 +1,9 @@
 package com.discgolf.in_the_bag.suggestions;
 
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 public enum DiscCategory {
     UNDERSTABLE_PUTT_APPROACH,
@@ -28,6 +31,32 @@ public enum DiscCategory {
     OVERSTABLE_DRIVER;
 
 
+    public static final Map<DiscCategory, String> CATEGORY_TITLES;
+
+    static {
+        Map<DiscCategory, String> titles = new EnumMap<>(DiscCategory.class);
+        titles.put(UNDERSTABLE_FAIRWAY_7, "Understable low-speed Fairway Driver");
+        titles.put(UNDERSTABLE_FAIRWAY_9, "Understable high-speed Fairway Driver");
+        titles.put(UNDERSTABLE_DRIVER, "Understable Distance Driver");
+
+        titles.put(STABLE_PUTT_APPROACH, "Stable Putt & Approach");
+        titles.put(STABLE_MIDRANGE, "Stable Midrange");
+        titles.put(STABLE_FAIRWAY_7, "Stable low-speed Fairway Driver");
+        titles.put(STABLE_FAIRWAY_9, "Stable high-speed Fairway Driver");
+        titles.put(STABLE_DRIVER, "Stable Distance Driver");
+
+        titles.put(OVERSTABLE_APPROACH, "Overstable Approach");
+        titles.put(OVERSTABLE_MIDRANGE, "Overstable Midrange");
+        titles.put(OVERSTABLE_FAIRWAY_7, "Overstable low-speed Fairway Driver");
+        titles.put(OVERSTABLE_FAIRWAY_9, "Overstable high-speed Fairway Driver");
+        titles.put(OVERSTABLE_DRIVER, "Overstable Distance Driver");
+
+        CATEGORY_TITLES = Collections.unmodifiableMap(titles);
+    }
+
+    public String getTitle() {
+        return CATEGORY_TITLES.get(this);
+    }
 
     // Order of disc categories to check for when there are no special cases
     public static final List<DiscCategory> CHECK_ORDER_SIMPLE = List.of(

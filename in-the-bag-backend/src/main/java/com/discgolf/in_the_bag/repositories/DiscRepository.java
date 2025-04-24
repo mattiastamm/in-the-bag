@@ -40,14 +40,5 @@ public interface DiscRepository extends JpaRepository<Disc, Long> {
     """)
     Optional<DiscAutoFillBaseRecord> findDiscDetailsForCreation(@Param("discId") Long discId);
 
-    @Query("""
-    SELECT new com.discgolf.in_the_bag.suggestions.DiscSuggestionDto(
-        d.id, d.name, d.manufacturer.name, d.speed, d.glide, d.turn, d.fade
-    )
-    FROM Disc d
-    WHERE d.id IN :ids
-""")
-    List<DiscSuggestionDto> findDiscSuggestionDtosByIds(@Param("ids") List<Long> ids);
-
 }
 

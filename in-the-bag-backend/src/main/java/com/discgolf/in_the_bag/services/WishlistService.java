@@ -1,12 +1,12 @@
 package com.discgolf.in_the_bag.services;
 
-import com.discgolf.in_the_bag.models.Disc;
-import com.discgolf.in_the_bag.models.WishlistEntry;
+import com.discgolf.in_the_bag.models.Suggestion;
+import com.discgolf.in_the_bag.models.Wishlist;
+import com.discgolf.in_the_bag.models.User;
 import com.discgolf.in_the_bag.records.WishlistAddRequest;
 import com.discgolf.in_the_bag.records.WishlistDiscDto;
-import com.discgolf.in_the_bag.repositories.DiscRepository;
+import com.discgolf.in_the_bag.repositories.SuggestionRepository;
 import com.discgolf.in_the_bag.repositories.WishlistRepository;
-import com.discgolf.in_the_bag.suggestions.DiscSuggestionLoader;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,78 +26,76 @@ public class WishlistService {
     private static final Logger logger = LoggerFactory.getLogger(WishlistService.class);
 
     private final WishlistRepository wishlistRepository;
-    private final DiscSuggestionLoader discSuggestionLoader;
-    private final DiscRepository discRepository;
+    private final SuggestionRepository suggestionRepository;
 
     public List<WishlistDiscDto> getWishlistDiscs(Long userId) {
         logger.info("Attempting to fetch wishlist discs for userId={}", userId);
-
-        List<WishlistEntry> wishlist = wishlistRepository.findByUserId(userId);
-        return wishlist.stream()
-                .map(wishlistEntry -> new WishlistDiscDto(
-                        wishlistEntry.getDisc().getId(),
-                        wishlistEntry.getDisc().getName(),
-                        wishlistEntry.getDisc().getManufacturer().getName(),
-                        wishlistEntry.getDisc().getSpeed(),
-                        wishlistEntry.getDisc().getGlide(),
-                        wishlistEntry.getDisc().getTurn(),
-                        wishlistEntry.getDisc().getFade(),
-                        wishlistEntry.getDisc().getType()
-                ))
-                .toList();
+        return wishlistRepository.findWishlistDiscsByUserId(userId);
     }
 
-
     public void addToWishlist(Long userId, WishlistAddRequest addRequest) {
-        List<Long> discIds = addRequest.discIds();
-        logger.info("Attempting to add {} discs to wishlist for userId={}", discIds.size(), userId);
+        List<Long> incomingSuggestionIds = addRequest.suggestionIds();
+        logger.info("Attempting to add {} suggestions to wishlist for userId={}", incomingSuggestionIds.size(), userId);
 
-        // Validate all discIds first
-        validateDiscInSuggestionList(discIds);
+        // Optional: validate that all suggestionIds exist
+        validateDiscInSuggestionList(incomingSuggestionIds);
 
-        // Remove duplicates (already in wishlist)
-        List<Long> alreadyInWishlist = wishlistRepository.findDiscIdsByUserId(userId);
+        // Fetch already existing suggestion IDs for this user
+        Set<Long> existingSuggestionIds = wishlistRepository.findAllSuggestionIdsByUserId(userId);
 
-        List<WishlistEntry> newEntries = discIds.stream()
-                .filter(id -> !alreadyInWishlist.contains(id))
-                .map(id -> {
-                    Disc disc = discRepository.findById(id)
-                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disc not found: " + id));
+        // Filter out duplicates
+        List<Long> newSuggestionIds = incomingSuggestionIds.stream()
+                .filter(id -> !existingSuggestionIds.contains(id))
+                .toList();
 
-                    WishlistEntry entry = new WishlistEntry();
-                    entry.setUserId(userId);
-                    entry.setDisc(disc);
-                    entry.setAddedAt(LocalDateTime.now().toString());
+        if (newSuggestionIds.isEmpty()) {
+            logger.info("No new suggestions to add for userId={}", userId);
+            return;
+        }
 
-                    return entry;
-                })
+        // Fetch only the Suggestion entities that are new
+        List<Suggestion> newSuggestions = suggestionRepository.findAllById(newSuggestionIds);
+
+        // Create a User object with only the ID
+        User user = new User();
+        user.setId(userId);
+
+        // Map to Wishlist entries
+        List<Wishlist> wishlistEntries = newSuggestions.stream()
+                .map(suggestion -> Wishlist.builder()
+                        .user(user)
+                        .suggestion(suggestion)
+                        .addedAt(LocalDateTime.now().toString()) // or your date format
+                        .build())
                 .toList();
 
         // Save new entries
-        wishlistRepository.saveAll(newEntries);
-        logger.info("Added {} new discs to wishlist for userId={}", newEntries.size(), userId);
+        wishlistRepository.saveAll(wishlistEntries);
+
+        logger.info("Added {} new suggestions to wishlist for userId={}", wishlistEntries.size(), userId);
     }
+
 
     @Transactional
-    public void removeFromWishlist(Long userId, Long discId) {
-        logger.info("Attempting to delete disc={} from wishlist for userId={}", discId, userId);
+    public void removeFromWishlist(Long userId, Long suggestionId) {
+        logger.info("Attempting to delete suggestion={} from wishlist for userId={}", suggestionId, userId);
 
-        if (!wishlistRepository.existsByUserIdAndDisc_Id(userId, discId)) {
+        if (!wishlistRepository.existsByUserIdAndSuggestionId(userId, suggestionId)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
-                    "Wishlist entry for discId=" + discId + " and userId=" + userId + " does not exist."
+                    "Wishlist entry for suggestionId=" + suggestionId + " and userId=" + userId + " does not exist."
             );
         }
-        wishlistRepository.deleteByUserIdAndDisc_Id(userId, discId);
+        wishlistRepository.deleteByUserIdAndSuggestionId(userId, suggestionId);
     }
 
 
-    // Checks if all disc_ids are valid -> are listed somewhere in the disc_suggestions.json
-    private void validateDiscInSuggestionList(List<Long> discIds) {
-        Set<Long> validSuggestionIds = discSuggestionLoader.getAllSuggestionDiscIds();
+    // Checks if all suggestion_ids are valid -> are in the suggestions table
+    private void validateDiscInSuggestionList(List<Long> suggestionIds) {
+        Set<Long> validSuggestionIds = suggestionRepository.findAllIds();
 
-        if (!validSuggestionIds.containsAll(discIds)) {
-            logger.warn("Some discIds are not in the official suggestion set: {}", discIds);
+        if (!validSuggestionIds.containsAll(suggestionIds)) {
+            logger.warn("Some suggestionIds are not in the official suggestion set");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "One or more discs are not from the official suggestion list."

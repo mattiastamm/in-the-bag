@@ -1,12 +1,14 @@
 package com.discgolf.in_the_bag.records;
 
 public record WishlistDiscDto(
-        Long id,
+        Long discId,
+        Long suggestionId,
         String name,
         String manufacturer,
         Float speed,
         Float glide,
         Float turn,
         Float fade,
-        String type
+        String category,
+        String stability
 ) {}

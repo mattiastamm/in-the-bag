@@ -28,16 +28,16 @@ public class WishlistController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> addToWishlist(@RequestBody WishlistAddRequest wishlistRequest) {
+    public ResponseEntity<Void> addToWishlist(@RequestBody WishlistAddRequest wishlistAddRequest) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
-        wishlistService.addToWishlist(userId, wishlistRequest);
+        wishlistService.addToWishlist(userId, wishlistAddRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/remove")
-    public ResponseEntity<Void> removeFromWishlist(@RequestParam Long discId) {
+    public ResponseEntity<Void> removeFromWishlist(@RequestParam Long suggestionId) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
-        wishlistService.removeFromWishlist(userId, discId);
+        wishlistService.removeFromWishlist(userId, suggestionId);
         return ResponseEntity.noContent().build();
     }
 }
