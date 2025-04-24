@@ -1,66 +1,124 @@
 @import "tailwindcss";
 
 @layer utilities {
+  /* Inventory custom grid */
   @media (max-width: 440px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(1, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 440px) and (max-width: 640px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 640px) and (max-width: 830px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 830px) and (max-width: 1025px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 1025px) and (max-width: 1220px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 1220px) and (max-width: 1420px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 1420px) and (max-width: 1620px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(7, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 1620px) and (max-width: 1775px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(8, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 1775px) {
-    .custom-grid {
+    .inventory-grid {
       display: grid;
       grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+  }
+
+  /* EditBagMocal custom grid */
+  @media (max-width: 440px) {
+    .editBagModal-grid {
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 440px) and (max-width: 670px) {
+    .editBagModal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 670px) and (max-width: 880px) {
+    .editBagModal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 880px) and (max-width: 1100px) {
+    .editBagModal-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) and (max-width: 1300px) {
+    .editBagModal-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1300px) and (max-width: 1500px) {
+    .editBagModal-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1500px) and (max-width: 1700px) {
+    .editBagModal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1700px) {
+    .editBagModal-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
     }
   }
 }

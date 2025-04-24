@@ -7,11 +7,11 @@ export default function SuggestionModal({ suggestions, onClose }) {
   const [selectedDiscs, setSelectedDiscs] = useState(new Set());
 
   const totalPages = suggestions.length;
-  const current = suggestions[pageIndex];
+  const currentCategory = suggestions[pageIndex];
 
-  const toggleDisc = (discId) => {
+  const toggleDisc = (suggestionId) => {
     const updated = new Set(selectedDiscs);
-    updated.has(discId) ? updated.delete(discId) : updated.add(discId);
+    updated.has(suggestionId) ? updated.delete(suggestionId) : updated.add(suggestionId);
     setSelectedDiscs(updated);
   };
 
@@ -39,6 +39,7 @@ export default function SuggestionModal({ suggestions, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-lg p-6 max-w-4xl w-full shadow-lg">
         {totalPages === 0 ? (
+          // No suggestions block (unchanged)
           <>
             <h2 className="text-2xl font-bold text-center mb-4">🥏 No Suggestions Needed!</h2>
             <p className="text-gray-700 text-center mb-2">
@@ -53,12 +54,10 @@ export default function SuggestionModal({ suggestions, onClose }) {
                 utility shots, or strong headwinds.
               </li>
               <li>
-                <strong>Plastic variety</strong> – Different plastics can affect grip and flight. Consider trying your
-                favorite molds in premium or baseline plastic.
+                <strong>Plastic variety</strong> – Try your favorite molds in premium or baseline plastic.
               </li>
               <li>
-                <strong>Practice backups</strong> – It’s always helpful to have duplicates of your go-to discs for
-                field work or in case of loss.
+                <strong>Practice backups</strong> – Always helpful to have duplicates of your go-to discs.
               </li>
             </ul>
 
@@ -76,18 +75,20 @@ export default function SuggestionModal({ suggestions, onClose }) {
             {/* Title */}
             <h2 className="text-2xl text-center mb-6">
               <p className="font-bold">Suggestion {pageIndex + 1}</p>
-              <p className="font-normal mb-5">{current.categoryLabel}</p>
-              <p className="text-lg text-gray-600 italic">Select the discs you want to add to your Wishlist</p>
+              <p className="font-normal mb-5">{currentCategory.categoryTitle}</p>
+              <p className="text-lg text-gray-600 italic">
+                Select the discs you want to add to your Wishlist
+              </p>
             </h2>
 
             {/* Disc Cards */}
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              {current.discs.map((disc) => {
-                const isSelected = selectedDiscs.has(disc.id);
+              {currentCategory.discSuggestionDtos.map((disc) => {
+                const isSelected = selectedDiscs.has(disc.suggestionId);
                 return (
                   <div
-                    key={disc.id}
-                    onClick={() => toggleDisc(disc.id)}
+                    key={disc.suggestionId}
+                    onClick={() => toggleDisc(disc.suggestionId)}
                     className={`cursor-pointer border-4 rounded-lg transition-transform transform hover:scale-105 ${
                       isSelected ? "border-blue-500" : "border-transparent"
                     }`}

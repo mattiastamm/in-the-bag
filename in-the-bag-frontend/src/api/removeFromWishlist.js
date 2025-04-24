@@ -1,7 +1,7 @@
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
-export async function removeFromWishlist(discId) {
-    const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/wishlist/remove?discId=${discId}`, {
+export async function removeFromWishlist(suggestionId) {
+    const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/wishlist/remove?suggestionId=${suggestionId}`, {
       method: "DELETE",
     });
   
