@@ -1,7 +1,7 @@
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 export async function getUserProfile() {
-  const apiUrl = `${import.meta.env.VITE_API_URL}/api/users/profile`;
+  const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/users/profile`;
 
   try {
     const response = await fetchWithAuth(apiUrl, {

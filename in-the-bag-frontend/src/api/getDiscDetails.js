@@ -1,7 +1,7 @@
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 export async function getDiscDetails(userDiscId) {
-  const apiUrl = `${import.meta.env.VITE_API_URL}/api/user-discs/details/${userDiscId}`;
+  const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/user-discs/${userDiscId}/details`;
   console.log("Fetching disc details from:", apiUrl);
 
   try {

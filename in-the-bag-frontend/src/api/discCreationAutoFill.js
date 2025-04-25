@@ -3,7 +3,7 @@ import { fetchWithAuth } from "../utils/fetchWithAuth";
 export async function discCreationAutoFill(discId) {
   try {
     const response = await fetchWithAuth(
-      `${import.meta.env.VITE_API_URL}/api/discs/${discId}/details`,
+      `${import.meta.env.VITE_API_URL}/api/v1/discs/${discId}/details`,
       { method: "GET" }
     );
 

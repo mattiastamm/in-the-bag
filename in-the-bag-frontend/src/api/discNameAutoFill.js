@@ -1,11 +1,11 @@
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
-export async function discNameAutoFill(query) {
-  if (!query.trim()) return [];
+export async function discNameAutoFill(name) {
+  if (!name.trim()) return [];
 
   try {
     const response = await fetchWithAuth(
-      `${import.meta.env.VITE_API_URL}/api/discs/search?query=${encodeURIComponent(query)}`,
+      `${import.meta.env.VITE_API_URL}/api/v1/discs?name=${encodeURIComponent(name)}`,
       { method: "GET" }
     );
 
@@ -19,3 +19,4 @@ export async function discNameAutoFill(query) {
     return [];
   }
 }
+

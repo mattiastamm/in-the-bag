@@ -2,9 +2,9 @@ import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 export async function changePassword({ currentPassword, newPassword }) {
   const response = await fetchWithAuth(
-    `${import.meta.env.VITE_API_URL}/api/users/change-password`,
+    `${import.meta.env.VITE_API_URL}/api/users/v1/password`,
     {
-      method: "PATCH",
+      method: "PUT",
       body: JSON.stringify({ currentPassword, newPassword }),
     }
   );

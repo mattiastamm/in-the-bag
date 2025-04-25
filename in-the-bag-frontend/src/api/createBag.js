@@ -1,7 +1,7 @@
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 export async function createBag({ title, comment }) {
-  const apiUrl = `${import.meta.env.VITE_API_URL}/api/bags`;
+  const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/bags`;
 
   try {
     const response = await fetchWithAuth(apiUrl, {

@@ -1,7 +1,7 @@
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 export async function getWishlist() {
-  const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/wishlist`, {
+  const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/v1/wishlist`, {
     method: "GET",
   });
 
