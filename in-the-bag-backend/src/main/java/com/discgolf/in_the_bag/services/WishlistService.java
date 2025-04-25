@@ -29,7 +29,7 @@ public class WishlistService {
     private final SuggestionRepository suggestionRepository;
 
     public List<WishlistDiscDto> getWishlistDiscs(Long userId) {
-        logger.info("Attempting to fetch wishlist discs for userId={}", userId);
+        logger.info("Fetching wishlist discs for userId={}", userId);
         return wishlistRepository.findWishlistDiscsByUserId(userId);
     }
 

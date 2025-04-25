@@ -37,11 +37,11 @@ public class UserService {
     private final JwtService jwtService;
 
     public LoginResponse signup(SignupRequest request) {
-        logger.info("📥 Signup attempt for email: {}", request.email());
+        logger.info("Signup attempt for email: {}", request.email());
 
         Optional<User> existingUser = userRepository.findByEmail(request.email());
         if (existingUser.isPresent()) {
-            logger.warn("⚠️ Signup failed: Email already in use -> {}", request.email());
+            logger.warn("Signup failed: Email already in use -> {}", request.email());
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already in use.");
         }
 
@@ -51,31 +51,31 @@ public class UserService {
         newUser.setCreatedAt(LocalDateTime.now().toString());
 
         userRepository.save(newUser);
-        logger.info("✅ New user registered: {}", newUser.getEmail());
+        logger.info("New user registered: {}", newUser.getEmail());
 
         String token = jwtService.generateToken(newUser.getId(), newUser.getEmail());
-        logger.debug("🔐 JWT generated for userId={}", newUser.getId());
+        logger.debug("JWT generated for userId={}", newUser.getId());
 
         return new LoginResponse(token, newUser.getId());
     }
 
     public LoginResponse authenticateUser(LoginRequest request) {
-        logger.info("🔐 Login attempt for email: {}", request.email());
+        logger.info("Login attempt for email: {}", request.email());
 
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> {
-                    logger.warn("❌ Login failed: User not found -> {}", request.email());
+                    logger.warn("Login failed: User not found -> {}", request.email());
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
                 });
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            logger.warn("❌ Login failed: Invalid credentials for email {}", request.email());
+            logger.warn("Login failed: Invalid credentials for email {}", request.email());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
         String jwt = jwtService.generateToken(user.getId(), user.getEmail());
-        logger.info("✅ Login successful for userId={}", user.getId());
-        logger.debug("🔐 JWT generated for userId={}", user.getId());
+        logger.info("Login successful for userId={}", user.getId());
+        logger.debug("JWT generated for userId={}", user.getId());
 
         return new LoginResponse(jwt, user.getId());
     }
@@ -114,24 +114,29 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
+        logger.info("Attempting to change password for user {}", user.getEmail());
+
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Current password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+        logger.info("Password changed successfully for user {}", user.getEmail());
     }
 
     public void deleteAccount(Long userId, String password) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
+        logger.info("Attempting to delete account for user {}", user.getEmail());
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Current password is incorrect");
         }
 
-        logger.info("Deleting user with ID {}", userId);
         userRepository.delete(user); // This triggers cascading deletions by the DB
+        logger.info("User {} deleted successfully", user.getEmail());
     }
 
 }

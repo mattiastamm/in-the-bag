@@ -214,7 +214,7 @@ public class BagService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bag with id=" + bagId + " not found"));
 
         if (!bag.getUserId().equals(userId)) {
-            logger.warn("❌ Bag with id={} does not belong to user with id={}", bagId, userId);
+            logger.warn("Bag with id={} does not belong to user with id={}", bagId, userId);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this bag");
         }
     }
@@ -224,7 +224,7 @@ public class BagService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bag with id=" + bagId + " not found"));
 
         if (!bag.getUserId().equals(userId)) {
-            logger.warn("❌ Bag with id={} does not belong to user with id={}", bagId, userId);
+            logger.warn("Bag with id={} does not belong to user with id={}", bagId, userId);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this bag");
         }
 
