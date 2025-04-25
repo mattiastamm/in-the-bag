@@ -2,14 +2,17 @@ import WishlistCard from "../components/WishlistCard";
 import { useQuery } from "@tanstack/react-query";
 import { getWishlist } from "../api/getWishlist";
 import { useState, useEffect } from "react";
+import { removeFromWishlist } from "../api/removeFromWishlist";
+import AddNewUserDiscModal from "../components/AddNewUserDiscModal";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import 'swiper/css/navigation';
 
+
 export default function Wishlist() {
-  const { data: wishlistDiscs, isLoading, error } = useQuery({
+  const { data: wishlistDiscs, isLoading, error, refetch } = useQuery({
     queryKey: ["wishlistDiscs"],
     queryFn: getWishlist,
   });
@@ -25,6 +28,7 @@ export default function Wishlist() {
 
   const [currentSlide, setCurrentSlide] = useState(1);
   const [slidesPerView, setSlidesPerView] = useState(getCurrentSlidesPerView());
+  const [transferDisc, setTransferDisc] = useState(null);
 
   // Add useEffect to update slidesPerView on window resize
   useEffect(() => {
@@ -39,16 +43,50 @@ export default function Wishlist() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load wishlist.</p>;
 
+
+  const handleAddToInventory = (disc) => {
+    setTransferDisc(disc); // full disc object
+  };
+
+  const handleRemove = async (disc) => {
+    const confirmed = window.confirm(`Are you sure you want to remove ${disc.name} from your wishlist?`);
+    if (!confirmed) return;
+
+    try {
+      const success = await removeFromWishlist(disc.suggestionId);
+      if (!success) throw new Error();
+      await refetch();
+    } catch (error) {
+      console.error("Failed to remove disc:", error);
+      alert("Something went wrong when removing the disc.");
+    }
+  };
+
+  const handleCloseTransferModal = async (wasAdded) => {
+    if (wasAdded && transferDisc) {
+      try {
+        await removeFromWishlist(transferDisc.suggestionId);
+        await refetch();
+      } catch (error) {
+        console.error("Failed to remove after transfer:", error);
+      }
+    }
+    setTransferDisc(null);
+  };
+
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-300px)] py-8">
       {/* Text about the page */}
-      <div className="py-4">
-        <p className="text-center text-gray-700 text-xl max-w-3xl mx-auto mb-8">
-          You have <span className="font-semibold">{wishlistDiscs.length}</span> disc{wishlistDiscs.length !== 1 && "s"} in your Wishlist. 
-          Press <span className="font-medium">"Add to Inv"</span> to add them directly to your Inventory and 
-          <span className="font-medium"> "Remove"</span> to remove them from your Wishlist.
-        </p>
-      </div>
+      {wishlistDiscs.length > 0 && (
+        <div className="pb-10">
+          <p className="text-center text-gray-700 text-xl max-w-3xl mx-auto mb-8">
+            You have <span className="font-semibold">{wishlistDiscs.length}</span> disc{wishlistDiscs.length !== 1 && "s"} in your Wishlist. 
+            Press <span className="font-medium">"Add to Inv"</span> to add them directly to your Inventory and
+            <span className="font-medium"> "Remove"</span> to remove them from your Wishlist.
+          </p>
+        </div>
+      )}
 
       {/* Carousel with fixed, responsive heights */}
       <div
@@ -84,8 +122,12 @@ export default function Wishlist() {
             }}
           >
             {wishlistDiscs.map((disc) => (
-              <SwiperSlide key={disc.suggestionId} className="h-full flex items-center justify-center p-4">
-                <WishlistCard {...disc} />
+              <SwiperSlide key={disc.suggestionId} className="h-full flex items-center justify-center p-4 cursor-default">
+                <WishlistCard
+                  {...disc}
+                  onAdd={() => handleAddToInventory(disc)}
+                  onRemove={() => handleRemove(disc)}
+                />
               </SwiperSlide>
             ))}
           </Swiper>
@@ -101,6 +143,14 @@ export default function Wishlist() {
         <div className="mt-8 text-gray-600 text-lg font-medium">
           Page {currentSlide} of {wishlistDiscs.length}
         </div>
+      )}
+
+      {transferDisc && (
+        <AddNewUserDiscModal
+          preSelectedDiscId={transferDisc.discId}
+          onClose={(wasAdded = false) => handleCloseTransferModal(wasAdded)}
+          refetch={refetch}
+        />
       )}
     </div>
   );
