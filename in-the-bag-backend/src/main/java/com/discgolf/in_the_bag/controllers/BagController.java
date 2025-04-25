@@ -1,7 +1,6 @@
 package com.discgolf.in_the_bag.controllers;
 
 import com.discgolf.in_the_bag.models.Bag;
-import com.discgolf.in_the_bag.records.BagRecord;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
 import com.discgolf.in_the_bag.records.CreateBagRequest;
 import com.discgolf.in_the_bag.records.UpdateBagDiscsRequest;
@@ -16,19 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bags")
+@RequestMapping("/api/v1/bags")
 @RequiredArgsConstructor
 public class BagController {
 
     private final BagService bagService;
     private final HttpServletRequest request;
     private final JwtUtil jwtUtil;
-
-    @GetMapping("/by-userDisc/{userDiscId}")
-    public List<BagRecord> getBagsByUserDiscId(@PathVariable Long userDiscId) {
-        Long userId = jwtUtil.extractUserIdFromRequest(request);
-        return bagService.getBagsByUserDiscId(userId, userDiscId);
-    }
 
     @GetMapping
     public ResponseEntity<List<BagWithDiscsDto>> getBagsWithDiscs() {
@@ -44,17 +37,20 @@ public class BagController {
     }
 
 
-    @PutMapping("/update-discs")
-    public ResponseEntity<Void> updateBagDiscs(@RequestBody UpdateBagDiscsRequest updateBagDiscsRequest) {
+    @PutMapping("/{bagId}")
+    public ResponseEntity<Void> updateBagDiscs(
+            @PathVariable Long bagId,
+            @RequestBody UpdateBagDiscsRequest updateBagDiscsRequest
+    ) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
-        bagService.updateBagDiscs(userId, updateBagDiscsRequest.bagId(), updateBagDiscsRequest.userDiscIds());
+        bagService.updateBagDiscs(userId, bagId, updateBagDiscsRequest.userDiscIds());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/remove-disc")
+    @DeleteMapping("/{bagId}/discs/{userDiscId}")
     public ResponseEntity<Void> removeDiscFromBag(
-            @RequestParam Long userDiscId,
-            @RequestParam Long bagId
+            @PathVariable Long bagId,
+            @PathVariable Long userDiscId
     ) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
         bagService.removeDiscFromBag(userId, userDiscId, bagId);

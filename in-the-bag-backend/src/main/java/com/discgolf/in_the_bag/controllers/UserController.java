@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -25,7 +25,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserProfile(userId));
     }
 
-    @PatchMapping("/change-password")
+    @PutMapping("/password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
         userService.changePassword(userId, changePasswordRequest);

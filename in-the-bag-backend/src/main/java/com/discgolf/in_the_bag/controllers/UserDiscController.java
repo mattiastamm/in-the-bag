@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user-discs")
+@RequestMapping("/api/v1/user-discs")
 public class UserDiscController {
     private final UserDiscService userDiscService;
     private final HttpServletRequest request;
@@ -29,7 +29,7 @@ public class UserDiscController {
     }
 
     // ✅ GET detailed info for specific UserDisc
-    @GetMapping("/details/{userDiscId}")
+    @GetMapping("/{userDiscId}/details")
     public DiscDetailsRecord getUserDiscDetails( @PathVariable Long userDiscId ) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
         return userDiscService.getDiscDetails(userId, userDiscId);
@@ -42,7 +42,7 @@ public class UserDiscController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDisc);
     }
 
-    // ✅ PATCH request to update customizable parts for a user's disc
+    // ✅ PATCH request to update customizable parts of a user's disc
     @PatchMapping("/{userDiscId}")
     public ResponseEntity<DiscDetailsRecord> updateUserDisc(
             @PathVariable Long userDiscId,

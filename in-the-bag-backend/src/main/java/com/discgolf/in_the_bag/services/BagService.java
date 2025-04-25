@@ -4,7 +4,6 @@ import com.discgolf.in_the_bag.models.Bag;
 import com.discgolf.in_the_bag.models.DiscInBag;
 import com.discgolf.in_the_bag.models.Plastic;
 import com.discgolf.in_the_bag.models.UserDisc;
-import com.discgolf.in_the_bag.records.BagRecord;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
 import com.discgolf.in_the_bag.records.UserDiscDto;
 import com.discgolf.in_the_bag.repositories.BagRepository;
@@ -33,15 +32,6 @@ public class BagService {
     private final UserDiscRepository userDiscRepository;
 
     private final UserDiscService userDiscService;
-
-    public List<BagRecord> getBagsByUserDiscId(Long userId, Long userDiscId) {
-        logger.info("Fetching bags containing userDiscId {}", userDiscId);
-        userDiscService.validateUserDiscOwnership(userId, userDiscId);
-
-        List<BagRecord> bags = bagRepository.findBagsByUserDiscId(userDiscId);
-        logger.info("Found {} bags for userDiscId {}", bags.size(), userDiscId);
-        return bags;
-    }
 
     public List<BagWithDiscsDto> getBagsWithDiscsForUser(Long userId) {
         logger.info("Fetching all bags with discs for userId {}", userId);

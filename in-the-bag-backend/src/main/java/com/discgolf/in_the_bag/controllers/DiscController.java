@@ -12,15 +12,15 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/discs")
+@RequestMapping("/api/v1/discs")
 public class DiscController {
 
     private final DiscRepository discRepository;
     private final DiscService discService;
 
-    @GetMapping("/search")
-    public ResponseEntity<List<DiscSearchRecord>> searchDiscs(@RequestParam String query) {
-        return ResponseEntity.ok(discRepository.searchDiscsByName(query));
+    @GetMapping
+    public ResponseEntity<List<DiscSearchRecord>> searchDiscs(@RequestParam String name) {
+        return ResponseEntity.ok(discRepository.searchDiscsByName(name));
     }
 
     @GetMapping("/{discId}/details")

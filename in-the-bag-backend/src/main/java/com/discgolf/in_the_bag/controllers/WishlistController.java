@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/wishlist")
+@RequestMapping("/api/v1/wishlist")
 public class WishlistController {
 
     private final WishlistService wishlistService;
@@ -27,15 +27,15 @@ public class WishlistController {
         return wishlistService.getWishlistDiscs(userId);
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<Void> addToWishlist(@RequestBody WishlistAddRequest wishlistAddRequest) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
         wishlistService.addToWishlist(userId, wishlistAddRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/remove")
-    public ResponseEntity<Void> removeFromWishlist(@RequestParam Long suggestionId) {
+    @DeleteMapping("/{suggestionId}")
+    public ResponseEntity<Void> removeFromWishlist(@PathVariable Long suggestionId) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
         wishlistService.removeFromWishlist(userId, suggestionId);
         return ResponseEntity.noContent().build();
