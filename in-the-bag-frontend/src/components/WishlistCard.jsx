@@ -11,18 +11,18 @@ export default function WishlistCard({
   onRemove,
 }) {
   return (
-    <div className="w-full border-2 border-gray-400 shadow-md rounded-lg h-full flex flex-col justify-between transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-600 hover:bg-gray-100 p-4">
+    <div className="w-full border-2 border-gray-400 shadow-md rounded-lg h-full flex flex-col justify-between transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-600 hover:bg-gray-100 pb-3 pt-2">
       
       {/* Manufacturer & Name */}
-      <div className="text-center mb-2">
-        <p className="text-sm text-gray-600">{manufacturer}</p>
-        <h3 className="text-xl font-bold">{name}</h3>
+      <div className="text-center mb-3">
+        <p className="text-lg text-gray-600">{manufacturer}</p>
+        <h3 className="text-2xl font-bold">{name}</h3>
       </div>
 
       {/* Bigger disc visual */}
-      <div className="flex items-center justify-center mb-4">
+      <div className="flex-grow flex items-center justify-center mb-2">
         <div
-          className="w-28 h-28 md:w-32 md:h-32 rounded-full border border-gray-300"
+          className="w-full aspect-square rounded-full border border-gray-300 max-w-[10rem]"
           style={{ backgroundColor: "#89CFF0" }}
         />
       </div>
@@ -42,13 +42,13 @@ export default function WishlistCard({
       <div className="flex gap-2 justify-center">
         <button
           onClick={onAdd}
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition text-sm cursor-pointer"
+          className="w-32 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition text-sm cursor-pointer"
         >
-          Add to Inventory
+          Add to Inv
         </button>
         <button
           onClick={onRemove}
-          className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition text-sm cursor-pointer"
+          className="w-32 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition text-sm cursor-pointer"
         >
           Remove
         </button>
