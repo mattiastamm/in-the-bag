@@ -25,7 +25,14 @@ export default function SignupModal({ onClose, onSignupSuccess, switchToLogin })
       onSignupSuccess?.();
       onClose();
     } catch (err) {
-      setError(err.message || "Signup failed.");
+      console.error("Signup error:", err);
+    
+      try {
+        const data = await err.response.json();
+        setError(data.message || "Signup failed.");
+      } catch {
+        setError(err.message || "Signup failed.");
+      }
     }
   };
 

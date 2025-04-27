@@ -5,16 +5,9 @@ export default function AddNewBagModal({ onClose, refetch }) {
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
 
-  const MAX_TITLE_LENGTH = 15;
-
   const handleSave = async () => {
     if (!title.trim()) {
       alert("Please enter a bag name");
-      return;
-    }
-
-    if (title.length > MAX_TITLE_LENGTH) {
-      alert(`Bag name can't exceed ${MAX_TITLE_LENGTH} characters.`);
       return;
     }
 

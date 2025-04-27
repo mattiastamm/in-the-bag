@@ -106,14 +106,14 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
     try {
       const success = await addNewDisc({ ...formData });
       if (success) {
-        refetch(); // Refresh inventory after adding disc
-        onClose(true);  // Close modal if successful
+        refetch();
+        onClose(true);
       } else {
-        alert("Failed to add the disc.");
+        setErrorMessage("Failed to add the disc."); // Show this instead of alert
       }
     } catch (error) {
       console.error("Error adding disc:", error);
-      alert("An error occurred while adding the disc.");
+      setErrorMessage(error.message || "An error occurred while adding the disc."); // show backend message
     }
   };
 
