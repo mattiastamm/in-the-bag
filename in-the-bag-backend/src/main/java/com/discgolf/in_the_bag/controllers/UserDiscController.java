@@ -46,7 +46,7 @@ public class UserDiscController {
     @PatchMapping("/{userDiscId}")
     public ResponseEntity<DiscDetailsRecord> updateUserDisc(
             @PathVariable Long userDiscId,
-            @RequestBody UpdateDiscRequest updateDiscRequest
+            @RequestBody @Valid UpdateDiscRequest updateDiscRequest
     ) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
         boolean isUpdated = userDiscService.updateDisc(userId, userDiscId, updateDiscRequest);

@@ -7,6 +7,7 @@ import com.discgolf.in_the_bag.records.UpdateBagDiscsRequest;
 import com.discgolf.in_the_bag.services.BagService;
 import com.discgolf.in_the_bag.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class BagController {
     }
 
     @PostMapping
-    public ResponseEntity<Bag> createBag(@RequestBody CreateBagRequest createBagRequest) {
+    public ResponseEntity<Bag> createBag(@RequestBody @Valid CreateBagRequest createBagRequest) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
         Bag newBag = bagService.createBag(userId, createBagRequest.title(), createBagRequest.comment());
         return ResponseEntity.status(HttpStatus.CREATED).body(newBag);

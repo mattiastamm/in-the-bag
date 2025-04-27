@@ -6,6 +6,7 @@ import com.discgolf.in_the_bag.records.UserProfileDto;
 import com.discgolf.in_the_bag.services.UserService;
 import com.discgolf.in_the_bag.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<String> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
         userService.changePassword(userId, changePasswordRequest);
         return ResponseEntity.ok("Password updated successfully");

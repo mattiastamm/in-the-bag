@@ -79,6 +79,17 @@ public class BagService {
     public Bag createBag(Long userId, String title, String comment) {
         logger.info("Creating new bag for user={} with title={} and comment={}", userId, title, comment);
 
+        // Fetch how many bags the user already has
+        int bagCount = bagRepository.findByUserId(userId).size();
+
+        // Business rule: Max 5 bags
+        if (bagCount >= 5) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Maximum of 5 bags allowed per user"
+            );
+        }
+
         Bag bag = new Bag();
         bag.setUserId(userId);
         bag.setTitle(title);
