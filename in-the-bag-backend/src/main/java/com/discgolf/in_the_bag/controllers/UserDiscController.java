@@ -49,7 +49,7 @@ public class UserDiscController {
             @RequestBody @Valid UpdateDiscRequest updateDiscRequest
     ) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
-        boolean isUpdated = userDiscService.updateDisc(userId, userDiscId, updateDiscRequest);
+        boolean isUpdated = userDiscService.updateUserDisc(userId, userDiscId, updateDiscRequest);
 
         if (isUpdated) {
             return ResponseEntity.noContent().build(); // ✅ 204 No Content (Success)

@@ -104,7 +104,7 @@ public class BagService {
     public void removeDiscFromBag(Long userId, Long userDiscId, Long bagId) {
         logger.info("Attempting to remove userDisc={} from bag={} for user={}", userDiscId, bagId, userId);
 
-        userDiscService.validateUserDiscOwnership(userId, userDiscId);
+        UserDisc userDisc = userDiscService.validateUserDiscOwnershipAndReturn(userId, userDiscId);
         validateBagOwnership(userId, bagId);
 
         boolean exists = discInBagRepository.existsByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId);
@@ -120,8 +120,6 @@ public class BagService {
         // Check if the disc is still in any bag
         boolean stillInBags = discInBagRepository.existsByUserDisc_UserDiscId(userDiscId);
         if (!stillInBags) {
-            UserDisc userDisc = userDiscRepository.findById(userDiscId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc not found: " + userDiscId));
             userDisc.setInUse(false);
             userDiscRepository.save(userDisc);
             logger.info("Set in_use=false for user_disc_id={}", userDiscId);
@@ -131,10 +129,6 @@ public class BagService {
     @Transactional
     public void updateBagDiscs(Long userId, Long bagId, List<Long> updatedUserDiscIds) {
         logger.info("Updating discs in bag with id={} to match user selection: {}", bagId, updatedUserDiscIds);
-
-        for (Long userDiscId : updatedUserDiscIds) {
-            userDiscService.validateUserDiscOwnership(userId, userDiscId);
-        }
 
         // validate the request
         Bag bag = validateBagOwnershipAndReturn(userId, bagId);
@@ -159,12 +153,10 @@ public class BagService {
         // Deal with added discs
         for (Long userDiscId : toAdd) {
             logger.debug("Adding userDiscId={} to bagId={}", userDiscId, bagId);
-
-            UserDisc userDisc = userDiscRepository.findById(userDiscId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc not found: " + userDiscId));
-
             DiscInBag entry = new DiscInBag();
-            entry.setUserDisc(userDisc);
+            UserDisc validatedUserDisc = userDiscRepository.findById(userDiscId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc not found: " + userDiscId));
+            entry.setUserDisc(validatedUserDisc);
             entry.setBag(bag);
             discInBagRepository.save(entry);
         }
@@ -172,10 +164,8 @@ public class BagService {
         // Deal with removed discs
         for (Long userDiscId : toRemove) {
             logger.debug("Removing userDiscId={} from bagId={}", userDiscId, bagId);
-
             UserDisc userDisc = userDiscRepository.findById(userDiscId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc not found: " + userDiscId));
-
             discInBagRepository.deleteByUserDiscAndBag(userDisc, bag);
         }
 

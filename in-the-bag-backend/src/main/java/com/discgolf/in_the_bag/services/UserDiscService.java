@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,7 @@ public class UserDiscService {
         // Fetch associated bags
         List<BagRecord> bags = bagRepository.findBagsByUserDiscId(userDiscId);
 
-        // ✅ Fetch the plastics for the disc’s manufacturer
+        // Fetch the plastics for the disc’s manufacturer
         List<PlasticRecord> plastics = userDiscRepository.findPlasticsByUserDiscId(userDiscId);
 
         // Merge into `DiscDetailsRecord`
@@ -90,13 +89,8 @@ public class UserDiscService {
         Disc disc = discRepository.findById(request.discId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disc not found: " + request.discId()));
 
-        // Plastic validation - cannot have both existing plasticId and customPlastic
-        if (request.plasticId() != null && request.customPlastic() != null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Only one of plasticId or customPlastic should be provided."
-            );
-        }
+        // validate plastics
+        validatePlasticChoice(request.plasticId(), request.customPlastic());
 
         // if plasticId exists, we find the corresponding plastic; else we use the customPlastic string
         Plastic plastic = null;
@@ -128,28 +122,24 @@ public class UserDiscService {
     }
 
     @Transactional
-    public boolean updateDisc(Long userId, Long userDiscId, UpdateDiscRequest request) {
+    public boolean updateUserDisc(Long userId, Long userDiscId, UpdateDiscRequest request) {
         logger.info("Updating userDiscId={}", userDiscId);
 
         // validate the request
         UserDisc userDisc = validateUserDiscOwnershipAndReturn(userId, userDiscId);
 
-        // ✅ Update only provided fields
-        if (request.customSpeed() != null) userDisc.setCustomSpeed(request.customSpeed());
-        if (request.customGlide() != null) userDisc.setCustomGlide(request.customGlide());
-        if (request.customTurn() != null) userDisc.setCustomTurn(request.customTurn());
-        if (request.customFade() != null) userDisc.setCustomFade(request.customFade());
-        if (request.color() != null) userDisc.setColor(request.color());
-        if (request.weight() != null && request.weight() >= 1) userDisc.setWeight(request.weight());
+        // Update fields
+        userDisc.setCustomSpeed(request.customSpeed());
+        userDisc.setCustomGlide(request.customGlide());
+        userDisc.setCustomTurn(request.customTurn());
+        userDisc.setCustomFade(request.customFade());
+        userDisc.setColor(request.color());
+        userDisc.setWeight(request.weight());
         userDisc.setComment(request.comment());
 
-        // ✅ Update plastic if changed
-        if (request.plasticId() != null && request.customPlastic() != null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Only one of plasticId or customPlastic should be provided."
-            );
-        }
+        // Validate & update plastic if changed
+        validatePlasticChoice(request.plasticId(), request.customPlastic());
+
         if (request.plasticId() != null) {
             Plastic newPlastic = plasticRepository.findPlasticEntityById(request.plasticId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plastic not found: " + request.plasticId()));
@@ -161,7 +151,7 @@ public class UserDiscService {
             userDisc.setCustomPlastic(request.customPlastic());
         }
 
-        // ✅ Save updated disc
+        // Save updated disc
         userDiscRepository.save(userDisc);
         return true;
     }
@@ -174,7 +164,7 @@ public class UserDiscService {
         return true; // ✅ Successful deletion
     }
 
-    // NB! No checks if the userDiscId is valid, needs to be checked before.
+    // NB! No need to check if userDiscId is valid, done before
     public void setInUseStatus(Long userDiscId, boolean inUse) {
         logger.info("Setting in_use value for user userDiscId={} to inUse={}", userDiscId, inUse);
         userDiscRepository.updateInUseStatus(userDiscId, inUse);
@@ -214,5 +204,22 @@ public class UserDiscService {
 
         return userDisc;
     }
+
+    private void validatePlasticChoice(Long plasticId, String customPlastic) {
+        if (plasticId != null && customPlastic != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Only one of plasticId or customPlastic should be provided."
+            );
+        }
+
+        if (plasticId == null && customPlastic == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "You must provide either a plasticId or a customPlastic."
+            );
+        }
+    }
+
 
 }
