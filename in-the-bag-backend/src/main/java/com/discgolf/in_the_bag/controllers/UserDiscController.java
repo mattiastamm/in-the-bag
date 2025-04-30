@@ -61,13 +61,8 @@ public class UserDiscController {
     @DeleteMapping("/{userDiscId}")
     public ResponseEntity<Void> deleteUserDisc(@PathVariable Long userDiscId) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
-        boolean deleted = userDiscService.deleteDisc(userId, userDiscId);
-
-        if (deleted) {
-            return ResponseEntity.noContent().build(); // ✅ 204 No Content
-        } else {
-            return ResponseEntity.notFound().build(); // ❌ 404 Not Found
-        }
+        userDiscService.deleteUserDisc(userId, userDiscId);
+        return ResponseEntity.noContent().build();
     }
 
 }

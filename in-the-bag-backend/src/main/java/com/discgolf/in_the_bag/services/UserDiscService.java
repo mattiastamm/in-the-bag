@@ -156,12 +156,10 @@ public class UserDiscService {
         return true;
     }
 
-    public boolean deleteDisc(Long userId, Long userDiscId) {
+    public void deleteUserDisc(Long userId, Long userDiscId) {
         logger.info("Attempting to delete userDiscId={}", userDiscId);
         validateUserDiscOwnership(userId, userDiscId);
-
         userDiscRepository.deleteById(userDiscId); // ✅ Delete disc
-        return true; // ✅ Successful deletion
     }
 
     // NB! No need to check if userDiscId is valid, done before

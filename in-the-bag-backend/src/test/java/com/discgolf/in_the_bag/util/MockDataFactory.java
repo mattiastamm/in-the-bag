@@ -1,10 +1,13 @@
 package com.discgolf.in_the_bag.util;
 
 import com.discgolf.in_the_bag.models.*;
+import com.discgolf.in_the_bag.records.BagWithDiscsDto;
+import com.discgolf.in_the_bag.records.UserDiscDto;
 import com.discgolf.in_the_bag.records.WishlistDiscDto;
 import com.discgolf.in_the_bag.suggestions.DiscCategory;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MockDataFactory {
@@ -135,5 +138,40 @@ public class MockDataFactory {
         return suggestion;
     }
 
+    public static UserDiscDto createMockUserDiscDto() {
+        UserDisc userDisc = createMockUserDiscDestroyer();
+        Disc disc = userDisc.getDisc();
+        return new UserDiscDto(
+                userDisc.getUserDiscId(),
+                disc.getName(),
+                disc.getType(),
+                userDisc.getCustomSpeed(),
+                userDisc.getCustomGlide(),
+                userDisc.getCustomTurn(),
+                userDisc.getCustomFade(),
+                userDisc.getColor(),
+                userDisc.getPlastic().getId(),
+                userDisc.getPlastic().getName(),
+                userDisc.getCustomPlastic(),
+                disc.getManufacturer().getName(),
+                disc.getSpeed(),
+                disc.getGlide(),
+                disc.getTurn(),
+                disc.getFade(),
+                userDisc.getWeight(),
+                userDisc.getInUse(),
+                userDisc.getComment()
+        );
+    }
+
+    public static BagWithDiscsDto createMockBagWithDiscsDto() {
+        return new BagWithDiscsDto(
+                1L,
+                "Mock Bag",
+                "Mock Comment",
+                "2025-04-10 14:22:19",
+                List.of(createMockUserDiscDto())
+        );
+    }
 
 }

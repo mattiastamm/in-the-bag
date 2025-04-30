@@ -338,10 +338,7 @@ class BagServiceTest {
         when(bagRepository.findById(bagId)).thenReturn(Optional.of(mockBag));
 
         // Act
-        boolean result = bagService.deleteBag(userId, bagId);
-
-        // Assert
-        assertTrue(result);
+        bagService.deleteBag(userId, bagId);
 
         // Verify that bag ownership was checked
         verify(bagRepository, times(1)).findById(bagId);

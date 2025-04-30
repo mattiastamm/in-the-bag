@@ -183,7 +183,7 @@ public class BagService {
     }
 
     @Transactional
-    public boolean deleteBag(Long userId, Long bagId) {
+    public void deleteBag(Long userId, Long bagId) {
         logger.info("Attempting to delete bag with id={} and all related disc links.", bagId);
         validateBagOwnership(userId, bagId);
 
@@ -194,7 +194,6 @@ public class BagService {
         bagRepository.deleteById(bagId);
 
         logger.info("Bag with id={} successfully deleted.", bagId);
-        return true;
     }
 
 

@@ -61,13 +61,8 @@ public class BagController {
     @DeleteMapping("/{bagId}")
     public ResponseEntity<Void> deleteBag(@PathVariable Long bagId) {
         Long userId = jwtUtil.extractUserIdFromRequest(request);
-        boolean success = bagService.deleteBag(userId, bagId);
-
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        bagService.deleteBag(userId, bagId);
+        return ResponseEntity.ok().build();
     }
 
 }

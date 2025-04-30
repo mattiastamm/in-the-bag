@@ -43,7 +43,7 @@ public record CreateUserDiscRequest(
         @DecimalMax(value = "5.0", message = "Fade must be at most 5")
         Float customFade,
 
-        // Comment is optional, no validation needed
+        @Size(max = 300, message = "Comment must be at most 300 characters")
         String comment
 ) {}
 

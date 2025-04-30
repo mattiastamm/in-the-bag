@@ -321,10 +321,9 @@ class UserDiscServiceTest {
         when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(mockUserDisc));
 
         // Act
-        boolean result = userDiscService.deleteDisc(userId, userDiscId);
+        userDiscService.deleteUserDisc(userId, userDiscId);
 
         // Assert
-        assertTrue(result);
         verify(userDiscRepository, times(1)).findDiscEntityByUserDiscId(userDiscId);
         verify(userDiscRepository, times(1)).deleteById(userDiscId);
     }
@@ -339,7 +338,7 @@ class UserDiscServiceTest {
         // Act + Assert
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> userDiscService.deleteDisc(userId, userDiscId)
+                () -> userDiscService.deleteUserDisc(userId, userDiscId)
         );
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
@@ -361,7 +360,7 @@ class UserDiscServiceTest {
         // Act + Assert
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> userDiscService.deleteDisc(userId, userDiscId)
+                () -> userDiscService.deleteUserDisc(userId, userDiscId)
         );
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
