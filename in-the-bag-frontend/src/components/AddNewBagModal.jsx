@@ -27,7 +27,7 @@ export default function AddNewBagModal({ onClose, refetch }) {
           <h2 className="text-xl font-bold">Create New Bag</h2>
           <button
             onClick={onClose}
-            className="text-3xl font-bold text-red-500 hover:text-red-700"
+            className="text-3xl font-bold text-red-500 hover:text-red-700 cursor-pointer"
           >
             &times;
           </button>
