@@ -75,7 +75,10 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onD
           <div key={type} className="mb-4">
             <h2 className="text-xl font-semibold mb-4 pl-6 bg-gray-200 py-2">{type}</h2>
             <div className="flex flex-col gap-2 mx-5">
-              {grouped[type].map((disc) => (
+              {grouped[type]
+              .slice()  // Prevent mutation of the original array
+              .sort((a, b) => a.speed - b.speed)  // Sort by speed ascending
+              .map((disc) => (
                 <BagDiscItem
                   key={disc.userDiscId}
                   disc={disc}
