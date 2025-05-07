@@ -44,6 +44,7 @@ export default function StabilityChart({ discs }) {
             type="number"
             dataKey="x"
             domain={[-5, 6]}
+            reversed={true}
             tickCount={12}
             label={{ value: "Stability (turn + fade)", position: "bottom", fill: "#ccc" }}
             stroke="#ccc"
