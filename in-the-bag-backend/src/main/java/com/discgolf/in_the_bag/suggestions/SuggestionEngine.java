@@ -1,7 +1,5 @@
 package com.discgolf.in_the_bag.suggestions;
 
-import com.discgolf.in_the_bag.models.Disc;
-import com.discgolf.in_the_bag.models.Suggestion;
 import com.discgolf.in_the_bag.repositories.SuggestionRepository;
 import com.discgolf.in_the_bag.services.UserDiscService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +27,7 @@ public class SuggestionEngine {
         int state = (understable_putt_approach_in_bag ? 1 : 0) + (understable_midrange_in_bag ? 2 : 0);
 
         // determine the order of checking
-        List<DiscCategory> checkOrder = resolveCheckOrder(state);
+        List<DiscCategory> checkOrder = new ArrayList<>(resolveCheckOrder(state));
         resolveFairwaySpecialCases(discsByCategory, checkOrder);
 
         List<DiscCategory> suggestion_categories = new ArrayList<>();
