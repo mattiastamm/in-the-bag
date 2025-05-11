@@ -66,7 +66,7 @@ export default function Inventory() {
             <div className="inventory-grid gap-10 auto-rows-fr pl-8">
               {categorizedDiscs[type]
               .slice()  // Make a shallow copy so the original isn't mutated
-              .sort((a, b) => a.speed - b.speed)  // Sort by speed (ascending)
+              .sort((a, b) => a.customSpeed - b.customSpeed)  // Sort by speed (ascending)
               .map((userDisc) => (
                 <div 
                   key={userDisc.userDiscId} 

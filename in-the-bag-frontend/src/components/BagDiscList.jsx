@@ -77,7 +77,7 @@ export default function BagDiscList({ discs, bagId, onRemoveDisc, onEditBag, onD
             <div className="flex flex-col gap-2 mx-5">
               {grouped[type]
               .slice()  // Prevent mutation of the original array
-              .sort((a, b) => a.speed - b.speed)  // Sort by speed ascending
+              .sort((a, b) => a.customSpeed - b.customSpeed)  // Sort by speed ascending
               .map((disc) => (
                 <BagDiscItem
                   key={disc.userDiscId}
