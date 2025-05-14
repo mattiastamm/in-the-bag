@@ -24,7 +24,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
         comment: disc.comment,
     }));
 
-    const [useCustomPlastic, setUseCustomPlastic] = useState(disc.availablePlastics.length === 0);
+    const [useCustomPlastic, setUseCustomPlastic] = useState(disc.customPlastic);
 
     // ✅ Flight number limits
     const flightNumberLimits = {
@@ -42,20 +42,18 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
         }
     };
 
-    const handleSave = async () => {
-        try {
-            const success = await updateDisc(disc.userDiscId, formData);
+    // Add local error state
+    const [localError, setLocalError] = useState(null);
 
-            if (success) {
-                console.log("Disc updated successfully!");
-                await refetch(); // ✅ Refresh inventory after saving
-                onClose(); // ✅ Close modal if update is successful
-            } else {
-                alert("Failed to update the disc. It may not exist or belong to you.");
-            }
-        } catch (error) {
-            console.error("Error updating disc:", error);
-            alert("An error occurred while updating the disc.");
+    const handleSave = async () => {
+        setLocalError(null); // Clear any previous errors
+        try {
+            await updateDisc(disc.userDiscId, formData);
+            await refetch();
+            onClose();
+        } catch (err) {
+            console.error("Error updating disc:", err);
+            setLocalError(err.message);
         }
     };
 
@@ -100,10 +98,13 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
         {/* Loading and Error Handling */}
         {isLoading ? (
           <p className="text-center text-gray-500">Loading...</p>
-        ) : error ? (
-          <p className="text-center text-red-500">{error}</p>
         ) : (
           <>
+            {/* Error Display */}
+            {(error || localError) && (
+              <p className="text-red-500 text-center my-2">{error || localError}</p>
+            )}
+
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-auto">
 

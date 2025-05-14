@@ -58,41 +58,50 @@ export default function Inventory() {
         </button>
       </div>
       
-      {/* Render each category in predefined order */}
-      {discTypeOrder.map((type) => (
-        categorizedDiscs[type] && categorizedDiscs[type].length > 0 && (
-          <div key={type} className="mb-9">
-            <h2 className="text-2xl font-semibold -mx-6 mb-8 py-1 pl-7 bg-gray-200">{type}</h2>
-            <div className="inventory-grid gap-10 auto-rows-fr pl-8">
-              {categorizedDiscs[type]
-              .slice()  // Make a shallow copy so the original isn't mutated
-              .sort((a, b) => a.customSpeed - b.customSpeed)  // Sort by speed (ascending)
-              .map((userDisc) => (
-                <div 
-                  key={userDisc.userDiscId} 
-                  onClick={() => fetchDiscDetails(userDisc.userDiscId)}
-                  className="cursor-pointer"
-                >
-                  <InventoryCard
-                    name={userDisc.name}
-                    customSpeed={userDisc.customSpeed}
-                    customGlide={userDisc.customGlide}
-                    customTurn={userDisc.customTurn}
-                    customFade={userDisc.customFade}
-                    color={userDisc.color}
-                    plasticName={userDisc.plasticName}
-                    customPlastic={userDisc.customPlastic}
-                    speed={userDisc.speed}
-                    glide={userDisc.glide}
-                    turn={userDisc.turn}
-                    fade={userDisc.fade}
-                  />
-                </div>
-              ))}
+      {/* Show either empty state message or disc grid */}
+      {userDiscs.length === 0 ? (
+        <div className="flex items-center justify-center h-[50vh]">
+          <p className="text-gray-600 text-lg italic text-center px-4">
+            No discs found. To add your first disc, press the{" "}
+            <span className="font-semibold">Add Disc</span> button.
+          </p>
+        </div>
+      ) : (
+        discTypeOrder.map((type) => (
+          categorizedDiscs[type] && categorizedDiscs[type].length > 0 && (
+            <div key={type} className="mb-9">
+              <h2 className="text-2xl font-semibold -mx-6 mb-8 py-1 pl-7 bg-gray-200">{type}</h2>
+              <div className="inventory-grid gap-10 auto-rows-fr pl-8">
+                {categorizedDiscs[type]
+                  .slice()
+                  .sort((a, b) => a.customSpeed - b.customSpeed)
+                  .map((userDisc) => (
+                    <div 
+                      key={userDisc.userDiscId} 
+                      onClick={() => fetchDiscDetails(userDisc.userDiscId)}
+                      className="cursor-pointer"
+                    >
+                      <InventoryCard
+                        name={userDisc.name}
+                        customSpeed={userDisc.customSpeed}
+                        customGlide={userDisc.customGlide}
+                        customTurn={userDisc.customTurn}
+                        customFade={userDisc.customFade}
+                        color={userDisc.color}
+                        plasticName={userDisc.plasticName}
+                        customPlastic={userDisc.customPlastic}
+                        speed={userDisc.speed}
+                        glide={userDisc.glide}
+                        turn={userDisc.turn}
+                        fade={userDisc.fade}
+                      />
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
-        )
-      ))}
+          )
+        ))
+      )}
 
       {/* ✅ Render Modal when a disc is selected */}
       {selectedDisc && (

@@ -10,6 +10,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
   const [errorMessage, setErrorMessage] = useState(null);
   const [isEditingSearch, setIsEditingSearch] = useState(false);
   const [tempSearchQuery, setTempSearchQuery] = useState("");
+  const [useCustomPlastic, setUseCustomPlastic] = useState(selectedDisc?.availablePlastics.length === 0);
 
   // this part is for adding discs from Wishlist to Inventory where ID is already known
   useEffect(() => {
@@ -257,14 +258,29 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
                   <div className="flex flex-col items-center">
                     <label className="block text-gray-700 mb-1">Plastic:</label>
 
-                    {selectedDisc.availablePlastics.length > 0 ? (
+                    {useCustomPlastic ? (
+                      <input
+                        type="text"
+                        maxLength={20}
+                        placeholder="Enter plastic name"
+                        value={formData.customPlastic || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            customPlastic: e.target.value,
+                            plasticId: null, // Clear any plastic ID if user types
+                          })
+                        }
+                        className="border rounded px-2 py-1 w-48"
+                      />
+                    ) : (
                       <select
                         value={formData.plasticId || ""}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
                             plasticId: parseInt(e.target.value),
-                            customPlastic: null, // 🧼 Clear any previous custom input
+                            customPlastic: null, // Clear any previous custom input
                           })
                         }
                         className="border rounded px-2 py-1"
@@ -276,21 +292,17 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
                           </option>
                         ))}
                       </select>
-                    ) : (
-                      <input
-                        type="text"
-                        maxLength={20}
-                        placeholder="Enter plastic name"
-                        value={formData.customPlastic || ""}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            customPlastic: e.target.value,
-                            plasticId: null, // 🧼 Clear any plastic ID if user types
-                          })
-                        }
-                        className="border rounded px-2 py-1 w-48"
-                      />
+                    )}
+
+                    {/* Toggle button - only show if there are available plastics */}
+                    {selectedDisc?.availablePlastics.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setUseCustomPlastic((prev) => !prev)}
+                        className="text-xs mt-2 px-2 py-1 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition cursor-pointer"
+                      >
+                        {useCustomPlastic ? "plastic options" : "custom plastic"}
+                      </button>
                     )}
                   </div>
   

@@ -72,24 +72,17 @@ export default function MyBags() {
 
         {/* Middle: Bag Buttons */}
         <div className="flex-1 flex flex-wrap gap-4 mx-4">
-          {bags.length > 0 ? (
-            bags.map((bag) => (
-              <button
-                key={bag.id}
-                onClick={() => setSelectedBagId(bag.id)}
-                className={`bg-blue-500 text-white text-xl px-4 py-2 rounded hover:bg-blue-600 cursor-pointer ${
-                  selectedBagId === bag.id ? "ring-4 ring-blue-300" : ""
-                }`}
-              >
-                {bag.title}
-              </button>
-            ))
-          ) : (
-            <p className="text-gray-600 text-lg italic">
-              No bags found. To create your first bag, press the{" "}
-              <span className="font-semibold">Add Bag</span> button.
-            </p>
-          )}
+          {bags.map((bag) => (
+            <button
+              key={bag.id}
+              onClick={() => setSelectedBagId(bag.id)}
+              className={`bg-blue-500 text-white text-xl px-4 py-2 rounded hover:bg-blue-600 cursor-pointer ${
+                selectedBagId === bag.id ? "ring-4 ring-blue-300" : ""
+              }`}
+            >
+              {bag.title}
+            </button>
+          ))}
         </div>
 
         {/* Right: Add Bag Button */}
@@ -116,14 +109,23 @@ export default function MyBags() {
       <div className="flex flex-col lg:flex-row flex-1 gap-6 -ml-6">
         {/* Left Half - becomes full width on smaller screens */}
         <div className="w-full lg:w-1/2 overflow-y-auto max-h-[90vh] pr-2 -pl-6">
-          {selectedBagId && (
-            <BagDiscList
-              discs={bags.find((b) => b.id === selectedBagId)?.discs || []}
-              bagId={selectedBagId}
-              onRemoveDisc={handleRemoveDisc}
-              onEditBag={() => setIsEditingBag(true)}
-              onDeleteBag={handleDeleteBag}
-            />
+          {bags.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-600 text-lg italic text-center px-4">
+                No bags found. To create your first bag, press the{" "}
+                <span className="font-semibold">Add Bag</span> button.
+              </p>
+            </div>
+          ) : (
+            selectedBagId && (
+              <BagDiscList
+                discs={bags.find((b) => b.id === selectedBagId)?.discs || []}
+                bagId={selectedBagId}
+                onRemoveDisc={handleRemoveDisc}
+                onEditBag={() => setIsEditingBag(true)}
+                onDeleteBag={handleDeleteBag}
+              />
+            )
           )}
         </div>
 
