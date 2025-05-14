@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -24,5 +25,4 @@ public class User {
 
     @Column(name = "created_at")
     private String createdAt;
-
 }

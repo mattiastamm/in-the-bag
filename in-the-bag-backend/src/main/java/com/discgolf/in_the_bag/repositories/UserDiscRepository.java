@@ -19,12 +19,10 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
 
     void deleteById(Long UserDiscId);
 
-    Optional<UserDisc> findDiscEntityByUserDiscId(Long userDiscId);
-
     // ✅ Use this for Inventory View (custom DTO projection)
     @Query("""
     SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
-        ud.userDiscId,
+        ud.id,
         d.name,
         d.type,
         ud.customSpeed,
@@ -48,13 +46,13 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
     JOIN ud.disc d
     JOIN d.manufacturer m
     LEFT JOIN ud.plastic p
-    WHERE ud.userId = :userId
+    WHERE ud.user.id = :userId
 """)
     List<UserDiscDto> findUserDiscsByUserId(@Param("userId") Long userId);
 
     @Query("""
     SELECT new com.discgolf.in_the_bag.records.UserDiscDto(
-        ud.userDiscId,
+        ud.id,
         d.name,
         d.type,
         ud.customSpeed,
@@ -78,22 +76,22 @@ public interface UserDiscRepository extends JpaRepository<UserDisc, Long> {
     JOIN ud.disc d
     JOIN d.manufacturer m
     LEFT JOIN ud.plastic p
-    WHERE ud.userDiscId = :userDiscId
+    WHERE ud.id = :userDiscId
 """)
-    Optional<UserDiscDto> findUserDiscsById(@Param("userDiscId") Long userDiscId);
+    Optional<UserDiscDto> findUserDiscById(@Param("userDiscId") Long userDiscId);
 
 
     @Query("""
     SELECT new com.discgolf.in_the_bag.records.PlasticRecord(p.id, p.name)
     FROM Plastic p
     WHERE p.manufacturer.id = (
-        SELECT ud.disc.manufacturer.id FROM UserDisc ud WHERE ud.userDiscId = :userDiscId
+        SELECT ud.disc.manufacturer.id FROM UserDisc ud WHERE ud.id = :userDiscId
     )
 """)
     List<PlasticRecord> findPlasticsByUserDiscId(@Param("userDiscId") Long userDiscId);
 
     @Modifying
-    @Query("UPDATE UserDisc ud SET ud.inUse = :stillInUse WHERE ud.userDiscId = :userDiscId")
+    @Query("UPDATE UserDisc ud SET ud.inUse = :stillInUse WHERE ud.id = :userDiscId")
     void updateInUseStatus(@Param("userDiscId") Long userDiscId, @Param("stillInUse") boolean stillInUse);
 
 }

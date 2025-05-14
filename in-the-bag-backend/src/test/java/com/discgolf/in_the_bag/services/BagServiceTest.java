@@ -1,14 +1,12 @@
 package com.discgolf.in_the_bag.services;
 
-import com.discgolf.in_the_bag.models.Bag;
-import com.discgolf.in_the_bag.models.Disc;
-import com.discgolf.in_the_bag.models.DiscInBag;
-import com.discgolf.in_the_bag.models.UserDisc;
+import com.discgolf.in_the_bag.models.*;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
 import com.discgolf.in_the_bag.records.UserDiscDto;
 import com.discgolf.in_the_bag.repositories.BagRepository;
 import com.discgolf.in_the_bag.repositories.DiscInBagRepository;
 import com.discgolf.in_the_bag.repositories.UserDiscRepository;
+import com.discgolf.in_the_bag.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +30,8 @@ class BagServiceTest {
     private DiscInBagRepository discInBagRepository;
     @Mock
     private UserDiscRepository userDiscRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private BagService bagService;
@@ -46,12 +46,12 @@ class BagServiceTest {
         Long userId = 1L;
 
         // Prepare mock data using your MockDataFactory
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
-        Set<UserDisc> userDiscs = new HashSet<>();
+        Bag mockBag = MockDataFactory.createMockBag();
+        List<UserDisc> userDiscs = new ArrayList<>();
         UserDisc destroyer = MockDataFactory.createMockUserDiscDestroyer();
         userDiscs.add(destroyer);
-        mockBag.setUserDiscs(userDiscs);
         when(bagRepository.findByUserId(userId)).thenReturn(List.of(mockBag));
+        when(discInBagRepository.findUserDiscsByBagId(mockBag.getId())).thenReturn(userDiscs);
 
         // Act
         List<BagWithDiscsDto> result = bagService.getBagsWithDiscsForUser(userId);
@@ -65,7 +65,7 @@ class BagServiceTest {
         assertEquals(mockBag.getCreatedAt(), bagDto.createdAt());
 
         // Verify disc mapping
-        assertEquals(mockBag.getUserDiscs().size(), bagDto.discs().size());
+        assertEquals(1, bagDto.discs().size());
         UserDiscDto discDto = bagDto.discs().get(0);
 
         UserDisc originalUserDisc = destroyer; // same disc
@@ -96,12 +96,12 @@ class BagServiceTest {
         Long userId = 1L;
 
         // Prepare mock data using your MockDataFactory
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
-        Set<UserDisc> userDiscs = new HashSet<>();
+        Bag mockBag = MockDataFactory.createMockBag();
+        List<UserDisc> userDiscs = new ArrayList<>();
         UserDisc firebird = MockDataFactory.createMockUserDiscFirebird(); // This disc has a custom plastic
         userDiscs.add(firebird);
-        mockBag.setUserDiscs(userDiscs);
         when(bagRepository.findByUserId(userId)).thenReturn(List.of(mockBag));
+        when(discInBagRepository.findUserDiscsByBagId(mockBag.getId())).thenReturn(userDiscs);
 
         // Act
         List<BagWithDiscsDto> result = bagService.getBagsWithDiscsForUser(userId);
@@ -124,54 +124,56 @@ class BagServiceTest {
     @Test
     void testCreateBag() {
         // Arrange
-        Long userId = 1L;
+        User mockUser = MockDataFactory.createMockUser();
         String title = "Tournament Bag";
         String comment = "For Tournament play only";
-        Bag savedBag = MockDataFactory.createMockBagWithoutDiscs();
+        Bag savedBag = MockDataFactory.createMockBag();
         savedBag.setTitle(title);
         savedBag.setComment(comment);
 
-        when(bagRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
+        when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
+        when(bagRepository.findByUserId(mockUser.getId())).thenReturn(Collections.emptyList());
         when(bagRepository.save(any(Bag.class))).thenReturn(savedBag);
 
         // Act
-        Bag result = bagService.createBag(userId, savedBag.getTitle(), savedBag.getComment());
+        Bag result = bagService.createBag(mockUser.getId(), savedBag.getTitle(), savedBag.getComment());
 
         // Assert
         assertNotNull(result);
         assertEquals(title, result.getTitle());
         assertEquals(comment, result.getComment());
-        assertEquals(userId, result.getUserId());
+        assertEquals(mockUser.getId(), result.getUser().getId());
 
-        verify(bagRepository, times(1)).findByUserId(userId);
+        verify(bagRepository, times(1)).findByUserId(mockUser.getId());
         verify(bagRepository, times(1)).save(any(Bag.class));
     }
     @Test
     void testCreateBag_WhenUserHasFiveBags() {
         // Arrange
-        Long userId = 2L;
+        User mockUser = MockDataFactory.createMockUser();
 
         // 5 mock bags
         List<Bag> existingBags = List.of(
-                MockDataFactory.createMockBagWithoutDiscs(),
-                MockDataFactory.createMockBagWithoutDiscs(),
-                MockDataFactory.createMockBagWithoutDiscs(),
-                MockDataFactory.createMockBagWithoutDiscs(),
-                MockDataFactory.createMockBagWithoutDiscs()
+                MockDataFactory.createMockBag(),
+                MockDataFactory.createMockBag(),
+                MockDataFactory.createMockBag(),
+                MockDataFactory.createMockBag(),
+                MockDataFactory.createMockBag()
         );
 
-        when(bagRepository.findByUserId(userId)).thenReturn(existingBags);
+        when(bagRepository.findByUserId(mockUser.getId())).thenReturn(existingBags);
+        when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
 
         // Act & Assert
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> bagService.createBag(userId, "Overflow Bag", "Should not allow")
+                () -> bagService.createBag(mockUser.getId(), "Overflow Bag", "Should not allow")
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
         assertEquals("Maximum of 5 bags allowed per user", exception.getReason());
 
-        verify(bagRepository, times(1)).findByUserId(userId);
+        verify(bagRepository, times(1)).findByUserId(mockUser.getId());
         verify(bagRepository, never()).save(any(Bag.class));
     }
 
@@ -183,13 +185,13 @@ class BagServiceTest {
         Long userId = 1L;
         Long bagId = 1L;
         Long userDiscId = 1L;
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
+        Bag mockBag = MockDataFactory.createMockBag();
         UserDisc mockUserDisc = MockDataFactory.createMockUserDiscDestroyer();
 
         when(userDiscService.validateUserDiscOwnershipAndReturn(userId, userDiscId)).thenReturn(mockUserDisc);
         when(bagRepository.findById(bagId)).thenReturn(Optional.of(mockBag));
-        when(discInBagRepository.existsByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId)).thenReturn(true);
-        when(discInBagRepository.existsByUserDisc_UserDiscId(userDiscId)).thenReturn(true); // Still in other bags
+        when(discInBagRepository.existsByUserDisc_IdAndBag_Id(userDiscId, bagId)).thenReturn(true);
+        when(discInBagRepository.existsByUserDisc_Id(userDiscId)).thenReturn(true); // Still in other bags
 
         // Act
         bagService.removeDiscFromBag(userId, userDiscId, bagId);
@@ -197,7 +199,7 @@ class BagServiceTest {
         // Assert
         verify(userDiscService, times(1)).validateUserDiscOwnershipAndReturn(userId, userDiscId);
         verify(bagRepository, times(1)).findById(bagId);
-        verify(discInBagRepository, times(1)).deleteByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId);
+        verify(discInBagRepository, times(1)).deleteByUserDisc_IdAndBag_Id(userDiscId, bagId);
         verify(userDiscRepository, never()).save(any()); // Should not save if still in other bags
     }
     @Test
@@ -217,7 +219,7 @@ class BagServiceTest {
         );
 
         assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
-        verify(discInBagRepository, never()).deleteByUserDisc_UserDiscIdAndBag_Id(any(), any());
+        verify(discInBagRepository, never()).deleteByUserDisc_IdAndBag_Id(any(), any());
     }
     @Test
     void testRemoveDiscFromBag_BagOwnershipMismatch() {
@@ -225,10 +227,12 @@ class BagServiceTest {
         Long userId = 1L;
         Long userDiscId = 1L;
         Long wrongBagId = 99L;
+        User differentUser = new User();
+        differentUser.setId(2L);
 
         // Simulate that bag userId doesn't match
-        Bag wrongBag = MockDataFactory.createMockBagWithoutDiscs();
-        wrongBag.setUserId(2L); // Different user
+        Bag wrongBag = MockDataFactory.createMockBag();
+        wrongBag.setUser(differentUser); // Different user
 
         when(bagRepository.findById(wrongBagId)).thenReturn(Optional.of(wrongBag));
 
@@ -246,12 +250,12 @@ class BagServiceTest {
         Long userId = 1L;
         Long userDiscId = 1L;
         Long bagId = 1L;
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
+        Bag mockBag = MockDataFactory.createMockBag();
         UserDisc mockUserDisc = MockDataFactory.createMockUserDiscDestroyer();
 
         when(userDiscService.validateUserDiscOwnershipAndReturn(userId, userDiscId)).thenReturn(mockUserDisc);
         when(bagRepository.findById(bagId)).thenReturn(Optional.of(mockBag));
-        when(discInBagRepository.existsByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId)).thenReturn(false);
+        when(discInBagRepository.existsByUserDisc_IdAndBag_Id(userDiscId, bagId)).thenReturn(false);
 
         // Act + Assert
         ResponseStatusException ex = assertThrows(
@@ -260,7 +264,7 @@ class BagServiceTest {
         );
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
-        verify(discInBagRepository, never()).deleteByUserDisc_UserDiscIdAndBag_Id(any(), any());
+        verify(discInBagRepository, never()).deleteByUserDisc_IdAndBag_Id(any(), any());
     }
     @Test
     void testRemoveDiscFromBag_DiscNotInOtherBags() {
@@ -268,13 +272,13 @@ class BagServiceTest {
         Long userId = 1L;
         Long userDiscId = 1L;
         Long bagId = 1L;
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
+        Bag mockBag = MockDataFactory.createMockBag();
         UserDisc mockUserDisc = MockDataFactory.createMockUserDiscDestroyer();
 
         when(userDiscService.validateUserDiscOwnershipAndReturn(userId, userDiscId)).thenReturn(mockUserDisc);
         when(bagRepository.findById(bagId)).thenReturn(Optional.of(mockBag));
-        when(discInBagRepository.existsByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId)).thenReturn(true);
-        when(discInBagRepository.existsByUserDisc_UserDiscId(userDiscId)).thenReturn(false);
+        when(discInBagRepository.existsByUserDisc_IdAndBag_Id(userDiscId, bagId)).thenReturn(true);
+        when(discInBagRepository.existsByUserDisc_Id(userDiscId)).thenReturn(false);
 
         // Act
         bagService.removeDiscFromBag(userId, userDiscId, bagId);
@@ -294,7 +298,7 @@ class BagServiceTest {
         List<Long> currentDiscIds = List.of(1L, 2L, 4L, 6L);   // Discs currently in bag
         List<Long> updatedUserDiscIds = List.of(1L, 3L, 5L);    // New selection
 
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
+        Bag mockBag = MockDataFactory.createMockBag();
 
         when(bagRepository.findById(bagId)).thenReturn(Optional.of(mockBag));
         when(discInBagRepository.findUserDiscIdsByBagId(bagId)).thenReturn(currentDiscIds);
@@ -306,7 +310,7 @@ class BagServiceTest {
         when(userDiscRepository.findById(4L)).thenReturn(Optional.of(MockDataFactory.createMockUserDiscDestroyer()));
         when(userDiscRepository.findById(6L)).thenReturn(Optional.of(MockDataFactory.createMockUserDiscDestroyer()));
 
-        when(discInBagRepository.existsByUserDisc_UserDiscId(anyLong())).thenReturn(false);
+        when(discInBagRepository.existsByUserDisc_Id(anyLong())).thenReturn(false);
 
         // Act
         bagService.updateBagDiscs(userId, bagId, updatedUserDiscIds);
@@ -334,7 +338,7 @@ class BagServiceTest {
         Long bagId = 1L;
 
         // Mock the bag exists and belongs to the user
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
+        Bag mockBag = MockDataFactory.createMockBag();
         when(bagRepository.findById(bagId)).thenReturn(Optional.of(mockBag));
 
         // Act
@@ -358,7 +362,7 @@ class BagServiceTest {
         // Arrange
         Long userId = 1L;
         Long bagId = 1L;
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
+        Bag mockBag = MockDataFactory.createMockBag();
         when(bagRepository.findById(bagId)).thenReturn(Optional.of(mockBag));
 
         // Act
@@ -386,8 +390,10 @@ class BagServiceTest {
         // Arrange
         Long userId = 1L;
         Long bagId = 1L;
-        Bag mockBag = MockDataFactory.createMockBagWithoutDiscs();
-        mockBag.setUserId(2L); // Wrong user ID
+        Bag mockBag = MockDataFactory.createMockBag();
+        User differentUser = new User();
+        differentUser.setId(2L);
+        mockBag.setUser(differentUser); // Wrong user ID
         when(bagRepository.findById(bagId)).thenReturn(Optional.of(mockBag));
 
         // Act & Assert

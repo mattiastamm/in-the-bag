@@ -35,6 +35,7 @@ public record UpdateDiscRequest(
         @Size(max = 20, message = "Custom plastic name must be 20 characters or less")
         String customPlastic,
 
+        @NotNull(message = "Weight is required")
         @DecimalMin(value = "0.1", message = "Weight must be positive")
         @DecimalMax(value = "999.9", message = "Weight must be less than 1000")
         Double weight,

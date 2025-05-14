@@ -6,9 +6,7 @@ import com.discgolf.in_the_bag.records.UserDiscDto;
 import com.discgolf.in_the_bag.records.WishlistDiscDto;
 import com.discgolf.in_the_bag.suggestions.DiscCategory;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MockDataFactory {
     public static Manufacturer createMockManufacturer() {
@@ -52,11 +50,17 @@ public class MockDataFactory {
         return plastic;
     }
 
+    public static User createMockUser() {
+        User user = new User();
+        user.setId(1L);
+        return user;
+    }
+
     public static UserDisc createMockUserDiscDestroyer() {
         Disc disc = createMockDiscDestroyer();
         UserDisc userDisc = new UserDisc();
-        userDisc.setUserDiscId(1L);
-        userDisc.setUserId(1L);
+        userDisc.setId(1L);
+        userDisc.setUser(createMockUser());
         userDisc.setDisc(disc);
         userDisc.setPlastic(createMockPlastic());
         userDisc.setWeight(173d);
@@ -74,8 +78,8 @@ public class MockDataFactory {
     public static UserDisc createMockUserDiscFirebird() {
         Disc disc = createMockDiscFirebird();
         UserDisc userDisc = new UserDisc();
-        userDisc.setUserDiscId(2L);
-        userDisc.setUserId(1L);
+        userDisc.setId(2L);
+        userDisc.setUser(createMockUser());
         userDisc.setDisc(disc);
         userDisc.setCustomPlastic("Custom Plastic");
         userDisc.setWeight(173d);
@@ -91,28 +95,13 @@ public class MockDataFactory {
     }
 
 
-    public static Bag createMockBagWithoutDiscs() {
+    public static Bag createMockBag() {
         Bag bag = new Bag();
         bag.setId(1L);
-        bag.setUserId(1L);
+        bag.setUser(createMockUser());
         bag.setTitle("Bag Title");
         bag.setCreatedAt("2025-04-10 14:22:19");
         bag.setComment("Comment");
-        bag.setUserDiscs(new HashSet<>());
-        return bag;
-    }
-
-    public static Bag createMockBagWithDiscs() {
-        Bag bag = new Bag();
-        bag.setId(1L);
-        bag.setUserId(1L);
-        bag.setTitle("Bag Title");
-        bag.setCreatedAt("2025-04-10 14:22:19");
-        bag.setComment("Comment");
-        Set<UserDisc> discs = new HashSet<>();
-        discs.add(createMockUserDiscDestroyer());
-        discs.add(createMockUserDiscFirebird());
-        bag.setUserDiscs(discs);
         return bag;
     }
 
@@ -142,7 +131,7 @@ public class MockDataFactory {
         UserDisc userDisc = createMockUserDiscDestroyer();
         Disc disc = userDisc.getDisc();
         return new UserDiscDto(
-                userDisc.getUserDiscId(),
+                userDisc.getId(),
                 disc.getName(),
                 disc.getType(),
                 userDisc.getCustomSpeed(),

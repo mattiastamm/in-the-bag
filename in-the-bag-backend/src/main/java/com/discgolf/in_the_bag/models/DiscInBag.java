@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "disc_in_bag")
@@ -18,12 +20,14 @@ public class DiscInBag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_disc_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserDisc userDisc;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bag_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Bag bag;
 }
 

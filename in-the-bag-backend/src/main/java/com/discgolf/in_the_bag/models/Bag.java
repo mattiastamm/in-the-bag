@@ -1,11 +1,10 @@
 package com.discgolf.in_the_bag.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.Set;
-import java.util.HashSet;
 
 @Entity
 @Table(name = "bags")
@@ -18,8 +17,10 @@ public class Bag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
 
     @Column(nullable = false)
     private String title;
@@ -29,8 +30,4 @@ public class Bag {
 
     @Column(columnDefinition = "text")
     private String comment;
-
-    @ManyToMany(mappedBy = "bags")
-    @JsonIgnore  // ✅ Prevents infinite recursion
-    private Set<UserDisc> userDiscs = new HashSet<>();
 }

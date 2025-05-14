@@ -88,7 +88,7 @@ class UserDiscControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userDiscId").value(2L))
+                .andExpect(jsonPath("$.id").value(2L))
                 .andExpect(jsonPath("$.color").value("#7f2afe"))
                 .andExpect(jsonPath("$.disc.name").value("Firebird"));
     }

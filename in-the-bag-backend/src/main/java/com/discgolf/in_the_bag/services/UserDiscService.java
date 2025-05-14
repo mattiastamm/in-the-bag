@@ -2,12 +2,10 @@ package com.discgolf.in_the_bag.services;
 
 import com.discgolf.in_the_bag.models.Disc;
 import com.discgolf.in_the_bag.models.Plastic;
+import com.discgolf.in_the_bag.models.User;
 import com.discgolf.in_the_bag.models.UserDisc;
 import com.discgolf.in_the_bag.records.*;
-import com.discgolf.in_the_bag.repositories.BagRepository;
-import com.discgolf.in_the_bag.repositories.DiscRepository;
-import com.discgolf.in_the_bag.repositories.UserDiscRepository;
-import com.discgolf.in_the_bag.repositories.PlasticRepository;
+import com.discgolf.in_the_bag.repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,9 +24,10 @@ public class UserDiscService {
     private static final Logger logger = LoggerFactory.getLogger(UserDiscService.class);
 
     private final UserDiscRepository userDiscRepository;
-    private final BagRepository bagRepository;
+    private final DiscInBagRepository discInBagRepository;
     private final PlasticRepository plasticRepository;
     private final DiscRepository discRepository;
+    private final UserRepository userRepository;
 
     public List<UserDiscDto> getUserDiscs(Long userId) {
         logger.info("Fetching base view DTO for every disc for userId={}", userId);
@@ -40,7 +39,7 @@ public class UserDiscService {
         validateUserDiscOwnership(userId, userDiscId);
 
         // Fetch disc details (without bags)
-        Optional<UserDiscDto> userDiscDtoOpt = userDiscRepository.findUserDiscsById(userDiscId);
+        Optional<UserDiscDto> userDiscDtoOpt = userDiscRepository.findUserDiscById(userDiscId);
 
         if (userDiscDtoOpt.isEmpty()) {
             logger.warn("Disc not found for userDiscId={}", userDiscId);
@@ -50,7 +49,7 @@ public class UserDiscService {
         UserDiscDto baseDiscDetails = userDiscDtoOpt.get();
 
         // Fetch associated bags
-        List<BagRecord> bags = bagRepository.findBagsByUserDiscId(userDiscId);
+        List<BagRecord> bags = discInBagRepository.findBagsByUserDiscId(userDiscId);
 
         // Fetch the plastics for the disc’s manufacturer
         List<PlasticRecord> plastics = userDiscRepository.findPlasticsByUserDiscId(userDiscId);
@@ -85,9 +84,12 @@ public class UserDiscService {
         logger.info("Adding new disc for userId={} with discId={} and plasticId={}/customPlastic={}",
                 userId, request.discId(), request.plasticId(), request.customPlastic());
 
-        // Validate referenced entities (disc & plastic exist)
+        // Validate referenced entities
         Disc disc = discRepository.findById(request.discId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disc not found: " + request.discId()));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
 
         // validate plastics
         validatePlasticChoice(request.plasticId(), request.customPlastic());
@@ -103,7 +105,7 @@ public class UserDiscService {
 
         // Create new UserDisc entity
         UserDisc newUserDisc = new UserDisc();
-        newUserDisc.setUserId(userId);
+        newUserDisc.setUser(user);
         newUserDisc.setDisc(disc);
         newUserDisc.setPlastic(plastic);
         newUserDisc.setCustomPlastic(request.customPlastic());
@@ -174,13 +176,13 @@ public class UserDiscService {
     public void validateUserDiscOwnership(Long userId, Long userDiscId) {
         logger.info("Validating userDisc={} ownership", userDiscId);
 
-        UserDisc userDisc = userDiscRepository.findDiscEntityByUserDiscId(userDiscId)
+        UserDisc userDisc = userDiscRepository.findById(userDiscId)
                 .orElseThrow(() -> {
                     logger.warn("userDisc with id={} does not exist", userDiscId);
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc with this id does not exist");
                 });
 
-        if (!userDisc.getUserId().equals(userId)) {
+        if (!userDisc.getUser().getId().equals(userId)) {
             logger.warn("userDisc with id={} does not belong to user with userId={}", userDiscId, userId);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "UserDisc does not belong to this user");
         }
@@ -189,13 +191,13 @@ public class UserDiscService {
     public UserDisc validateUserDiscOwnershipAndReturn(Long userId, Long userDiscId) {
         logger.info("Validating userDisc={} ownership", userDiscId);
 
-        UserDisc userDisc = userDiscRepository.findDiscEntityByUserDiscId(userDiscId)
+        UserDisc userDisc = userDiscRepository.findById(userDiscId)
                 .orElseThrow(() -> {
                     logger.warn("userDisc with id={} does not exist", userDiscId);
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "UserDisc with this id does not exist");
                 });
 
-        if (!userDisc.getUserId().equals(userId)) {
+        if (!userDisc.getUser().getId().equals(userId)) {
             logger.warn("userDisc with id={} does not belong to user with userId={}", userDiscId, userId);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "UserDisc does not belong to this user");
         }

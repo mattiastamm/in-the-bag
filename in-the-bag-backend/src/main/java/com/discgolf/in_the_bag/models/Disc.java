@@ -14,7 +14,7 @@ public class Disc {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "manufacturer", referencedColumnName = "id")  // Foreign key to "manufacturers.id"
+    @JoinColumn(name = "manufacturer", nullable = false)
     private Manufacturer manufacturer;
 
     private Float speed;

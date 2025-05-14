@@ -2,6 +2,7 @@ package com.discgolf.in_the_bag.controllers;
 
 import com.discgolf.in_the_bag.config.GlobalExceptionHandler;
 import com.discgolf.in_the_bag.models.Bag;
+import com.discgolf.in_the_bag.models.User;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
 import com.discgolf.in_the_bag.records.CreateBagRequest;
 import com.discgolf.in_the_bag.services.BagService;
@@ -75,24 +76,24 @@ class BagControllerTest {
     // METHOD: createBag()
     @Test
     void testCreateBag_Success() throws Exception {
-        Long userId = 1L;
         CreateBagRequest createBagRequest = new CreateBagRequest("New Bag", "My comment");
+        User mockUser = MockDataFactory.createMockUser();
 
         Bag createdBag = new Bag();
         createdBag.setId(1L);
-        createdBag.setUserId(1L);
+        createdBag.setUser(mockUser);
         createdBag.setTitle("New Bag");
         createdBag.setComment("My comment");
 
-        when(jwtUtil.extractUserIdFromRequest(any())).thenReturn(userId);
-        when(bagService.createBag(eq(userId), eq("New Bag"), eq("My comment"))).thenReturn(createdBag);
+        when(jwtUtil.extractUserIdFromRequest(any())).thenReturn(mockUser.getId());
+        when(bagService.createBag(eq(mockUser.getId()), eq("New Bag"), eq("My comment"))).thenReturn(createdBag);
 
         mockMvc.perform(post("/api/v1/bags")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createBagRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("New Bag"))
-                .andExpect(jsonPath("$.userId").value(1L));
+                .andExpect(jsonPath("$.user.id").value(mockUser.getId()));
     }
     @Test
     void testCreateBag_TitleTooLong() throws Exception {

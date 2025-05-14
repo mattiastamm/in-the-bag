@@ -141,7 +141,7 @@ public class UserServiceTest {
         user.setEmail("test@example.com");
         user.setCreatedAt("2024-01-01T12:00:00");
         List<Bag> bags = new ArrayList<>();
-        bags.add(MockDataFactory.createMockBagWithoutDiscs());
+        bags.add(MockDataFactory.createMockBag());
 
         UserDisc disc = MockDataFactory.createMockUserDiscDestroyer();
 

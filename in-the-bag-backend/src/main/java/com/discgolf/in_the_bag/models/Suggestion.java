@@ -18,7 +18,7 @@ public class Suggestion {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY) // fetched only when needed
-    @JoinColumn(name = "disc_id", referencedColumnName = "id")  // Foreign key to "discs.id"
+    @JoinColumn(name = "disc_id", nullable = false)
     private Disc disc;
 
     @Enumerated(EnumType.STRING)

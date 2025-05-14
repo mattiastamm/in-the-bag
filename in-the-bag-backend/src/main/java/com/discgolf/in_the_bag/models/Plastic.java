@@ -13,8 +13,8 @@ public class Plastic {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "manufacturer", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manufacturer", nullable = false)
     private Manufacturer manufacturer;
 }
 

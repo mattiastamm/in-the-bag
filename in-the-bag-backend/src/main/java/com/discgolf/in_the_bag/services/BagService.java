@@ -1,14 +1,12 @@
 package com.discgolf.in_the_bag.services;
 
-import com.discgolf.in_the_bag.models.Bag;
-import com.discgolf.in_the_bag.models.DiscInBag;
-import com.discgolf.in_the_bag.models.Plastic;
-import com.discgolf.in_the_bag.models.UserDisc;
+import com.discgolf.in_the_bag.models.*;
 import com.discgolf.in_the_bag.records.BagWithDiscsDto;
 import com.discgolf.in_the_bag.records.UserDiscDto;
 import com.discgolf.in_the_bag.repositories.BagRepository;
 import com.discgolf.in_the_bag.repositories.DiscInBagRepository;
 import com.discgolf.in_the_bag.repositories.UserDiscRepository;
+import com.discgolf.in_the_bag.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +28,7 @@ public class BagService {
     private final BagRepository bagRepository;
     private final DiscInBagRepository discInBagRepository;
     private final UserDiscRepository userDiscRepository;
+    private final UserRepository userRepository;
 
     private final UserDiscService userDiscService;
 
@@ -40,11 +39,12 @@ public class BagService {
         logger.info("Found {} bags for userId {}", bags.size(), userId);
 
         return bags.stream().map(bag -> {
-            List<UserDiscDto> discDtos = bag.getUserDiscs().stream().map(userDisc -> {
+            List<UserDisc> userDiscs = discInBagRepository.findUserDiscsByBagId(bag.getId());
+            List<UserDiscDto> discDtos = userDiscs.stream().map(userDisc -> {
                 Plastic plastic = userDisc.getPlastic();
 
                 return new UserDiscDto(
-                        userDisc.getUserDiscId(),
+                        userDisc.getId(),
                         userDisc.getDisc().getName(),
                         userDisc.getDisc().getType(),
                         userDisc.getCustomSpeed(),
@@ -79,6 +79,9 @@ public class BagService {
     public Bag createBag(Long userId, String title, String comment) {
         logger.info("Creating new bag for user={} with title={} and comment={}", userId, title, comment);
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
+
         // Fetch how many bags the user already has
         int bagCount = bagRepository.findByUserId(userId).size();
 
@@ -91,7 +94,7 @@ public class BagService {
         }
 
         Bag bag = new Bag();
-        bag.setUserId(userId);
+        bag.setUser(user);
         bag.setTitle(title);
         bag.setComment(comment);
         bag.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
@@ -107,18 +110,18 @@ public class BagService {
         UserDisc userDisc = userDiscService.validateUserDiscOwnershipAndReturn(userId, userDiscId);
         validateBagOwnership(userId, bagId);
 
-        boolean exists = discInBagRepository.existsByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId);
+        boolean exists = discInBagRepository.existsByUserDisc_IdAndBag_Id(userDiscId, bagId);
 
         if (!exists) {
             logger.warn("No entry found in disc_in_bag for user_disc_id={} and bag_id={}", userDiscId, bagId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Disc not found in the specified bag");
         }
 
-        discInBagRepository.deleteByUserDisc_UserDiscIdAndBag_Id(userDiscId, bagId);
+        discInBagRepository.deleteByUserDisc_IdAndBag_Id(userDiscId, bagId);
         logger.info("Removed user_disc_id={} from bag_id={}", userDiscId, bagId);
 
         // Check if the disc is still in any bag
-        boolean stillInBags = discInBagRepository.existsByUserDisc_UserDiscId(userDiscId);
+        boolean stillInBags = discInBagRepository.existsByUserDisc_Id(userDiscId);
         if (!stillInBags) {
             userDisc.setInUse(false);
             userDiscRepository.save(userDisc);
@@ -175,7 +178,7 @@ public class BagService {
         affected.addAll(toRemove);
 
         for (Long userDiscId : affected) {
-            boolean stillInUse = discInBagRepository.existsByUserDisc_UserDiscId(userDiscId);
+            boolean stillInUse = discInBagRepository.existsByUserDisc_Id(userDiscId);
             userDiscService.setInUseStatus(userDiscId, stillInUse);
         }
 
@@ -203,7 +206,7 @@ public class BagService {
         Bag bag = bagRepository.findById(bagId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bag with id=" + bagId + " not found"));
 
-        if (!bag.getUserId().equals(userId)) {
+        if (!bag.getUser().getId().equals(userId)) {
             logger.warn("Bag with id={} does not belong to user with id={}", bagId, userId);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this bag");
         }
@@ -213,7 +216,7 @@ public class BagService {
         Bag bag = bagRepository.findById(bagId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bag with id=" + bagId + " not found"));
 
-        if (!bag.getUserId().equals(userId)) {
+        if (!bag.getUser().getId().equals(userId)) {
             logger.warn("Bag with id={} does not belong to user with id={}", bagId, userId);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this bag");
         }

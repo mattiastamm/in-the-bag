@@ -23,9 +23,10 @@ import static org.mockito.Mockito.*;
 class UserDiscServiceTest {
 
     @Mock private UserDiscRepository userDiscRepository;
-    @Mock private BagRepository bagRepository;
+    @Mock private DiscInBagRepository discInBagRepository;
     @Mock private DiscRepository discRepository;
     @Mock private PlasticRepository plasticRepository;
+    @Mock private UserRepository userRepository;
 
     @InjectMocks
     private UserDiscService userDiscService;
@@ -55,7 +56,7 @@ class UserDiscServiceTest {
         Long userDiscId = 1L;
         UserDisc mockUserDisc = MockDataFactory.createMockUserDiscDestroyer();
 
-        Bag bag = MockDataFactory.createMockBagWithDiscs();
+        Bag bag = MockDataFactory.createMockBag();
         List<BagRecord> bags = new ArrayList<>();
         BagRecord bagRecord = new BagRecord(bag.getId(), bag.getTitle(), bag.getComment());
         bags.add(bagRecord);
@@ -65,11 +66,11 @@ class UserDiscServiceTest {
         PlasticRecord plasticRecord = new PlasticRecord(plastic.getId(), plastic.getName());
         plastics.add(plasticRecord);
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(mockUserDisc));
-        when(userDiscRepository.findUserDiscsById(userDiscId)).thenReturn(Optional.of(
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.of(mockUserDisc));
+        when(userDiscRepository.findUserDiscById(userDiscId)).thenReturn(Optional.of(
                 new UserDiscDto(1L, "Destroyer", "Driver", 12f, 5f, -1f, 3f, "#000000", 1, "Star", null, "Innova", 12f, 5f, -1f, 3f, 173d, true, "Good disc!")
         ));
-        when(bagRepository.findBagsByUserDiscId(userDiscId)).thenReturn(bags);
+        when(discInBagRepository.findBagsByUserDiscId(userDiscId)).thenReturn(bags);
         when(userDiscRepository.findPlasticsByUserDiscId(userDiscId)).thenReturn(plastics);
 
         // Act
@@ -88,8 +89,8 @@ class UserDiscServiceTest {
         Long userDiscId = 1L;
         UserDisc mockUserDisc = MockDataFactory.createMockUserDiscDestroyer();
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(mockUserDisc));
-        when(userDiscRepository.findUserDiscsById(userDiscId)).thenReturn(Optional.empty());
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.of(mockUserDisc));
+        when(userDiscRepository.findUserDiscById(userDiscId)).thenReturn(Optional.empty());
 
         // Act + Assert
         ResponseStatusException exception = assertThrows(
@@ -101,13 +102,13 @@ class UserDiscServiceTest {
         assertEquals("UserDisc not found: " + userDiscId, exception.getReason());
 
         // Verify that validate ownership was called
-        verify(userDiscRepository, times(1)).findDiscEntityByUserDiscId(userDiscId);
+        verify(userDiscRepository, times(1)).findById(userDiscId);
 
         // Verify that it attempted to find the disc details
-        verify(userDiscRepository, times(1)).findUserDiscsById(userDiscId);
+        verify(userDiscRepository, times(1)).findUserDiscById(userDiscId);
 
         // Verify that bagRepository and plastics weren't even called (optional)
-        verify(bagRepository, never()).findBagsByUserDiscId(anyLong());
+        verify(discInBagRepository, never()).findBagsByUserDiscId(anyLong());
         verify(userDiscRepository, never()).findPlasticsByUserDiscId(anyLong());
     }
 
@@ -116,7 +117,7 @@ class UserDiscServiceTest {
     @Test
     void testAddDiscToUser_HappyFlow() {
         // Arrange
-        Long userId = 1L;
+        User mockUser = MockDataFactory.createMockUser();
         CreateUserDiscRequest request = new CreateUserDiscRequest(
                 1L, // discId
                 1L, // plasticId
@@ -128,16 +129,17 @@ class UserDiscServiceTest {
         );
         Plastic mockPlastic = MockDataFactory.createMockPlastic();
 
+        when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
         when(discRepository.findById(1L)).thenReturn(Optional.of(MockDataFactory.createMockDiscDestroyer()));
         when(plasticRepository.findById(1L)).thenReturn(Optional.of(mockPlastic));
         when(userDiscRepository.save(any(UserDisc.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        UserDisc result = userDiscService.addDiscToUser(userId, request);
+        UserDisc result = userDiscService.addDiscToUser(mockUser.getId(), request);
 
         // Assert
         assertNotNull(result);
-        assertEquals(userId, result.getUserId());
+        assertEquals(mockUser.getId(), result.getUser().getId());
         assertEquals(175.0, result.getWeight());
         assertEquals("#FFFFFF", result.getColor());
         assertNull(result.getCustomPlastic());
@@ -170,12 +172,14 @@ class UserDiscServiceTest {
         CreateUserDiscRequest request = new CreateUserDiscRequest(
                 1L, 1L, "Custom Plastic", "#FFFFFF", 175.0, 12f, 5f, -1f, 3f, "Great disc!"
         );
+        User mockUser = MockDataFactory.createMockUser();
 
+        when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
         when(discRepository.findById(1L)).thenReturn(Optional.of(MockDataFactory.createMockDiscDestroyer()));
 
         // Act & Assert
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> userDiscService.addDiscToUser(1L, request)
+                () -> userDiscService.addDiscToUser(mockUser.getId(), request)
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
@@ -188,12 +192,14 @@ class UserDiscServiceTest {
         CreateUserDiscRequest request = new CreateUserDiscRequest(
                 1L, null, null, "#FFFFFF", 175.0, 12f, 5f, -1f, 3f, "Great disc!"
         );
+        User mockUser = MockDataFactory.createMockUser();
 
         when(discRepository.findById(1L)).thenReturn(Optional.of(MockDataFactory.createMockDiscDestroyer()));
+        when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
 
         // Act & Assert
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> userDiscService.addDiscToUser(1L, request)
+                () -> userDiscService.addDiscToUser(mockUser.getId(), request)
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
@@ -206,13 +212,15 @@ class UserDiscServiceTest {
         CreateUserDiscRequest request = new CreateUserDiscRequest(
                 1L, 2L, null, "#FFFFFF", 175.0, 12f, 5f, -1f, 3f, "Great disc!"
         );
+        User mockUser = MockDataFactory.createMockUser();
 
+        when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
         when(discRepository.findById(1L)).thenReturn(Optional.of(MockDataFactory.createMockDiscDestroyer()));
         when(plasticRepository.findById(2L)).thenReturn(Optional.empty());
 
         // Act & Assert
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> userDiscService.addDiscToUser(1L, request)
+                () -> userDiscService.addDiscToUser(mockUser.getId(), request)
         );
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
@@ -234,7 +242,7 @@ class UserDiscServiceTest {
                 10f, 5f, -1f, 3f, "#123456", mockPlastic.getId().longValue(), null, 173.0, "Updated comment"
         );
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(existingUserDisc));
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.of(existingUserDisc));
         when(plasticRepository.findPlasticEntityById(request.plasticId())).thenReturn(Optional.of(mockPlastic));
 
         // Act
@@ -254,7 +262,7 @@ class UserDiscServiceTest {
                 10f, 5f, -1f, 3f, "#123456", 1L, "Custom Plastic", 173.0, "Updated comment"
         );
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(existingUserDisc));
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.of(existingUserDisc));
 
         // Act + Assert
         ResponseStatusException exception = assertThrows(
@@ -275,7 +283,7 @@ class UserDiscServiceTest {
                 10f, 5f, -1f, 3f, "#123456", null, null, 173.0, "Updated comment"
         );
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(existingUserDisc));
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.of(existingUserDisc));
 
         // Act + Assert
         ResponseStatusException exception = assertThrows(
@@ -296,7 +304,7 @@ class UserDiscServiceTest {
                 10f, 5f, -1f, 3f, "#123456", 1L, null, 173.0, "Updated comment"
         );
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(existingUserDisc));
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.of(existingUserDisc));
         when(plasticRepository.findPlasticEntityById(1L)).thenReturn(Optional.empty());
 
         // Act + Assert
@@ -318,13 +326,13 @@ class UserDiscServiceTest {
         Long userDiscId = 1L;
         UserDisc mockUserDisc = MockDataFactory.createMockUserDiscDestroyer();
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(mockUserDisc));
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.of(mockUserDisc));
 
         // Act
         userDiscService.deleteUserDisc(userId, userDiscId);
 
         // Assert
-        verify(userDiscRepository, times(1)).findDiscEntityByUserDiscId(userDiscId);
+        verify(userDiscRepository, times(1)).findById(userDiscId);
         verify(userDiscRepository, times(1)).deleteById(userDiscId);
     }
     @Test
@@ -333,7 +341,7 @@ class UserDiscServiceTest {
         Long userId = 1L;
         Long userDiscId = 1L;
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.empty());
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.empty());
 
         // Act + Assert
         ResponseStatusException exception = assertThrows(
@@ -344,7 +352,7 @@ class UserDiscServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         assertEquals("UserDisc with this id does not exist", exception.getReason());
 
-        verify(userDiscRepository, times(1)).findDiscEntityByUserDiscId(userDiscId);
+        verify(userDiscRepository, times(1)).findById(userDiscId);
         verify(userDiscRepository, never()).deleteById(anyLong());
     }
     @Test
@@ -353,9 +361,11 @@ class UserDiscServiceTest {
         Long userId = 1L;
         Long userDiscId = 1L;
         UserDisc mockUserDisc = MockDataFactory.createMockUserDiscDestroyer();
-        mockUserDisc.setUserId(99L); // Simulate different user
+        User differentUser = new User();
+        differentUser.setId(99L);
+        mockUserDisc.setUser(differentUser); // Simulate different user
 
-        when(userDiscRepository.findDiscEntityByUserDiscId(userDiscId)).thenReturn(Optional.of(mockUserDisc));
+        when(userDiscRepository.findById(userDiscId)).thenReturn(Optional.of(mockUserDisc));
 
         // Act + Assert
         ResponseStatusException exception = assertThrows(
@@ -366,7 +376,7 @@ class UserDiscServiceTest {
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
         assertEquals("UserDisc does not belong to this user", exception.getReason());
 
-        verify(userDiscRepository, times(1)).findDiscEntityByUserDiscId(userDiscId);
+        verify(userDiscRepository, times(1)).findById(userDiscId);
         verify(userDiscRepository, never()).deleteById(anyLong());
     }
 
