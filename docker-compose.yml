@@ -1,0 +1,77 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ./in-the-bag-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./in-the-bag-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/in_the_bag
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: in_the_bag
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  init-sql:
+    image: alpine:latest
+    depends_on:
+      - backend
+      - db
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: |
+      "
+      echo 'Installing curl, nc, and psql...';
+      apk add --no-cache curl postgresql15-client netcat-openbsd;
+
+      echo 'Waiting for backend to open port 8080...';
+      until nc -z backend 8080; do
+        echo 'Backend not ready yet...';
+        sleep 2;
+      done;
+
+      echo 'Backend is UP. Running SQL inserts...';
+      psql -h db -U postgres -d in_the_bag -f /scripts/insert.sql
+      "
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./insert.sql:/scripts/insert.sql
+    networks:
+      - app-network
+
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
+    name:   app-network
