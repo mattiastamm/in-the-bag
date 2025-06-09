@@ -91,6 +91,11 @@ public class UserDiscService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
 
+        // Limit how many discs a user can have
+        if (userDiscRepository.findAllByUserId(userId).size() >= 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Inventory limit exceeded!");
+        }
+
         // validate plastics
         validatePlasticChoice(request.plasticId(), request.customPlastic());
 
