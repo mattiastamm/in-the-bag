@@ -10,7 +10,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
   const [errorMessage, setErrorMessage] = useState(null);
   const [isEditingSearch, setIsEditingSearch] = useState(false);
   const [tempSearchQuery, setTempSearchQuery] = useState("");
-  const [useCustomPlastic, setUseCustomPlastic] = useState(selectedDisc?.availablePlastics.length === 0);
+  const [useCustomPlastic, setUseCustomPlastic] = useState(false);
 
   // this part is for adding discs from Wishlist to Inventory where ID is already known
   useEffect(() => {
@@ -59,6 +59,8 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
       setSelectedDisc(details);
       setSearchQuery(details.name); // Keep the disc name in the search bar
       setSearchResults([]); // Clear suggestions immediately
+      setUseCustomPlastic(details.availablePlastics.length === 0); // If no plastics available, force custom plastic input
+
       // Autofill flight numbers from the selected disc details
       setFormData({
         ...formData,
@@ -105,22 +107,18 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
       return;
     }
     try {
-      const success = await addNewDisc({ ...formData });
-      if (success) {
-        refetch();
-        onClose(true);
-      } else {
-        setErrorMessage("Failed to add the disc."); // Show this instead of alert
-      }
+      await addNewDisc({ ...formData });
+      refetch();
+      onClose(true);
     } catch (error) {
       console.error("Error adding disc:", error);
-      setErrorMessage(error.message || "An error occurred while adding the disc."); // show backend message
+      setErrorMessage(error.message || "An error occurred while adding the disc.");
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-300/40 backdrop-blur-md z-50">
-      <div className="bg-white w-[50%] max-h-[80vh] min-h-[70vh] rounded-lg shadow-lg p-6 flex flex-col overflow-y-auto">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md z-50">
+      <div className="bg-gray-700 w-[50%] max-h-[80vh] min-h-[70vh] rounded-lg shadow-lg p-6 flex flex-col overflow-y-auto">
         
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
@@ -140,7 +138,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
         {/* Only used when the ID is not preselected */}
         {!preSelectedDiscId && (
           <div className="mt-4 relative">
-              <label className="block text-gray-700 mb-1">Search for a Disc:</label>
+              <label className="block text-white mb-1">Search for a Disc:</label>
               <input
                   type="text"
                   // If we are currently editing, show tempSearchQuery; otherwise show selectedDisc's name or an empty string
@@ -174,19 +172,19 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
                   setIsEditingSearch(false);
                   setSearchResults([]);
                   }}
-                  className="border rounded px-2 py-1 w-full"
+                  className="border rounded px-2 py-1 w-full text-white"
                   placeholder="Enter disc name..."
               />
 
               {/* Only show suggestions if user is editing AND typed >= 2 chars */}
               {isEditingSearch && tempSearchQuery.length > 1 && searchResults.length > 0 && (
-                  <ul className="absolute bg-white border rounded w-full mt-1 shadow-md max-h-40 overflow-y-auto">
+                  <ul className="absolute bg-gray-700 border rounded w-full mt-1 shadow-md max-h-40 overflow-y-auto">
                   {searchResults.map((disc) => (
                       <li
                       key={disc.id}
                       // Use onMouseDown instead of onClick, so selection happens before onBlur
                       onMouseDown={() => handleDiscSelect(disc.id)}
-                      className="p-2 hover:bg-gray-200 cursor-pointer"
+                      className="p-2 hover:bg-gray-600 cursor-pointer"
                       >
                       {disc.name}
                       </li>
@@ -202,8 +200,8 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
             <>
               {/* Disc Info */}
               <div className="text-center flex flex-col items-center mt-2">
-                <p className="text-gray-600"><strong>Type:</strong> {selectedDisc.type}</p>
-                <p className="text-gray-600"><strong>Manufacturer:</strong> {selectedDisc.manufacturerName}</p>
+                <p className="text-white"><strong>Type:</strong> {selectedDisc.type}</p>
+                <p className="text-white"><strong>Manufacturer:</strong> {selectedDisc.manufacturerName}</p>
               </div>
   
               {/* Flight Numbers & Plastic Section in Grid */}
@@ -211,28 +209,28 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
                 
                 {/* Flight Numbers (Left) */}
                 <div className="flex flex-col items-center">
-                  <p className="text-gray-700 text-lg font-semibold mb-2">Flight Numbers:</p>
+                  <p className="text-white text-lg font-semibold mb-2">Flight Numbers:</p>
                   <div className="flex gap-6">
                     {Object.keys(flightNumberLimits).map((field, index) => (
                       <div key={index} className="flex flex-col items-center">
                         <button
                           onClick={() => updateFlightNumber(field, 0.5)}
                           disabled={formData[field] >= flightNumberLimits[field].max}
-                          className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
+                          className="bg-gray-400 hover:bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
                         >
                           +
                         </button>
                         <span className={`text-lg font-bold px-3 py-1 text-center w-10 ${
                           formData[field] !== selectedDisc[field.replace("custom", "").toLowerCase()]
                             ? "text-green-500"
-                            : "text-gray-700"
+                            : "text-white"
                         }`}>
                           {formData[field]}
                         </span>
                         <button
                           onClick={() => updateFlightNumber(field, -0.5)}
                           disabled={formData[field] <= flightNumberLimits[field].min}
-                          className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
+                          className="bg-gray-400 hover:bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
                         >
                           -
                         </button>
@@ -245,7 +243,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
                 <div className="flex flex-col items-center gap-4">
                   {/* Color Picker */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-gray-700 mb-1">Color:</label>
+                    <label className="block text-white mb-1">Color:</label>
                     <input
                       type="color"
                       value={formData.color}
@@ -256,7 +254,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
   
                   {/* Plastic Input */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-gray-700 mb-1">Plastic:</label>
+                    <label className="block text-white mb-1">Plastic:</label>
 
                     {useCustomPlastic ? (
                       <input
@@ -271,7 +269,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
                             plasticId: null, // Clear any plastic ID if user types
                           })
                         }
-                        className="border rounded px-2 py-1 w-48"
+                        className="border rounded px-2 py-1 w-48 text-white"
                       />
                     ) : (
                       <select
@@ -283,7 +281,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
                             customPlastic: null, // Clear any previous custom input
                           })
                         }
-                        className="border rounded px-2 py-1"
+                        className="bg-gray-700 text-white border-gray-600 border rounded px-2 py-1"
                       >
                         <option value="">Select Plastic</option>
                         {selectedDisc.availablePlastics.map((plastic) => (
@@ -308,7 +306,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
   
                   {/* Weight Input */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-gray-700 mb-1">Weight (grams):</label>
+                    <label className="block text-white mb-1">Weight (grams):</label>
                     <input
                       type="number"
                       value={formData.weight}
@@ -322,7 +320,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
   
               {/* Comment Box */}
               <div className="mt-4 flex flex-col">
-                <label className="block text-gray-700 mb-1">Comment:</label>
+                <label className="block text-white mb-1">Comment:</label>
                 <textarea
                   maxLength={50}
                   value={formData.comment}
@@ -333,7 +331,7 @@ export default function AddNewUserDiscModal({ preSelectedDiscId, onClose, refetc
             </>
           ) : (
             // Placeholder message when no disc is selected
-            <div className="flex-1 flex items-center justify-center text-gray-500 text-lg">
+            <div className="flex-1 flex items-center justify-center text-white text-lg">
               Select a disc to continue
             </div>
           )}

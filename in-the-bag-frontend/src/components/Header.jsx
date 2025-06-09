@@ -36,7 +36,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="bg-gray-800 text-white p-6 flex items-center justify-between shadow-md">
+    <header className="bg-gray-900 text-white p-6 flex items-center justify-between shadow-md">
       {/* Logo Section */}
       <div className="flex items-center space-x-1 w-1/5 pl-3">
         <img src={basketLogo} alt="Disc Golf Basket" className="h-10 w-auto filter invert" />
@@ -59,16 +59,16 @@ export default function Header() {
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0 mt-12 w-32 -mr-6 bg-white text-gray-800 border rounded shadow z-50">
+              <div className="absolute right-0 mt-12 w-32 -mr-6 bg-gray-700 text-white shadow z-50">
                 <button
                   onClick={handleProfileClick}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-800 cursor-pointer"
                 >
                   Profile
                 </button>
                 <button
                   onClick={handleLogoutClick}
-                  className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 cursor-pointer"
+                  className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-800 cursor-pointer"
                 >
                   Log out
                 </button>

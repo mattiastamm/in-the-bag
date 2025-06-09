@@ -77,7 +77,7 @@ export default function MyBags() {
               key={bag.id}
               onClick={() => setSelectedBagId(bag.id)}
               className={`bg-blue-500 text-white text-xl px-4 py-2 rounded hover:bg-blue-600 cursor-pointer ${
-                selectedBagId === bag.id ? "ring-4 ring-blue-300" : ""
+                selectedBagId === bag.id ? "ring-2 ring-blue-300" : ""
               }`}
             >
               {bag.title}
@@ -103,7 +103,7 @@ export default function MyBags() {
       </div>
 
       {/* Divider Line */}
-      <div className="-mx-6 border-b border-gray-300" />
+      <div className="-mx-6 border-b-3 border-gray-900" />
 
       {/* Split Layout: Left = Disc List, Right = Future Content */}
       <div className="flex flex-col lg:flex-row flex-1 gap-6 -ml-6">
@@ -130,7 +130,7 @@ export default function MyBags() {
         </div>
 
         {/* Right Half - becomes full width and moves below on smaller screens */}
-        <div className="w-full lg:w-1/2 border-t lg:border-t-0 lg:border-l flex flex-col justify-start border-gray-300 p-4 text-gray-500 text-lg">
+        <div className="w-full lg:w-1/2 border-t lg:border-t-0 lg:border-l-3 flex flex-col justify-start border-gray-900 p-4 text-gray-500 text-lg">
           <StabilityChart
             discs={bags.find((b) => b.id === selectedBagId)?.discs || []}
           />

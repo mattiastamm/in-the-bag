@@ -21,10 +21,10 @@ export default function BagDiscItem({ disc, onRemove }) {
 
   // Helper: Highlight custom numbers if they differ
   const getTextClass = (custom, original) =>
-    custom !== original ? "text-green-500 font-semibold" : "text-gray-800";
+    custom !== original ? "text-green-500 font-semibold" : "text-white";
 
   return (
-    <div className="flex items-center justify-between bg-gray-100 px-4 py-2 rounded-md shadow-sm w-full">
+    <div className="flex items-center justify-between bg-gray-700 px-4 py-2 rounded-md shadow-sm w-full">
       {/* Disc Color Circle (non-shrinking) */}
       <div
         className="w-9 h-9 rounded-full flex-shrink-0"
@@ -36,7 +36,7 @@ export default function BagDiscItem({ disc, onRemove }) {
       <div className="flex-1 min-w-0 flex items-center justify-evenly gap-2 text-sm sm:text-base">
         {/* Name + Manufacturer/Plastic */}
         <div className="flex items-center gap-x-4 min-w-0">
-          <div className="flex flex-wrap gap-x-4 text-gray-600 min-w-0">
+          <div className="flex flex-wrap gap-x-4 text-white min-w-0">
             <span className="whitespace-nowrap">{manufacturerName}</span>
             <span className="whitespace-nowrap">{plasticName || customPlastic}</span>
           </div>

@@ -36,19 +36,19 @@ export default function SuggestionModal({ suggestions, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-lg p-6 max-w-4xl w-full shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-gray-800 rounded-lg p-6 max-w-4xl w-full shadow-lg max-h-[80vh] overflow-y-auto">
         {totalPages === 0 ? (
           // No suggestions block (unchanged)
           <>
             <h2 className="text-2xl font-bold text-center mb-4">🥏 No Suggestions Needed!</h2>
-            <p className="text-gray-700 text-center mb-2">
+            <p className="text-white text-center mb-2">
               Looks like your bag is already extremely versatile and covers all the essential disc types—great work!
             </p>
-            <p className="text-gray-700 text-center mb-4">
+            <p className="text-white text-center mb-4">
               If you’re looking to take your game to the next level, here are a few suggestions:
             </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2">
+            <ul className="list-disc list-inside text-white space-y-2">
               <li>
                 <strong>Specialty discs</strong> – Try out discs with unique flight characteristics for rollers,
                 utility shots, or strong headwinds.
@@ -76,7 +76,7 @@ export default function SuggestionModal({ suggestions, onClose }) {
             <h2 className="text-2xl text-center mb-6">
               <p className="font-bold">Suggestion {pageIndex + 1}</p>
               <p className="font-normal mb-5">{currentCategory.categoryTitle}</p>
-              <p className="text-lg text-gray-600 italic">
+              <p className="text-lg text-gray-400 italic">
                 Select the discs you want to add to your Wishlist
               </p>
             </h2>
@@ -107,7 +107,7 @@ export default function SuggestionModal({ suggestions, onClose }) {
                 <button
                   onClick={handlePrev}
                   disabled={pageIndex === 0}
-                  className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded disabled:opacity-50 cursor-pointer"
+                  className="bg-gray-400 hover:bg-gray-500 px-4 py-2 rounded disabled:opacity-50 cursor-pointer"
                 >
                   Prev
                 </button>
@@ -115,7 +115,7 @@ export default function SuggestionModal({ suggestions, onClose }) {
                 <button
                   onClick={handleNext}
                   disabled={pageIndex === totalPages - 1}
-                  className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded disabled:opacity-50 cursor-pointer"
+                  className="bg-gray-400 hover:bg-gray-500 px-4 py-2 rounded disabled:opacity-50 cursor-pointer"
                 >
                   Next
                 </button>

@@ -20,7 +20,7 @@ export default function LoginModal({ onClose, onLoginSuccess, switchToSignup }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white p-6 rounded-lg w-[90%] max-w-md shadow-lg">
+      <div className="bg-gray-700 p-6 rounded-lg w-[90%] max-w-md shadow-lg">
         <h2 className="text-2xl font-bold mb-4">Log In</h2>
 
         {error && <p className="text-red-500 mb-2">{error}</p>}

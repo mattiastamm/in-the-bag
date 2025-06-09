@@ -19,7 +19,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-800 flex items-center justify-center">
       {showSignup ? (
         <SignupModal
           onClose={() => setShowSignup(false)}

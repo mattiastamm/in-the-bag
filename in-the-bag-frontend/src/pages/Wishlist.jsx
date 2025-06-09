@@ -80,7 +80,7 @@ export default function Wishlist() {
       {/* Text about the page */}
       {wishlistDiscs.length > 0 && (
         <div className="pb-10">
-          <p className="text-center text-gray-700 text-xl max-w-3xl mx-auto mb-8">
+          <p className="text-center text-gray-300 text-xl max-w-3xl mx-auto mb-8">
             You have <span className="font-semibold">{wishlistDiscs.length}</span> disc{wishlistDiscs.length !== 1 && "s"} in your Wishlist. 
             Press <span className="font-medium">"Add to Inv"</span> to add them directly to your Inventory and
             <span className="font-medium"> "Remove"</span> to remove them from your Wishlist.
@@ -105,7 +105,7 @@ export default function Wishlist() {
             }}
             modules={[Autoplay, Navigation]}
             navigation={ true }
-            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: true }}
             spaceBetween={40}
             slidesPerView={1}
             breakpoints={{
@@ -132,7 +132,7 @@ export default function Wishlist() {
             ))}
           </Swiper>
         ) : (
-          <p className="text-center text-gray-600 text-lg">
+          <p className="text-center text-gray-300 text-lg">
             You haven't added any discs to your wishlist yet.
           </p>
         )}
@@ -140,7 +140,7 @@ export default function Wishlist() {
 
       {/* Page Index */}
       {wishlistDiscs.length > 0 && wishlistDiscs.length > slidesPerView && (
-        <div className="mt-8 text-gray-600 text-lg font-medium">
+        <div className="mt-8 text-gray-300 text-lg font-medium">
           Page {currentSlide} of {wishlistDiscs.length}
         </div>
       )}

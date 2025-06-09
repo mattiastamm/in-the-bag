@@ -21,12 +21,12 @@ export default function DeleteAccountModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white p-6 rounded-lg w-[90%] max-w-md shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="bg-gray-700 p-6 rounded-lg w-[90%] max-w-md shadow-lg">
         <h2 className="text-2xl font-bold text-red-600 mb-4">
           Confirm Account Deletion
         </h2>
-        <p className="mb-3 text-sm text-gray-700">
+        <p className="mb-4 text-sm text-white">
           This action cannot be undone. Please enter your password to proceed.
         </p>
 
@@ -35,7 +35,7 @@ export default function DeleteAccountModal({ onClose }) {
           placeholder="Your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full border px-3 py-2 rounded mb-3"
+          className="w-full border px-3 py-2 rounded mb-4"
         />
 
         {error && <p className="text-red-500 mb-3">{error}</p>}
@@ -43,7 +43,7 @@ export default function DeleteAccountModal({ onClose }) {
         <div className="flex justify-between">
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 hover:underline cursor-pointer"
+            className="text-white hover:underline cursor-pointer"
           >
             Cancel
           </button>

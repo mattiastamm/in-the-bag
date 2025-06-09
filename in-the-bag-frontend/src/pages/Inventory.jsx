@@ -52,7 +52,7 @@ export default function Inventory() {
         <h1 className="text-3xl font-bold pl-1">My Inventory</h1>
         <button 
           onClick={() => setIsAddingDisc(true)}
-          className="bg-green-500 text-white text-2xl px-4 py-2 rounded transition-transform transform hover:bg-green-700 cursor-pointer"
+          className="bg-green-500 text-2xl px-4 py-2 rounded transition-transform transform hover:bg-green-700 cursor-pointer"
         >
           + Add Disc
         </button>
@@ -61,7 +61,7 @@ export default function Inventory() {
       {/* Show either empty state message or disc grid */}
       {userDiscs.length === 0 ? (
         <div className="flex items-center justify-center h-[50vh]">
-          <p className="text-gray-600 text-lg italic text-center px-4">
+          <p className="text-lg italic text-center px-4">
             No discs found. To add your first disc, press the{" "}
             <span className="font-semibold">Add Disc</span> button.
           </p>
@@ -70,7 +70,7 @@ export default function Inventory() {
         discTypeOrder.map((type) => (
           categorizedDiscs[type] && categorizedDiscs[type].length > 0 && (
             <div key={type} className="mb-9">
-              <h2 className="text-2xl font-semibold -mx-6 mb-8 py-1 pl-7 bg-gray-200">{type}</h2>
+              <h2 className="text-2xl font-semibold -mx-6 mb-8 py-1.5 pl-7 bg-gray-900">{type}</h2>
               <div className="inventory-grid gap-10 auto-rows-fr pl-8">
                 {categorizedDiscs[type]
                   .slice()
@@ -79,7 +79,7 @@ export default function Inventory() {
                     <div 
                       key={userDisc.userDiscId} 
                       onClick={() => fetchDiscDetails(userDisc.userDiscId)}
-                      className="cursor-pointer"
+                      className="cursor-pointer transform transition-transform hover:scale-107"
                     >
                       <InventoryCard
                         name={userDisc.name}

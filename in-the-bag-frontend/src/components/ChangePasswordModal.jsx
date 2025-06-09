@@ -32,8 +32,8 @@ export default function ChangePasswordModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white p-6 rounded-lg w-[90%] max-w-md shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="bg-gray-700 p-6 rounded-lg w-[90%] max-w-md shadow-lg">
         <h2 className="text-2xl font-bold mb-4">Change Password</h2>
 
         {error && <p className="text-red-500 mb-3">{error}</p>}
@@ -72,7 +72,7 @@ export default function ChangePasswordModal({ onClose }) {
 
         <button
           onClick={onClose}
-          className="mt-4 w-full text-sm text-gray-500 hover:underline cursor-pointer"
+          className="mt-4 w-full text-sm text-white hover:underline cursor-pointer"
         >
           Cancel
         </button>

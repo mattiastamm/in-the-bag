@@ -33,7 +33,7 @@ const renderCustomizedLabel = ({
 export default function DiscTypePieChart({ data }) {
   return (
     <div className="flex flex-col items-center">
-        <h2 className="text-lg font-semibold mb-2">Discs by Category</h2>
+        <h2 className="text-lg font-semibold">Discs by Category</h2>
         <ResponsiveContainer width="100%" height={220}>
             <PieChart>
             <Pie
@@ -44,6 +44,7 @@ export default function DiscTypePieChart({ data }) {
                 labelLine={false}
                 label={renderCustomizedLabel}
                 dataKey="value"
+                stroke="none"
             >
                 {data.map((entry, index) => (
                 <Cell
@@ -60,7 +61,7 @@ export default function DiscTypePieChart({ data }) {
             {data.map((entry, index) => (
             <li
                 key={index}
-                className="flex items-center gap-2 text-sm text-gray-700"
+                className="flex items-center gap-2 text-sm text-white"
             >
                 <span
                 className="inline-block w-3 h-3 rounded-full"

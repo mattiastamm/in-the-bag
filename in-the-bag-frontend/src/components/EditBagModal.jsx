@@ -41,8 +41,8 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
   }, {});
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white w-[90%] max-h-[90vh] rounded-lg p-6 overflow-y-auto shadow-lg">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="bg-gray-800 w-[90%] max-h-[90vh] rounded-lg p-6 overflow-y-auto shadow-lg">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2 mb-4">
           <h2 className="text-xl font-bold">Edit Bag Contents</h2>
@@ -53,7 +53,7 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
         {discTypeOrder.map((type) => (
           groupedDiscs[type]?.length > 0 && (
             <div key={type} className="mb-6">
-              <h3 className="text-lg font-semibold mb-3 bg-gray-200 py-2 px-3 rounded">{type}</h3>
+              <h3 className="text-lg font-semibold mb-3 bg-gray-900 py-2 px-6 rounded -mx-6">{type}</h3>
               <div className="editBagModal-grid gap-6 auto-rows-fr">
                 {groupedDiscs[type].map((disc) => (
                   <div
@@ -76,9 +76,9 @@ export default function EditBagModal({ bagId, initialSelectedDiscIds, onClose, r
         ))}
 
         {/* Action Buttons */}
-        <div className="mt-6 flex justify-end gap-4">
+        <div className="mt-15 flex gap-4 justify-center">
           <button
-            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
+            className="bg-gray-400 px-4 py-2 rounded hover:bg-gray-500 cursor-pointer"
             onClick={onClose}
           >
             Cancel

@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+body {
+  background-color: #1f2937;
+  color: white;
+}
+
 @layer utilities {
   /* Inventory custom grid */
   @media (max-width: 440px) {

@@ -79,11 +79,11 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
 
   return (
     <div 
-      className="fixed inset-0 flex items-center justify-center bg-gray-300/40 backdrop-blur-md z-50" 
+      className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md z-50" 
     >
       {/* Modal Box */}
       <div 
-        className="bg-white w-[90%] md:w-[70%] lg:w-[50%] max-h-[90vh] rounded-lg shadow-lg p-6 flex flex-col overflow-y-auto" 
+        className="bg-gray-700 w-[90%] md:w-[70%] lg:w-[50%] max-h-[90vh] rounded-lg shadow-lg p-6 flex flex-col overflow-y-auto" 
         onClick={(e) => e.stopPropagation()} // ✅ Prevent click inside from closing
       >
         {/* Header */}
@@ -97,7 +97,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
 
         {/* Loading and Error Handling */}
         {isLoading ? (
-          <p className="text-center text-gray-500">Loading...</p>
+          <p className="text-center text-white">Loading...</p>
         ) : (
           <>
             {/* Error Display */}
@@ -110,12 +110,12 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
 
               {/* Disc Details */}
               <div className="text-center flex flex-col items-center mt-2">
-                <p className="text-gray-600"><strong>Type:</strong> {disc.type}</p>
-                <p className="text-gray-600"><strong>Manufacturer:</strong> {disc.manufacturerName}</p>
+                <p className="text-white"><strong>Type:</strong> {disc.type}</p>
+                <p className="text-white"><strong>Manufacturer:</strong> {disc.manufacturerName}</p>
 
                 {/* Bags Section */}
                 <div className="w-full text-center">
-                  <p className=" text-gray-600">
+                  <p className=" text-white">
                     <strong>Bags:</strong>{' '}
                     {disc.inUse ? (
                       disc.bags.map(bag => bag.title).join(', ')
@@ -132,7 +132,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                 
                 {/* ✅ Flight Numbers (Left) - Centered */}
                 <div className="flex flex-col items-center">
-                  <p className="text-gray-700 text-lg font-semibold mb-2">Flight Numbers:</p>
+                  <p className="text-white text-lg font-semibold mb-2">Flight Numbers:</p>
                   <div className="flex gap-6">
                       {Object.keys(flightNumberLimits).map((field, index) => (
                           <div key={index} className="flex flex-col items-center">
@@ -140,7 +140,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                           <button
                               onClick={() => updateFlightNumber(field, 0.5)}
                               disabled={formData[field] >= flightNumberLimits[field].max}
-                              className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50 hover:bg-gray-300"
+                              className="bg-gray-400 px-3 py-1 rounded disabled:opacity-50 hover:bg-gray-300"
                           >
                               +
                           </button>
@@ -149,7 +149,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                           <span className={`text-lg font-bold px-3 py-1 text-center w-10 ${
                             formData[field] !== disc[field.replace("custom", "").toLowerCase()]
                               ? "text-green-500"
-                              : "text-gray-700"
+                              : "text-white"
                           }`}>
                               {formData[field]}
                           </span>
@@ -158,7 +158,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                           <button
                               onClick={() => updateFlightNumber(field, -0.5)}
                               disabled={formData[field] <= flightNumberLimits[field].min}
-                              className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50 hover:bg-gray-300"
+                              className="bg-gray-400 px-3 py-1 rounded disabled:opacity-50 hover:bg-gray-300"
                           >
                               -
                           </button>
@@ -172,7 +172,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                   
                   {/* Color Picker */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-gray-700 mb-1">Color:</label>
+                    <label className="block text-white mb-1">Color:</label>
                     <input
                       type="color"
                       value={formData.color}
@@ -183,7 +183,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
 
                   {/* Weight Input */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-gray-700 mb-1">Weight (grams):</label>
+                    <label className="block text-white mb-1">Weight (grams):</label>
                     <input
                       type="number"
                       value={formData.weight}
@@ -200,7 +200,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
 
                   {/* Plastic Input */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-gray-700 mb-1">Plastic:</label>
+                    <label className="block text-white mb-1">Plastic:</label>
 
                     {useCustomPlastic ? (
                       <input
@@ -219,7 +219,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
                         onChange={(e) =>
                           setFormData({ ...formData, plasticId: parseInt(e.target.value), customPlastic: null })
                         }
-                        className="border rounded px-2 py-1"
+                        className="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1"
                       >
                         <option value="">Select Plastic</option>
                         {disc.availablePlastics.map((plastic) => (
@@ -247,7 +247,7 @@ export default function DiscDetailsModal({ disc, onClose, isLoading, error, refe
 
               {/* Comment Box */}
               <div className="mt-4 flex flex-col">
-                <label className="block text-gray-700 mb-1">Comment:</label>
+                <label className="block text-white mb-1">Comment:</label>
                 <textarea
                   value={formData.comment}
                   onChange={(e) => setFormData({ ...formData, comment: e.target.value })}

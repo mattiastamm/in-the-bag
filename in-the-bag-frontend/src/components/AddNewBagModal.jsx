@@ -21,8 +21,8 @@ export default function AddNewBagModal({ onClose, refetch }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-500/50 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-md w-[90%] md:w-[60%] lg:w-[40%]">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50">
+      <div className="bg-gray-700 p-6 rounded-lg shadow-md w-[90%] md:w-[60%] lg:w-[40%]">
         <div className="flex justify-between items-center mb-4 border-b pb-2">
           <h2 className="text-xl font-bold">Create New Bag</h2>
           <button
@@ -56,7 +56,7 @@ export default function AddNewBagModal({ onClose, refetch }) {
 
         <div className="flex justify-end gap-3">
           <button
-            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 cursor-pointer"
+            className="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500 cursor-pointer text-white"
             onClick={onClose}
           >
             Cancel
