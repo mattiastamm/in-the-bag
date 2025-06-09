@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # AWS credentials
-inTheBag_KeyPair.pem
+InTheBag_KeyPair.pem
